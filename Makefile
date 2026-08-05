@@ -9,6 +9,7 @@ SOURCES := native/api_core.cpp \
            native/api_controls.cpp \
            native/api_dialogs.cpp \
            native/api_runtime.cpp \
+           native/api_widgets.cpp \
            native/cl_fltk_bridge_state.cpp \
            native/cl_fltk_bridge_events.cpp \
            native/cl_fltk_bridge_style.cpp \
@@ -21,7 +22,7 @@ CXXFLAGS += -std=c++17 -fPIC -O2 -Wall -Wextra $(shell $(FLTK_CONFIG) --cxxflags
 LDFLAGS += -shared $(shell $(FLTK_CONFIG) --ldflags)
 LISP_ENV := ASDF_OUTPUT_TRANSLATIONS=$(CURDIR)/:$(CURDIR)/build/common-lisp-cache/
 
-.PHONY: all native smoke widget-smoke demo scrollbar-visual button-ellipsis-visual clean
+.PHONY: all native smoke widget-smoke demo scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
 
 all: native
 
@@ -45,6 +46,9 @@ scrollbar-visual: native
 
 button-ellipsis-visual: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load scripts/visual-button-ellipsis.lisp
+
+modern-widgets-visual: native
+	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load scripts/visual-modern-widgets.lisp
 
 clean:
 	rm -rf build

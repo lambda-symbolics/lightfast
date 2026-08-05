@@ -12,6 +12,7 @@
      (:file "bridge")
      (:file "core")
      (:file "runtime")
+     (:file "widgets")
      (:file "geometry")
      (:module "constructors"
       :serial t
@@ -20,7 +21,8 @@
        (:file "buttons")
        (:file "text")
        (:file "choices")
-       (:file "values")))
+       (:file "values")
+       (:file "widgets")))
      (:file "tables")
      (:file "layout")
      (:file "dialogs")))))

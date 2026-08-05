@@ -585,13 +585,42 @@ bool classic_value_input_set_text_size(Fl_Widget *widget, int size)
         input->textsize(size);
         return true;
     }
+    if (auto *output = dynamic_cast<Fl_Value_Output *>(widget)) {
+        output->textsize(size);
+        return true;
+    }
+    if (auto *chart = dynamic_cast<Fl_Chart *>(widget)) {
+        chart->textsize(size);
+        return true;
+    }
+    if (auto *terminal = dynamic_cast<Fl_Terminal *>(widget)) {
+        terminal->textsize(size);
+        return true;
+    }
     return false;
 }
 
 bool classic_value_input_set_text_font(Fl_Widget *widget, int font)
 {
+    const auto text_font = static_cast<Fl_Font>(font);
     if (auto *input = dynamic_cast<ClassicValueInput *>(widget)) {
-        input->textfont(static_cast<Fl_Font>(font));
+        input->textfont(text_font);
+        return true;
+    }
+    if (auto *output = dynamic_cast<Fl_Value_Output *>(widget)) {
+        output->textfont(text_font);
+        return true;
+    }
+    if (auto *choice = dynamic_cast<Fl_Scheme_Choice *>(widget)) {
+        choice->textfont(text_font);
+        return true;
+    }
+    if (auto *chart = dynamic_cast<Fl_Chart *>(widget)) {
+        chart->textfont(text_font);
+        return true;
+    }
+    if (auto *terminal = dynamic_cast<Fl_Terminal *>(widget)) {
+        terminal->textfont(text_font);
         return true;
     }
     return false;
@@ -1140,6 +1169,78 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
         tree->when(FL_WHEN_CHANGED);
         apply_common_style(tree);
         return tree;
+    }
+    case WIDGET_FILE_INPUT: {
+        auto *input = new Fl_File_Input(x, y, w, h, text);
+        input->when(FL_WHEN_CHANGED);
+        input->textsize(12);
+        apply_inset_style(input);
+        return input;
+    }
+    case WIDGET_VALUE_OUTPUT: {
+        auto *output = new Fl_Value_Output(x, y, w, h, text);
+        output->when(FL_WHEN_CHANGED);
+        output->textsize(12);
+        apply_inset_style(output);
+        return output;
+    }
+    case WIDGET_PACK: {
+        auto *pack = new Fl_Pack(x, y, w, h, text);
+        pack->type(Fl_Pack::VERTICAL);
+        pack->spacing(0);
+        apply_common_style(pack);
+        return pack;
+    }
+    case WIDGET_GRID: {
+        auto *grid = new Fl_Grid(x, y, w, h, text);
+        apply_common_style(grid);
+        return grid;
+    }
+    case WIDGET_POSITIONER: {
+        auto *positioner = new Fl_Positioner(x, y, w, h, text);
+        positioner->xbounds(0.0, 1.0);
+        positioner->ybounds(0.0, 1.0);
+        positioner->value(0.5, 0.5);
+        positioner->when(FL_WHEN_CHANGED);
+        apply_inset_style(positioner);
+        return positioner;
+    }
+    case WIDGET_WIZARD: {
+        auto *wizard = new Fl_Wizard(x, y, w, h, text);
+        apply_common_style(wizard);
+        return wizard;
+    }
+    case WIDGET_CHART: {
+        auto *chart = new Fl_Chart(x, y, w, h, text);
+        chart->type(FL_BAR_CHART);
+        chart->textsize(12);
+        apply_inset_style(chart);
+        return chart;
+    }
+    case WIDGET_SCHEME_CHOICE: {
+        auto *choice = new Fl_Scheme_Choice(x, y, w, h, text);
+        choice->when(FL_WHEN_CHANGED);
+        choice->textsize(12);
+        apply_inset_style(choice);
+        return choice;
+    }
+    case WIDGET_TERMINAL: {
+        auto *terminal = new Fl_Terminal(x, y, w, h, text);
+        terminal->textsize(12);
+        apply_inset_style(terminal);
+        return terminal;
+    }
+    case WIDGET_COLOR_CHOOSER: {
+        auto *chooser = new Fl_Color_Chooser(x, y, w, h, text);
+        chooser->when(FL_WHEN_CHANGED);
+        apply_common_style(chooser);
+        return chooser;
+    }
+    case WIDGET_SHORTCUT_BUTTON: {
+        auto *button = new Fl_Shortcut_Button(x, y, w, h, text);
+        button->when(FL_WHEN_CHANGED);
+        apply_button_style(button);
+        return button;
     }
     default:
         return nullptr;

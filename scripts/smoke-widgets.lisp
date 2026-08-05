@@ -578,4 +578,95 @@
   (assert (= 30 (lightfast:widget-height child)))
   (assert (lightfast:destroy window)))
 
+(let* ((window (lightfast:make-window :width 640
+                                     :height 480
+                                     :label "Lightfast modern widget smoke"))
+       (file-input (lightfast:make-file-input :parent window
+                                             :x 8 :y 8 :width 180
+                                             :value "/tmp/example.raw"))
+       (value-output (lightfast:make-value-output :parent window
+                                                 :x 196 :y 8 :width 80
+                                                 :value "2.5"
+                                                 :minimum 0 :maximum 10 :step 0.5))
+       (pack (lightfast:make-pack :parent window
+                                 :x 8 :y 40 :width 180 :height 80
+                                 :orientation :horizontal :spacing 3))
+       (grid (lightfast:make-grid :parent window
+                                 :x 196 :y 40 :width 180 :height 80
+                                 :rows 2 :columns 2 :margin 2
+                                 :row-gap 3 :column-gap 4))
+       (grid-child (lightfast:make-box :parent grid :label "Cell"))
+       (positioner (lightfast:make-positioner :parent window
+                                             :x 384 :y 8 :width 100 :height 100
+                                             :x-value 0.25 :y-value 0.75
+                                             :x-step 0.05 :y-step 0.1))
+       (wizard (lightfast:make-wizard :parent window
+                                     :x 8 :y 128 :width 180 :height 80))
+       (page-one (lightfast:make-group :parent wizard :label "One"))
+       (page-two (lightfast:make-group :parent wizard :label "Two"))
+       (chart (lightfast:make-chart :parent window
+                                   :x 196 :y 128 :width 180 :height 80
+                                   :type :line :minimum -1 :maximum 4))
+       (scheme (lightfast:make-scheme-choice :parent window
+                                            :x 384 :y 116 :width 160))
+       (terminal (lightfast:make-terminal :parent window
+                                         :x 8 :y 216 :width 368 :height 80
+                                         :text (format nil "ready~%")))
+       (chooser (lightfast:make-color-chooser :parent window
+                                             :x 384 :y 148 :width 195 :height 115
+                                             :red 0.25 :green 0.5 :blue 0.75))
+       (shortcut (lightfast:make-shortcut-button :parent window
+                                                :x 8 :y 304 :width 140
+                                                :shortcut 65))
+       (browser (lightfast:make-browser :parent window
+                                       :x 384 :y 272 :width 195 :height 100
+                                       :items '("zero" "one" "two"))))
+  (declare (ignore value-output pack page-one scheme))
+  (assert (string= "/tmp/example.raw" (lightfast:value file-input)))
+  (lightfast:grid-place grid grid-child :row 0 :column 1 :alignment :center)
+  (lightfast:grid-set-row-height grid 0 20)
+  (lightfast:grid-set-row-weight grid 1 2)
+  (lightfast:grid-set-column-width grid 0 40)
+  (lightfast:grid-set-column-weight grid 1 3)
+  (multiple-value-bind (x y) (lightfast:positioner-values positioner)
+    (assert (< (abs (- x 0.25d0)) 1.0d-9))
+    (assert (< (abs (- y 0.75d0)) 1.0d-9)))
+  (lightfast:positioner-set-bounds positioner
+                                   :x-minimum -1 :x-maximum 1
+                                   :y-minimum -2 :y-maximum 2)
+  (lightfast:positioner-set-value positioner :x -0.5 :y 1.5)
+  (setf (lightfast:wizard-current-child wizard) page-two)
+  (assert (= (lightfast:widget-id page-two)
+             (lightfast:wizard-current-child wizard)))
+  (lightfast:wizard-previous wizard)
+  (lightfast:wizard-next wizard)
+  (lightfast:chart-add chart 1.0 :label "one")
+  (lightfast:chart-add chart 3.0 :label "three")
+  (lightfast:chart-insert chart 1 2.0 :label "two")
+  (lightfast:chart-replace chart 0 1.5 :label "one and a half")
+  (lightfast:chart-set-type chart :filled)
+  (lightfast:chart-clear chart)
+  (lightfast:terminal-append terminal (format nil "done~%"))
+  (assert (search "ready" (lightfast:terminal-text terminal)))
+  (lightfast:terminal-clear terminal)
+  (assert (null (search "ready" (lightfast:terminal-text terminal))))
+  (multiple-value-bind (red green blue) (lightfast:color-chooser-rgb chooser)
+    (assert (< (abs (- red 0.25d0)) 1.0d-9))
+    (assert (< (abs (- green 0.5d0)) 1.0d-9))
+    (assert (< (abs (- blue 0.75d0)) 1.0d-9)))
+  (setf (lightfast:shortcut-button-shortcut shortcut) 66)
+  (assert (= 66 (lightfast:shortcut-button-shortcut shortcut)))
+  (lightfast:browser-set-selection-mode browser :multiple)
+  (lightfast:browser-set-selected-p browser 0 t)
+  (lightfast:browser-set-selected-p browser 2 t)
+  (assert (equal '(0 2) (lightfast:browser-selected-indices browser)))
+  (lightfast:browser-set-selected-p browser 0 nil)
+  (assert (equal '(2) (lightfast:browser-selected-indices browser)))
+  (assert (handler-case
+              (progn
+                (lightfast:browser-set-selection-mode browser :legacy)
+                nil)
+            (error () t)))
+  (assert (lightfast:destroy window)))
+
 (format t "~&Lightfast smoke test passed.~%")

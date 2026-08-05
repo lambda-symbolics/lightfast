@@ -146,6 +146,8 @@
      (%choice-add (widget-id widget) label))
     (#.+widget-input-choice+
      (%choice-add (widget-id widget) label))
+    (#.+widget-scheme-choice+
+     (%choice-add (widget-id widget) label))
     (#.+widget-browser+
      (%browser-add (widget-id widget) label))
     (#.+widget-file-browser+

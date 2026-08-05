@@ -374,6 +374,159 @@
 (cffi:defcfun ("clfl_widget_clear" %widget-clear) :void
   (id :long-long))
 
+(cffi:defcfun ("clfl_pack_set_orientation" %pack-set-orientation) :int
+  (id         :long-long)
+  (horizontal :int))
+
+(cffi:defcfun ("clfl_pack_set_spacing" %pack-set-spacing) :int
+  (id      :long-long)
+  (spacing :int))
+
+(cffi:defcfun ("clfl_grid_layout" %grid-layout) :int
+  (id         :long-long)
+  (rows       :int)
+  (columns    :int)
+  (margin     :int)
+  (row-gap    :int)
+  (column-gap :int))
+
+(cffi:defcfun ("clfl_grid_place" %grid-place) :int
+  (id          :long-long)
+  (child-id    :long-long)
+  (row         :int)
+  (column      :int)
+  (row-span    :int)
+  (column-span :int)
+  (alignment   :int))
+
+(cffi:defcfun ("clfl_grid_set_row_height" %grid-set-row-height) :int
+  (id     :long-long)
+  (row    :int)
+  (height :int))
+
+(cffi:defcfun ("clfl_grid_set_row_weight" %grid-set-row-weight) :int
+  (id     :long-long)
+  (row    :int)
+  (weight :int))
+
+(cffi:defcfun ("clfl_grid_set_column_width" %grid-set-column-width) :int
+  (id     :long-long)
+  (column :int)
+  (width  :int))
+
+(cffi:defcfun ("clfl_grid_set_column_weight" %grid-set-column-weight) :int
+  (id     :long-long)
+  (column :int)
+  (weight :int))
+
+(cffi:defcfun ("clfl_positioner_set_value" %positioner-set-value) :int
+  (id :long-long)
+  (x  :double)
+  (y  :double))
+
+(cffi:defcfun ("clfl_positioner_get_value" %positioner-get-value) :int
+  (id :long-long)
+  (x  :pointer)
+  (y  :pointer))
+
+(cffi:defcfun ("clfl_positioner_set_bounds" %positioner-set-bounds) :int
+  (id        :long-long)
+  (x-minimum :double)
+  (x-maximum :double)
+  (y-minimum :double)
+  (y-maximum :double))
+
+(cffi:defcfun ("clfl_positioner_set_steps" %positioner-set-steps) :int
+  (id     :long-long)
+  (x-step :double)
+  (y-step :double))
+
+(cffi:defcfun ("clfl_wizard_next" %wizard-next) :int
+  (id :long-long))
+
+(cffi:defcfun ("clfl_wizard_previous" %wizard-previous) :int
+  (id :long-long))
+
+(cffi:defcfun ("clfl_wizard_current" %wizard-current) :long-long
+  (id :long-long))
+
+(cffi:defcfun ("clfl_wizard_set_current" %wizard-set-current) :int
+  (id       :long-long)
+  (child-id :long-long))
+
+(cffi:defcfun ("clfl_chart_add" %chart-add) :int
+  (id    :long-long)
+  (value :double)
+  (label :string)
+  (color :unsigned-int))
+
+(cffi:defcfun ("clfl_chart_insert" %chart-insert) :int
+  (id    :long-long)
+  (index :int)
+  (value :double)
+  (label :string)
+  (color :unsigned-int))
+
+(cffi:defcfun ("clfl_chart_replace" %chart-replace) :int
+  (id    :long-long)
+  (index :int)
+  (value :double)
+  (label :string)
+  (color :unsigned-int))
+
+(cffi:defcfun ("clfl_chart_clear" %chart-clear) :int
+  (id :long-long))
+
+(cffi:defcfun ("clfl_chart_set_bounds" %chart-set-bounds) :int
+  (id      :long-long)
+  (minimum :double)
+  (maximum :double))
+
+(cffi:defcfun ("clfl_chart_set_type" %chart-set-type) :int
+  (id   :long-long)
+  (type :int))
+
+(cffi:defcfun ("clfl_terminal_append" %terminal-append) :int
+  (id   :long-long)
+  (text :string))
+
+(cffi:defcfun ("clfl_terminal_clear" %terminal-clear) :int
+  (id :long-long))
+
+(cffi:defcfun ("clfl_terminal_text" %terminal-text) :pointer
+  (id :long-long))
+
+(cffi:defcfun ("clfl_color_chooser_set_rgb" %color-chooser-set-rgb) :int
+  (id    :long-long)
+  (red   :double)
+  (green :double)
+  (blue  :double))
+
+(cffi:defcfun ("clfl_color_chooser_get_rgb" %color-chooser-get-rgb) :int
+  (id    :long-long)
+  (red   :pointer)
+  (green :pointer)
+  (blue  :pointer))
+
+(cffi:defcfun ("clfl_shortcut_button_set_shortcut" %shortcut-button-set-shortcut) :int
+  (id       :long-long)
+  (shortcut :unsigned-int))
+
+(cffi:defcfun ("clfl_shortcut_button_get_shortcut" %shortcut-button-get-shortcut) :unsigned-int
+  (id :long-long))
+
+(cffi:defcfun ("clfl_browser_set_selection_mode" %browser-set-selection-mode) :int
+  (id   :long-long)
+  (mode :int))
+
+(cffi:defcfun ("clfl_browser_set_selected" %browser-set-selected) :int
+  (id       :long-long)
+  (index    :int)
+  (selected :int))
+
+(cffi:defcfun ("clfl_browser_selected_indices" %browser-selected-indices) :pointer
+  (id :long-long))
+
 (cffi:defcfun ("clfl_copy_text" %copy-text) :void
   (value :string))
 

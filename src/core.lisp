@@ -132,6 +132,28 @@
 
 (defconstant +widget-vertical-slider+ 49)
 
+(defconstant +widget-file-input+ 50)
+
+(defconstant +widget-value-output+ 51)
+
+(defconstant +widget-pack+ 52)
+
+(defconstant +widget-grid+ 53)
+
+(defconstant +widget-positioner+ 54)
+
+(defconstant +widget-wizard+ 55)
+
+(defconstant +widget-chart+ 56)
+
+(defconstant +widget-scheme-choice+ 57)
+
+(defconstant +widget-terminal+ 58)
+
+(defconstant +widget-color-chooser+ 59)
+
+(defconstant +widget-shortcut-button+ 60)
+
 (defconstant +event-activate+ 1)
 
 (defconstant +event-change+ 2)

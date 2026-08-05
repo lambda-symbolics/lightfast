@@ -14,7 +14,9 @@
 #include <FL/Fl_Dial.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_File_Browser.H>
+#include <FL/Fl_File_Input.H>
 #include <FL/Fl_Flex.H>
+#include <FL/Fl_Grid.H>
 #include <FL/Fl_Float_Input.H>
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Help_View.H>
@@ -31,7 +33,9 @@
 #include <FL/Fl_Multiline_Output.H>
 #include <FL/Fl_Native_File_Chooser.H>
 #include <FL/Fl_Output.H>
+#include <FL/Fl_Pack.H>
 #include <FL/Fl_Pixmap.H>
+#include <FL/Fl_Positioner.H>
 #include <FL/Fl_Radio_Round_Button.H>
 #include <FL/Fl_Progress.H>
 #include <FL/Fl_Repeat_Button.H>
@@ -39,10 +43,13 @@
 #include <FL/Fl_Roller.H>
 #include <FL/Fl_Scroll.H>
 #include <FL/Fl_Scrollbar.H>
+#include <FL/Fl_Scheme_Choice.H>
 #include <FL/Fl_Secret_Input.H>
+#include <FL/Fl_Shortcut_Button.H>
 #include <FL/Fl_Spinner.H>
 #include <FL/Fl_Table_Row.H>
 #include <FL/Fl_Tabs.H>
+#include <FL/Fl_Terminal.H>
 #include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Text_Display.H>
 #include <FL/Fl_Text_Editor.H>
@@ -50,6 +57,9 @@
 #include <FL/Fl_Tree.H>
 #include <FL/Fl_Valuator.H>
 #include <FL/Fl_Value_Input.H>
+#include <FL/Fl_Value_Output.H>
+#include <FL/Fl_Wizard.H>
+#include <FL/Fl_Chart.H>
 #include <FL/fl_ask.H>
 #include <FL/fl_draw.H>
 
@@ -117,7 +127,18 @@ enum WidgetKind {
     WIDGET_MENU_BUTTON,
     WIDGET_TILE,
     WIDGET_FLEX,
-    WIDGET_VERTICAL_SLIDER
+    WIDGET_VERTICAL_SLIDER,
+    WIDGET_FILE_INPUT = 50,
+    WIDGET_VALUE_OUTPUT,
+    WIDGET_PACK,
+    WIDGET_GRID,
+    WIDGET_POSITIONER,
+    WIDGET_WIZARD,
+    WIDGET_CHART,
+    WIDGET_SCHEME_CHOICE,
+    WIDGET_TERMINAL,
+    WIDGET_COLOR_CHOOSER,
+    WIDGET_SHORTCUT_BUTTON
 };
 
 enum EventKind {

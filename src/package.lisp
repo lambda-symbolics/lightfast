@@ -61,6 +61,17 @@
    #:+widget-progress+
    #:+widget-slider+
    #:+widget-vertical-slider+
+   #:+widget-file-input+
+   #:+widget-value-output+
+   #:+widget-pack+
+   #:+widget-grid+
+   #:+widget-positioner+
+   #:+widget-wizard+
+   #:+widget-chart+
+   #:+widget-scheme-choice+
+   #:+widget-terminal+
+   #:+widget-color-chooser+
+   #:+widget-shortcut-button+
    #:+widget-status-bar+
    #:+widget-light-button+
    #:+widget-radio-button+
@@ -92,7 +103,10 @@
    #:alert-box
    #:apply-classic-theme
    #:browser-select
+   #:browser-selected-indices
    #:browser-set-column-widths
+   #:browser-set-selected-p
+   #:browser-set-selection-mode
    #:check
    #:check-browser-check-all
    #:check-browser-check-none
@@ -106,7 +120,14 @@
    #:choose-files
    #:choose-save-file
    #:choice-box
+   #:chart-add
+   #:chart-clear
+   #:chart-insert
+   #:chart-replace
+   #:chart-set-bounds
+   #:chart-set-type
    #:clear
+   #:color-chooser-rgb
    #:copy-text
    #:destroy
    #:draw-circle
@@ -131,6 +152,12 @@
    #:flex-set-gap
    #:flex-set-margin
    #:flex-set-orientation
+   #:grid-layout
+   #:grid-place
+   #:grid-set-column-weight
+   #:grid-set-column-width
+   #:grid-set-row-height
+   #:grid-set-row-weight
    #:scrollbar-set-orientation
    #:form
    #:form-field
@@ -153,8 +180,12 @@
    #:make-choice
    #:make-clock
    #:make-adjuster
+   #:make-chart
+   #:make-color-chooser
    #:make-file-browser
+   #:make-file-input
    #:make-flex
+   #:make-grid
    #:make-group
    #:make-input
    #:make-input-choice
@@ -170,7 +201,9 @@
    #:make-multiline-input
    #:make-multiline-output
    #:make-output
+   #:make-pack
    #:make-panel
+   #:make-positioner
    #:make-progress
    #:make-radio-button
    #:make-radio-group
@@ -178,9 +211,11 @@
    #:make-rect
    #:make-repeat-button
    #:make-return-button
+   #:make-scheme-choice
    #:make-scroll
    #:make-scrollbar
    #:make-secret-input
+   #:make-shortcut-button
    #:make-slider
    #:make-vertical-slider
    #:make-spinner
@@ -188,6 +223,7 @@
    #:make-tab-page
    #:make-tabs
    #:make-table
+   #:make-terminal
    #:make-text-display
    #:make-text-editor
    #:make-toolbar
@@ -202,7 +238,9 @@
    #:make-roller
    #:make-tree
    #:make-value-input
+   #:make-value-output
    #:make-value-slider
+   #:make-wizard
    #:make-window
    #:choose-color
    #:input-dialog
@@ -213,6 +251,12 @@
    #:on
    #:on-action
    #:on-resize
+   #:pack-set-orientation
+   #:pack-set-spacing
+   #:positioner-set-bounds
+   #:positioner-set-steps
+   #:positioner-set-value
+   #:positioner-values
    #:quit
    #:redraw
    #:remove-timeout
@@ -240,6 +284,7 @@
    #:resize-widget
    #:run
    #:set-box
+   #:set-color-chooser-rgb
    #:set-color-rgb
    #:set-label-font
    #:set-label-size
@@ -252,6 +297,7 @@
    #:set-text-font
    #:set-text-size
    #:show
+   #:shortcut-button-shortcut
    #:table-cell
    #:table-clear-rows
    #:table-column
@@ -272,8 +318,14 @@
    #:table-set-row
    #:table-set-rows
    #:table-set-size
+   #:terminal-append
+   #:terminal-clear
+   #:terminal-text
    #:tile-size-range
    #:value
+   #:wizard-current-child
+   #:wizard-next
+   #:wizard-previous
    #:wait
    #:widget
    #:widget-height
