@@ -22,7 +22,7 @@ CXXFLAGS += -std=c++17 -fPIC -O2 -Wall -Wextra $(shell $(FLTK_CONFIG) --cxxflags
 LDFLAGS += -shared $(shell $(FLTK_CONFIG) --ldflags)
 LISP_ENV := ASDF_OUTPUT_TRANSLATIONS=$(CURDIR)/:$(CURDIR)/build/common-lisp-cache/
 
-.PHONY: all native smoke widget-smoke demo scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
+.PHONY: all native smoke layout-smoke widget-smoke demo layout-visual scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
 
 all: native
 
@@ -35,11 +35,17 @@ $(BRIDGE): $(SOURCES) native/cl_fltk_bridge.hpp native/stock_icons.hpp $(STOCK_I
 smoke: native
 	$(LISP_ENV) sbcl --noinform --non-interactive --load scripts/smoke-load.lisp
 
+layout-smoke:
+	$(LISP_ENV) sbcl --noinform --non-interactive --load scripts/smoke-layout.lisp
+
 widget-smoke: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-widgets.lisp
 
 demo: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load examples/demo.lisp --eval '(lightfast-demo:main)'
+
+layout-visual: native
+	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load scripts/visual-layout.lisp
 
 scrollbar-visual: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load scripts/visual-scrollbars.lisp

@@ -1,0 +1,36 @@
+#+title: Autolith project adaptations
+
+* Purpose
+
+This voluntary file records reusable ways Autolith adapts itself to Lightfast.
+It supplements AGENTS.md and never overrides repository policy, user
+instructions, or capability boundaries. It contains documentation, not
+executable Lisp.
+
+* Project profile
+
+- Work from the Lightfast repository root and keep native bridge, pure Lisp,
+  display-backed widget, and visual checks separate enough that failures retain
+  a clear subsystem boundary.
+- Build the native bridge with =make native=. Run =make smoke=,
+  =make layout-smoke=, and =make widget-smoke= for behavior changes.
+- Run GUI checks on =DISPLAY=:0= unless the user specifies another display.
+  Use permanent visual scripts such as =make layout-visual= and inspect local
+  screenshots with =fs.view-image=.
+- Preserve the =cl-fltk= ASDF compatibility system and package nickname whenever
+  public Lightfast APIs change.
+- Preserve the native =clfl_*= ABI naming convention unless an intentional,
+  documented ABI version change requires otherwise.
+- Use =make clean= before the final native rebuild when bridge sources or build
+  inputs change. Do not commit generated =build/= contents or screenshots.
+- Keep application-specific UI policy in consuming repositories. Lightfast
+  should expose reusable widgets, geometry, layout, and event mechanisms.
+
+* Active adaptations
+
+None. No private image mutation or user-local init change is active for
+Lightfast.
+
+* Candidates
+
+None recorded.

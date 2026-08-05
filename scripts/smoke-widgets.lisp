@@ -578,6 +578,64 @@
   (assert (= 30 (lightfast:widget-height child)))
   (assert (lightfast:destroy window)))
 
+(let* ((window (lightfast:make-window :width 300 :height 180
+                                      :label "Automatic layout smoke"))
+       (panel (lightfast:make-panel :parent window))
+       (left (lightfast:make-box :parent panel :label "Left"))
+       (right (lightfast:make-box :parent panel :label "Right"))
+       (status (lightfast:make-status-bar :parent window))
+       (layout
+         (lightfast:make-layout-column
+          :padding 6
+          :gap 4
+          :children
+          (list
+           (lightfast:make-layout-row
+            :target panel
+            :grow 1
+            :padding 5
+            :gap 3
+            :children
+            (list (lightfast:make-layout-item left :basis 40 :shrink 0)
+                  (lightfast:make-layout-item right :basis 0 :grow 1)))
+           (lightfast:make-layout-item status :basis 20 :shrink 0)))))
+  (lightfast:apply-layout layout
+                          (lightfast:make-rect :width 300 :height 180)
+                          :parent window)
+  (mapc #'lightfast:refresh-geometry (list panel left right status))
+  (assert (= 6 (lightfast:widget-x panel)))
+  (assert (= 6 (lightfast:widget-y panel)))
+  (assert (= 288 (lightfast:widget-width panel)))
+  (assert (= 144 (lightfast:widget-height panel)))
+  (assert (= 11 (lightfast:widget-x left)))
+  (assert (= 11 (lightfast:widget-y left)))
+  (assert (= 40 (lightfast:widget-width left)))
+  (assert (= 235 (lightfast:widget-width right)))
+  (assert (= 154 (lightfast:widget-y status)))
+  (assert (= 20 (lightfast:widget-height status)))
+  (let* ((other-window (lightfast:make-window :width 40 :height 40))
+         (wrong-parent (lightfast:make-box :parent other-window))
+         (old-x (lightfast:widget-x status))
+         (old-y (lightfast:widget-y status))
+         (invalid-layout
+           (lightfast:make-layout-row
+            :children
+            (list (lightfast:make-layout-item status :basis 10)
+                  (lightfast:make-layout-item wrong-parent :basis 10)))))
+    (assert (handler-case
+                (progn
+                  (lightfast:apply-layout
+                   invalid-layout
+                   (lightfast:make-rect :width 20 :height 20)
+                   :parent window)
+                  nil)
+              (lightfast:layout-error () t)))
+    (lightfast:refresh-geometry status)
+    (assert (= old-x (lightfast:widget-x status)))
+    (assert (= old-y (lightfast:widget-y status)))
+    (assert (lightfast:destroy other-window)))
+  (assert (lightfast:destroy window)))
+
 (let* ((window (lightfast:make-window :width 640
                                      :height 480
                                      :label "Lightfast modern widget smoke"))

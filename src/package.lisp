@@ -102,6 +102,7 @@
    #:add-timeout
    #:alert-box
    #:apply-classic-theme
+   #:apply-layout
    #:browser-select
    #:browser-selected-indices
    #:browser-set-column-widths
@@ -120,6 +121,7 @@
    #:choose-files
    #:choose-save-file
    #:choice-box
+   #:compute-layout
    #:chart-add
    #:chart-clear
    #:chart-insert
@@ -169,7 +171,17 @@
    #:label
    #:label-width-for-text
    #:labeled-control-rects
+   #:layout-error
+   #:layout-error-message
    #:layout-labeled-widgets
+   #:layout-node
+   #:layout-node-p
+   #:layout-on-resize
+   #:layout-placement
+   #:layout-placement-p
+   #:layout-placement-parent
+   #:layout-placement-rect
+   #:layout-placement-target
    #:load-library
    #:make-box
    #:make-browser
@@ -190,6 +202,9 @@
    #:make-input
    #:make-input-choice
    #:make-label
+   #:make-layout-column
+   #:make-layout-item
+   #:make-layout-row
    #:make-labeled-choice
    #:make-labeled-control
    #:make-labeled-input

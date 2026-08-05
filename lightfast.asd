@@ -14,6 +14,7 @@
      (:file "runtime")
      (:file "widgets")
      (:file "geometry")
+     (:file "layout-engine")
      (:module "constructors"
       :serial t
       :components
