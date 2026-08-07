@@ -127,4 +127,22 @@ void clfl_widget_set_color_rgb(widget_id id, int red, int green, int blue)
     }
 }
 
+// Set the mouse cursor shown over a widget.
+//
+// FLTK scopes a cursor to a window rather than to a widget, so this resolves
+// the widget to the window that contains it; a widget that is itself a window
+// stands in for its own. CURSOR is an Fl_Cursor value.
+void clfl_widget_set_cursor(widget_id id, int cursor)
+{
+    if (Fl_Widget *widget = find_widget(id)) {
+        Fl_Window *window = widget->window();
+        if (!window) {
+            window = widget->as_window();
+        }
+        if (window) {
+            window->cursor(static_cast<Fl_Cursor>(cursor));
+        }
+    }
+}
+
 }

@@ -164,6 +164,10 @@
   (green :int)
   (blue  :int))
 
+(cffi:defcfun ("clfl_widget_set_cursor" %widget-set-cursor) :void
+  (id     :long-long)
+  (cursor :int))
+
 (cffi:defcfun ("clfl_draw_set_color_rgb" %draw-set-color-rgb) :void
   (red   :int)
   (green :int)

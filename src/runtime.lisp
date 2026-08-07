@@ -335,6 +335,34 @@
   (%widget-set-color-rgb (widget-id widget) red green blue)
   widget)
 
+(defparameter *cursor-shapes*
+  '((:default . 0) (:arrow . 35) (:cross . 66) (:wait . 76) (:insert . 77)
+    (:hand . 31) (:help . 47) (:move . 27) (:none . 255)
+    ;; Resize cursors, named for the edge or corner they pull.
+    (:north-south . 78) (:west-east . 79)
+    (:northwest-southeast . 80) (:northeast-southwest . 81)
+    (:north . 70) (:north-east . 69) (:east . 49) (:south-east . 8)
+    (:south . 9) (:south-west . 7) (:west . 36) (:north-west . 68))
+  "Mouse cursor shapes, keyed by name, holding FLTK's own Fl_Cursor values.")
+
+(defun cursor-shapes ()
+  "Return every cursor shape name SET-CURSOR accepts."
+  (mapcar #'first *cursor-shapes*))
+
+(defun set-cursor (widget shape)
+  "Show cursor SHAPE while the pointer is over WIDGET's window.
+
+SHAPE is a name from CURSOR-SHAPES. FLTK scopes a cursor to a window rather
+than to a widget, so this changes the cursor for everything in the same window,
+and :DEFAULT puts it back. Signals an error for an unknown shape rather than
+silently leaving the pointer as it was."
+  (let ((code (rest (assoc shape *cursor-shapes*))))
+    (unless code
+      (error "Unknown cursor shape ~S; expected one of ~S."
+             shape (cursor-shapes)))
+    (%widget-set-cursor (widget-id widget) code)
+    widget))
+
 (defun draw-color-rgb (&key red green blue)
   (%draw-set-color-rgb red green blue))
 

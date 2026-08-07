@@ -301,6 +301,9 @@
    #:set-box
    #:set-color-chooser-rgb
    #:set-color-rgb
+   #:set-cursor
+   #:cursor-shapes
+   #:*cursor-shapes*
    #:set-label-font
    #:set-label-size
    #:set-range
