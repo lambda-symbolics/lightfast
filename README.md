@@ -16,15 +16,21 @@ make demo
 (asdf:load-system :lightfast)
 ```
 
-The `cl-fltk` ASDF system and package nickname remain available for compatibility.
+The `cl-fltk` ASDF system and package nickname are aliases for Lightfast.
 
 ## Automatic layout
 
 Lightfast includes a deterministic, single-line flex layout engine for ordinary
-nested rows and columns. It supports padding, gaps, natural or fixed bases,
-weighted growth and shrinking, minimum and maximum dimensions, justification,
-and cross-axis alignment. Layout calculation is pure; applying it to FLTK
-widgets is a separate operation.
+nested rows and columns. It supports:
+
+- padding and gaps
+- natural or fixed bases
+- weighted growth and shrinking
+- minimum and maximum dimensions
+- justification
+- cross-axis alignment
+
+Layout calculation is pure. Applying it to FLTK widgets is a separate operation.
 
 ```lisp
 (let ((layout
@@ -49,5 +55,4 @@ widgets is a separate operation.
 Use `compute-layout` for display-independent rectangle calculation and
 `apply-layout` for explicit widget resizing. Container nodes may have a target
 group; their descendants are then calculated in that group's local coordinate
-space. The initial engine intentionally does not implement wrapping, CSS
-parsing, percentages, or a constraint solver.
+space.
