@@ -8,6 +8,14 @@ namespace {
 
 Fl_Pixmap *stock_icon(const char *name)
 {
+    static Fl_Pixmap photo_icon(kPhotoIcon);
+    static Fl_Pixmap folder_icon(kFolderIcon);
+    static Fl_Pixmap contrast_icon(kContrastIcon);
+    static Fl_Pixmap sharpen_icon(kSharpenIcon);
+    static Fl_Pixmap focus_icon(kFocusIcon);
+    static Fl_Pixmap crop_icon(kCropIcon);
+    static Fl_Pixmap zoom_in_icon(kZoomInIcon);
+    static Fl_Pixmap zoom_out_icon(kZoomOutIcon);
     static Fl_Pixmap archive_icon(kArchiveIcon);
     static Fl_Pixmap calendar_icon(kCalendarIcon);
     static Fl_Pixmap contact_icon(kContactIcon);
@@ -55,6 +63,14 @@ Fl_Pixmap *stock_icon(const char *name)
     };
 
     static StockIconEntry stock_icons[] = {
+        {"photo", &photo_icon},
+        {"folder", &folder_icon},
+        {"contrast", &contrast_icon},
+        {"sharpen", &sharpen_icon},
+        {"focus", &focus_icon},
+        {"crop", &crop_icon},
+        {"zoom-in", &zoom_in_icon},
+        {"zoom-out", &zoom_out_icon},
         {"archive", &archive_icon},
         {"calendar", &calendar_icon},
         {"contact", &contact_icon},
@@ -100,7 +116,7 @@ Fl_Pixmap *stock_icon(const char *name)
         {"forward", &next_icon},
         {"ok", &success_icon},
         {"warn", &warning_icon},
-        {"folder-open", &open_icon},
+        {"folder-open", &folder_icon},
     };
 
     if (!name || !*name) {

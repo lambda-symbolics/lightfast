@@ -1,5 +1,13 @@
 #pragma once
 
+#include "photo.xpm"
+#include "folder.xpm"
+#include "contrast.xpm"
+#include "sharpen.xpm"
+#include "focus.xpm"
+#include "crop.xpm"
+#include "zoom-in.xpm"
+#include "zoom-out.xpm"
 #include "archive.xpm"
 #include "calendar.xpm"
 #include "contact.xpm"

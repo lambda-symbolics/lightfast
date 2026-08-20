@@ -1,0 +1,23 @@
+static const char *const kContrastIcon[] = {
+    "16 16 4 1",
+    ". c None",
+    "K c #000000",
+    "W c #ffffff",
+    "D c #808080",
+    "................",
+    "................",
+    ".....KKKKKK.....",
+    "...KKWWWWKKKK...",
+    "..KWWWWWWKKKKK..",
+    "..KWWWWWWKKKKK..",
+    ".KWWWWWWWKKKKKK.",
+    ".KWWWWWWWKKKKKK.",
+    ".KWWWWWWWKKKKKK.",
+    ".KWWWWWWWKKKKKK.",
+    "..KWWWWWWKKKKK..",
+    "..KWWWWWWKKKKK..",
+    "...KKWWWWKKKK...",
+    ".....KKKKKK.....",
+    "................",
+    "................"
+};
