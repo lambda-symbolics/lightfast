@@ -8,12 +8,39 @@
   (merge-pathnames "build/liblightfast.so"
                    (asdf:system-source-directory :lightfast)))
 
+(defun bridge-stale-source (path)
+  "Return a native source newer than the bridge built at PATH, or NIL.
+
+A pull brings new C and new pixmaps; it does not bring a new shared library.
+Nothing then fails loudly — the old bridge loads, and whatever the new sources
+added is simply absent, which looks like a bug in the caller rather than a build
+that never happened. Asking the filesystem is cheap and answers it exactly."
+  (let ((built (ignore-errors (file-write-date path))))
+    (when built
+      (find-if (lambda (source)
+                 (let ((changed (ignore-errors (file-write-date source))))
+                   (and changed (> changed built))))
+               (directory (merge-pathnames
+                           "native/*.*"
+                           (asdf:system-source-directory :lightfast)))))))
+
 (defun load-library ()
   (unless *library-loaded-p*
     (let ((path (bridge-library-path)))
       (unless (probe-file path)
         (error "Native Lightfast bridge is missing at ~A. Run `make native` first."
                path))
+      (let ((stale (bridge-stale-source path)))
+        (when stale
+          ;; A warning rather than an error: a build deliberately kept behind
+          ;; its sources is somebody's business, and refusing to start would
+          ;; take the application down over it. Naming the file that is newer
+          ;; and the library that is not is enough to act on.
+          (warn "Lightfast's native bridge at ~A is older than ~A. ~
+                 Run `make` in ~A, or anything those sources added — new stock ~
+                 icons, new entry points — will be missing without saying so."
+                path (file-namestring stale)
+                (asdf:system-source-directory :lightfast))))
       (cffi:load-foreign-library path)
       (setf *library-loaded-p* t))))
 
