@@ -409,14 +409,23 @@ silently leaving the pointer as it was."
           (progn ,@body)
        (draw-pop-clip))))
 
+(defun exact-double (number)
+  "NUMBER as the double FLTK is handed, read as the decimal it was written as.
+
+A single-float 0.1 widened bit for bit is 0.10000000149011612, and FLTK sizes a
+value field's digits by its step: a slider stepped by that showed 0.3 as
+0.300000000 and, in a box four digits wide, as a row of noughts. Rationalizing
+first recovers the 1/10 the programmer meant."
+  (coerce (rationalize number) 'double-float))
+
 (defun set-range (widget minimum maximum)
   (%widget-set-range (widget-id widget)
-                     (coerce minimum 'double-float)
-                     (coerce maximum 'double-float))
+                     (exact-double minimum)
+                     (exact-double maximum))
   widget)
 
 (defun set-step (widget step)
-  (%widget-set-step (widget-id widget) (coerce step 'double-float))
+  (%widget-set-step (widget-id widget) (exact-double step))
   widget)
 
 (defun quit ()
