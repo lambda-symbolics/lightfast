@@ -82,6 +82,12 @@ void clfl_window_cancel_close(widget_id id)
     }
 }
 
+/// Whether Escape closes the window; on by default, as in FLTK.
+void clfl_window_set_escape_closes(widget_id id, int enabled)
+{
+    set_window_escape_closes(find_widget(id), enabled != 0);
+}
+
 void clfl_window_set_size_range(widget_id id,
                                 int min_width,
                                 int min_height,

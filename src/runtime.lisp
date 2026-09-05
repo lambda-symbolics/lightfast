@@ -18,6 +18,15 @@
   (%window-hide (widget-id widget))
   widget)
 
+(defun window-escape-closes (widget enabled-p)
+  "Whether the Escape key closes WIDGET, a window, as FLTK has it do by default.
+
+Right for a dialog, where Escape is Cancel; wrong for an application's main
+window, where a key beside the number row is not the way to leave. With
+ENABLED-P false the window swallows Escape and stays."
+  (%window-set-escape-closes (widget-id widget) (if enabled-p 1 0))
+  widget)
+
 (defun window-cancel-close (widget)
   "Keep WIDGET, a window, open despite the close its callback is handling.
 

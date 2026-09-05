@@ -54,6 +54,8 @@ public:
     {
     }
 
+    void escape_closes(bool enabled) { escape_closes_ = enabled; }
+
     void resize(int x, int y, int w, int h) override
     {
         const bool changed = (w != this->w()) || (h != this->h());
@@ -87,9 +89,28 @@ public:
                 }
             }
         }
+        // An Escape nobody claimed comes back round as a shortcut, and when
+        // the window declines that too FLTK runs the window's callback — a
+        // close. A dialog wants exactly that; an application's main window
+        // does not, so it can be told to swallow the key here instead.
+        if (event == FL_SHORTCUT && Fl::event_key() == FL_Escape && !escape_closes_) {
+            return 1;
+        }
         return Fl_Double_Window::handle(event);
     }
+
+private:
+    bool escape_closes_ = true;
 };
+
+bool set_window_escape_closes(Fl_Widget *widget, bool enabled)
+{
+    if (auto *window = dynamic_cast<ClflWindow *>(widget)) {
+        window->escape_closes(enabled);
+        return true;
+    }
+    return false;
+}
 
 class ClassicGroup final : public Fl_Group {
 public:

@@ -211,6 +211,9 @@ extern int g_programmatic_resize_depth;
 extern Fl_Tile *g_active_tile_drag;
 
 char *copy_c_string(const char *value);
+/// Whether Escape closes WIDGET, when it is one of our windows; returns false
+/// for anything else.
+bool set_window_escape_closes(Fl_Widget *widget, bool enabled);
 Entry *find_entry(widget_id id);
 Fl_Widget *find_widget(widget_id id);
 Fl_Group *find_group(widget_id id);

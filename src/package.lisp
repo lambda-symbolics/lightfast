@@ -353,6 +353,7 @@
    #:widget-width
    #:window-app-id
    #:window-cancel-close
+   #:window-escape-closes
    #:widget-x
    #:widget-y
    #:with-group

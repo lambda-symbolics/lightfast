@@ -89,6 +89,10 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
 (cffi:defcfun ("clfl_window_cancel_close" %window-cancel-close) :void
   (id :long-long))
 
+(cffi:defcfun ("clfl_window_set_escape_closes" %window-set-escape-closes) :void
+  (id      :long-long)
+  (enabled :int))
+
 (cffi:defcfun ("clfl_window_set_size_range" %window-set-size-range) :void
   (id         :long-long)
   (min-width  :int)
