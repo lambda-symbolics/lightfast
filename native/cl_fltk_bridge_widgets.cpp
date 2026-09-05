@@ -69,6 +69,24 @@ public:
             dispatch_input_callback(this, EVENT_KEY, key_event_value())) {
             return 1;
         }
+        // A key reaches the window only after the focused widget and every
+        // group above it declined it. FLTK would next offer it as a shortcut
+        // to the widget under the mouse and its groups, each of which asks its
+        // children last-added first — so a vertical scrollbar anywhere in the
+        // way takes Page Up, Page Down, Home and End whether or not it has
+        // focus, and an application's accelerators on those keys never fired.
+        // The menu bar is asked here instead, before that pass; what it does
+        // not claim goes round as usual, and a focused text field or slider
+        // has already had first refusal.
+        if (event == FL_KEYDOWN) {
+            for (int index = 0; index < children(); ++index) {
+                if (auto *bar = dynamic_cast<Fl_Menu_Bar *>(child(index))) {
+                    if (bar->takesevents() && bar->handle(FL_SHORTCUT)) {
+                        return 1;
+                    }
+                }
+            }
+        }
         return Fl_Double_Window::handle(event);
     }
 };
