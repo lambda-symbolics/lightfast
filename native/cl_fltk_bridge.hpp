@@ -200,6 +200,12 @@ extern std::unordered_map<Fl_Widget *, widget_id> g_widget_ids;
 extern std::unordered_map<widget_id, std::unique_ptr<TimerEntry>> g_timers;
 extern std::vector<std::unique_ptr<MenuCallback>> g_menu_callbacks;
 extern bool g_quit_requested;
+/// Set by clfl_window_cancel_close from inside a close callback: the window stays.
+extern bool g_window_close_cancelled;
+/// Title text owned on behalf of each window: Fl_Window::label() keeps the
+/// pointer it is given rather than a copy, and it is that call, not
+/// copy_label(), that reaches the window manager.
+extern std::unordered_map<Fl_Widget *, std::string> g_window_titles;
 extern int g_window_close_callback_depth;
 extern int g_programmatic_resize_depth;
 extern Fl_Tile *g_active_tile_drag;

@@ -174,12 +174,19 @@ void window_event_callback(Fl_Widget *widget, void *)
         auto callback = entry->callbacks.find(EVENT_CLOSE);
         if (callback != entry->callbacks.end() && callback->second.callback) {
             const std::string value = widget_value_string(widget);
+            g_window_close_cancelled = false;
             ++g_window_close_callback_depth;
             callback->second.callback(found->second,
                                       EVENT_CLOSE,
                                       value.c_str(),
                                       callback->second.token);
             --g_window_close_callback_depth;
+            // The callback may have asked for the window to stay — an
+            // application with unsaved work puts its question there.
+            if (g_window_close_cancelled) {
+                g_window_close_cancelled = false;
+                return;
+            }
             finish_window_close(widget);
             return;
         }

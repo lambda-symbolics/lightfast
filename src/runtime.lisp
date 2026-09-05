@@ -18,6 +18,15 @@
   (%window-hide (widget-id widget))
   widget)
 
+(defun window-cancel-close (widget)
+  "Keep WIDGET, a window, open despite the close its callback is handling.
+
+Only meaningful from inside a callback installed with :EVENT +EVENT-CLOSE+: the
+close that fired it is abandoned rather than finished, which is how an
+application asks about unsaved work before the window goes."
+  (%window-cancel-close (widget-id widget))
+  widget)
+
 (defun set-size-range (widget &key min-width min-height max-width max-height)
   (%window-set-size-range (widget-id widget)
                           (or min-width 0)

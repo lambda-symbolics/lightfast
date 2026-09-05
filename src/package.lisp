@@ -352,6 +352,7 @@
    #:widget-parent
    #:widget-width
    #:window-app-id
+   #:window-cancel-close
    #:widget-x
    #:widget-y
    #:with-group

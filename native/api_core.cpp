@@ -73,6 +73,15 @@ void clfl_window_hide(widget_id id)
     }
 }
 
+/// Keeps the window open. Meaningful only while its close callback runs: the
+/// close that triggered the callback is then abandoned instead of finished.
+void clfl_window_cancel_close(widget_id id)
+{
+    if (g_window_close_callback_depth > 0 && find_widget(id)) {
+        g_window_close_cancelled = true;
+    }
+}
+
 void clfl_window_set_size_range(widget_id id,
                                 int min_width,
                                 int min_height,
@@ -110,6 +119,16 @@ void clfl_widget_redraw(widget_id id)
 void clfl_widget_set_label(widget_id id, const char *label)
 {
     if (Fl_Widget *widget = find_widget(id)) {
+        if (auto *window = dynamic_cast<Fl_Window *>(widget)) {
+            // A window's label is its title bar, and only Fl_Window::label()
+            // tells the window manager; copy_label() changes the text FLTK
+            // holds and nothing the user can see. FLTK keeps the pointer, so
+            // the text lives here for as long as the window does.
+            std::string &title = g_window_titles[widget];
+            title = label ? label : "";
+            window->label(title.c_str());
+            return;
+        }
         widget->copy_label(label ? label : "");
         widget->redraw_label();
     }

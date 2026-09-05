@@ -9,6 +9,8 @@ std::unordered_map<Fl_Widget *, widget_id> g_widget_ids;
 std::unordered_map<widget_id, std::unique_ptr<TimerEntry>> g_timers;
 std::vector<std::unique_ptr<MenuCallback>> g_menu_callbacks;
 bool g_quit_requested = false;
+bool g_window_close_cancelled = false;
+std::unordered_map<Fl_Widget *, std::string> g_window_titles;
 int g_window_close_callback_depth = 0;
 int g_programmatic_resize_depth = 0;
 
