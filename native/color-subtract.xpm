@@ -1,0 +1,22 @@
+static const char *const kColorSubtractIcon[] = {
+    "16 16 3 1",
+    ". c None",
+    "K c #000000",
+    "O c #ff8000",
+    "................",
+    "..KKKKKKKKKKKK..",
+    "..KOOOOOOOOOOK..",
+    "..KOOOOOOOOOOK..",
+    "..KOOOOOOOOOOK..",
+    "..KOOOOOOOOOOK..",
+    "..KOOOOOOOOOOK..",
+    "..KOKKKKKKKKOK..",
+    "..KOKKKKKKKKOK..",
+    "..KOOOOOOOOOOK..",
+    "..KOOOOOOOOOOK..",
+    "..KOOOOOOOOOOK..",
+    "..KOOOOOOOOOOK..",
+    "..KKKKKKKKKKKK..",
+    "................",
+    "................"
+};

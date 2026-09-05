@@ -82,6 +82,24 @@ void clfl_window_cancel_close(widget_id id)
     }
 }
 
+/// Gives the window the stock icon NAME as its icon, which is what a window
+/// manager shows in a task bar and a title bar. Kept for the life of the
+/// program: FLTK reads the pixels again when the window is shown.
+void clfl_window_set_icon(widget_id id, const char *name)
+{
+    auto *window = dynamic_cast<Fl_Window *>(find_widget(id));
+    Fl_Pixmap *pixmap = stock_icon_pixmap(name);
+    if (!window || !pixmap) {
+        return;
+    }
+    static std::unordered_map<std::string, std::unique_ptr<Fl_RGB_Image>> icons;
+    auto &image = icons[name];
+    if (!image) {
+        image = std::make_unique<Fl_RGB_Image>(pixmap);
+    }
+    window->icon(image.get());
+}
+
 /// Whether Escape closes the window; on by default, as in FLTK.
 void clfl_window_set_escape_closes(widget_id id, int enabled)
 {

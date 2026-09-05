@@ -101,11 +101,7 @@ application asks about unsaved work before the window goes."
   value)
 
 (defun set-stock-icon (widget icon-name)
-  (%widget-set-stock-icon (widget-id widget)
-                          (etypecase icon-name
-                            (null "")
-                            (string icon-name)
-                            (symbol (string-downcase (symbol-name icon-name)))))
+  (%widget-set-stock-icon (widget-id widget) (stock-icon-name icon-name))
   widget)
 
 (defun on (widget callback &key (event +event-activate+))
@@ -401,6 +397,25 @@ silently leaving the pointer as it was."
 
 (defun draw-filled-circle (x y radius)
   (%draw-filled-circle x y radius))
+
+(defun stock-icon-name (icon-name)
+  (etypecase icon-name
+    (null "")
+    (string icon-name)
+    (symbol (string-downcase (symbol-name icon-name)))))
+
+(defun draw-stock-icon (icon-name x y)
+  "Draw the stock icon ICON-NAME, a keyword or string, with its corner at X, Y.
+
+The same pictures the buttons wear, on a canvas: a node in a graph or a mark
+beside a row can then carry the icon its button does, and the two read as one
+thing."
+  (%draw-stock-icon (stock-icon-name icon-name) x y))
+
+(defun window-set-icon (widget icon-name)
+  "Give WIDGET, a window, the stock icon ICON-NAME for its task-bar picture."
+  (%window-set-icon (widget-id widget) (stock-icon-name icon-name))
+  widget)
 
 (defun draw-text (text x y &key (width 0) (height 0) (align 0))
   (%draw-text (or text "") x y width height align))

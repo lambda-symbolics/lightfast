@@ -56,6 +56,27 @@ Fl_Pixmap *stock_icon(const char *name)
     static Fl_Pixmap warning_icon(kWarningIcon);
     static Fl_Pixmap web_icon(kWebIcon);
     static Fl_Pixmap won_icon(kWonIcon);
+    static Fl_Pixmap white_balance_icon(kWhiteBalanceIcon);
+    static Fl_Pixmap exposure_icon(kExposureIcon);
+    static Fl_Pixmap noise_icon(kNoiseIcon);
+    static Fl_Pixmap tone_icon(kToneIcon);
+    static Fl_Pixmap optics_icon(kOpticsIcon);
+    static Fl_Pixmap film_icon(kFilmIcon);
+    static Fl_Pixmap blend_icon(kBlendIcon);
+    static Fl_Pixmap color_subtract_icon(kColorSubtractIcon);
+    static Fl_Pixmap negative_icon(kNegativeIcon);
+    static Fl_Pixmap rotate_icon(kRotateIcon);
+    static Fl_Pixmap flip_icon(kFlipIcon);
+    static Fl_Pixmap curves_icon(kCurvesIcon);
+    static Fl_Pixmap fit_icon(kFitIcon);
+    static Fl_Pixmap actual_pixels_icon(kActualPixelsIcon);
+    static Fl_Pixmap compare_icon(kCompareIcon);
+    static Fl_Pixmap camera_icon(kCameraIcon);
+    static Fl_Pixmap paste_icon(kPasteIcon);
+    static Fl_Pixmap dropper_icon(kDropperIcon);
+    static Fl_Pixmap film_border_icon(kFilmBorderIcon);
+    static Fl_Pixmap orfeus_icon(kOrfeusIcon);
+    static Fl_Pixmap orfeus_32_icon(kOrfeus32Icon);
 
     struct StockIconEntry {
         const char *name;
@@ -117,6 +138,27 @@ Fl_Pixmap *stock_icon(const char *name)
         {"ok", &success_icon},
         {"warn", &warning_icon},
         {"folder-open", &folder_icon},
+        {"white-balance", &white_balance_icon},
+        {"exposure", &exposure_icon},
+        {"noise", &noise_icon},
+        {"tone", &tone_icon},
+        {"optics", &optics_icon},
+        {"film", &film_icon},
+        {"blend", &blend_icon},
+        {"color-subtract", &color_subtract_icon},
+        {"negative", &negative_icon},
+        {"rotate", &rotate_icon},
+        {"flip", &flip_icon},
+        {"curves", &curves_icon},
+        {"fit", &fit_icon},
+        {"actual-pixels", &actual_pixels_icon},
+        {"compare", &compare_icon},
+        {"camera", &camera_icon},
+        {"paste", &paste_icon},
+        {"dropper", &dropper_icon},
+        {"film-border", &film_border_icon},
+        {"orfeus", &orfeus_icon},
+        {"orfeus-32", &orfeus_32_icon},
     };
 
     if (!name || !*name) {
@@ -132,10 +174,21 @@ Fl_Pixmap *stock_icon(const char *name)
 
 } // namespace
 
+Fl_Pixmap *stock_icon_pixmap(const char *name)
+{
+    return stock_icon(name);
+}
+
 void set_widget_stock_icon(widget_id id, const char *name)
 {
     if (Fl_Widget *widget = find_widget(id)) {
         widget->image(stock_icon(name));
+        // A captioned button keeps its caption and seats the icon beside it;
+        // left to itself FLTK stacks the picture over the text, and in a
+        // button one row tall the two land on each other.
+        if (widget->label() && *widget->label()) {
+            widget->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE | FL_ALIGN_IMAGE_NEXT_TO_TEXT);
+        }
         widget->redraw();
     }
 }

@@ -1,0 +1,22 @@
+static const char *const kToneIcon[] = {
+    "16 16 3 1",
+    ". c None",
+    "B c #0000ff",
+    "K c #000000",
+    "................",
+    "............KKK.",
+    "............KBK.",
+    "............KBK.",
+    "........KKK.KBK.",
+    "........KBK.KBK.",
+    "........KBK.KBK.",
+    "....KKK.KBK.KBK.",
+    "....KBK.KBK.KBK.",
+    "....KBK.KBK.KBK.",
+    "KKK.KBK.KBK.KBK.",
+    "KBK.KBK.KBK.KBK.",
+    "KBK.KBK.KBK.KBK.",
+    "KBK.KBK.KBK.KBK.",
+    "KKK.KKK.KKK.KKK.",
+    "................"
+};

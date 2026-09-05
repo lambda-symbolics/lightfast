@@ -1,0 +1,23 @@
+static const char *const kOrfeusIcon[] = {
+    "16 16 4 1",
+    ". c None",
+    "K c #000000",
+    "W c #ffffff",
+    "Y c #ffff00",
+    "................",
+    "..KK........KK..",
+    ".KYYK......KYYK.",
+    ".KYYK......KYYK.",
+    ".KYYK......KYYK.",
+    "..KYK......KYK..",
+    "..KYKKKKKKKKYK..",
+    "..KYKWKWKWKKYK..",
+    "..KYK.K.K.K.YK..",
+    "..KYK.K.K.K.YK..",
+    "..KYK.K.K.K.YK..",
+    "...KYK.K.K.KY...",
+    "....KYKKKKKY....",
+    ".....KYYYYK.....",
+    "......KKKK......",
+    "................"
+};

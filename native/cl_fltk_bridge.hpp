@@ -35,6 +35,7 @@
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Pack.H>
 #include <FL/Fl_Pixmap.H>
+#include <FL/Fl_RGB_Image.H>
 #include <FL/Fl_Positioner.H>
 #include <FL/Fl_Radio_Round_Button.H>
 #include <FL/Fl_Progress.H>
@@ -230,6 +231,8 @@ std::string widget_callback_value_string(Fl_Widget *widget);
 void set_choice_value(Fl_Choice *choice, const char *value);
 void set_widget_value(Fl_Widget *widget, const char *value);
 void set_widget_stock_icon(widget_id id, const char *name);
+/// The stock icon NAME, or null when there is none of that name.
+Fl_Pixmap *stock_icon_pixmap(const char *name);
 void set_widget_text_size(widget_id id, int size);
 void set_widget_text_font(widget_id id, int font);
 void clear_widget_contents(widget_id id);

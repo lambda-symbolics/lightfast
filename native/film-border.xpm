@@ -1,0 +1,23 @@
+static const char *const kFilmBorderIcon[] = {
+    "16 16 4 1",
+    ". c None",
+    "K c #000000",
+    "O c #ff8000",
+    "W c #ffffff",
+    "KKKKKKKKKKKKKKKK",
+    "KOWOOWOOWOOWOOOK",
+    "KOOOOOOOOOOOOOOK",
+    "KOOKKKKKKKKKKOOK",
+    "KOOK........KOOK",
+    "KOOK........KOOK",
+    "KOOK........KOOK",
+    "KOOK........KOOK",
+    "KOOK........KOOK",
+    "KOOK........KOOK",
+    "KOOK........KOOK",
+    "KOOK........KOOK",
+    "KOOKKKKKKKKKKOOK",
+    "KOOOOOOOOOOOOOOK",
+    "KOWOOWOOWOOWOOOK",
+    "KKKKKKKKKKKKKKKK"
+};

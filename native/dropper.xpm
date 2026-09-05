@@ -1,0 +1,23 @@
+static const char *const kDropperIcon[] = {
+    "16 16 4 1",
+    ". c None",
+    "B c #0000ff",
+    "K c #000000",
+    "W c #ffffff",
+    "...........KKK..",
+    "..........KKKKK.",
+    ".........KKKKKKK",
+    "........KKKKKKKK",
+    ".......KWKKKKKK.",
+    "......KWWKKKKK..",
+    ".....KWWWKKK....",
+    "....KWWWK.K.....",
+    "...KWWWK........",
+    "..KWWWK.........",
+    ".KWWWK..........",
+    ".KWWK...........",
+    "KKKK............",
+    "..B.............",
+    ".BBB............",
+    "..B............."
+};

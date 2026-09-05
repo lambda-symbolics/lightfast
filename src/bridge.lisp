@@ -239,6 +239,15 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
   (y      :int)
   (radius :int))
 
+(cffi:defcfun ("clfl_draw_stock_icon" %draw-stock-icon) :void
+  (name :string)
+  (x    :int)
+  (y    :int))
+
+(cffi:defcfun ("clfl_window_set_icon" %window-set-icon) :void
+  (id   :long-long)
+  (name :string))
+
 (cffi:defcfun ("clfl_draw_text" %draw-text) :void
   (text   :string)
   (x      :int)

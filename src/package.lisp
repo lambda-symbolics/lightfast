@@ -135,6 +135,8 @@
    #:draw-circle
    #:draw-color-rgb
    #:draw-filled-circle
+   #:draw-stock-icon
+   #:window-set-icon
    #:draw-filled-rect
    #:draw-font
    #:draw-line

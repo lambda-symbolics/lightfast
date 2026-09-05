@@ -53,6 +53,15 @@ void clfl_draw_text(const char *text, int x, int y, int width, int height, int a
     }
 }
 
+/// Draws the stock icon NAME with its top-left corner at X, Y; nothing for a
+/// name there is no icon for.
+void clfl_draw_stock_icon(const char *name, int x, int y)
+{
+    if (Fl_Pixmap *icon = stock_icon_pixmap(name)) {
+        icon->draw(x, y);
+    }
+}
+
 void clfl_draw_push_clip(int x, int y, int width, int height)
 {
     fl_push_clip(x, y, std::max(0, width), std::max(0, height));
