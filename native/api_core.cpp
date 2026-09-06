@@ -235,6 +235,24 @@ int clfl_menu_add(widget_id id,
     return 1;
 }
 
+/// Sets or clears the checked state of the item at PATH — the bullet of a radio
+/// item or the tick of a toggle — leaving its other flags as they were.
+int clfl_menu_set_item_checked(widget_id id, const char *path, int checked)
+{
+    auto *menu = dynamic_cast<Fl_Menu_ *>(find_widget(id));
+    if (!menu || !path || !*path) {
+        return 0;
+    }
+    const int index = menu->find_index(path);
+    if (index < 0) {
+        return 0;
+    }
+    const int flags = menu->menu()[index].flags;
+    menu->mode(index, checked ? (flags | FL_MENU_VALUE) : (flags & ~FL_MENU_VALUE));
+    menu->redraw();
+    return 1;
+}
+
 int clfl_menu_set_item_mode(widget_id id, const char *path, int mode)
 {
     auto *menu = dynamic_cast<Fl_Menu_ *>(find_widget(id));

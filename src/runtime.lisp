@@ -137,11 +137,20 @@ application asks about unsaved work before the window goes."
 
 (defconstant +menu-item-invisible+ #x10
   "FLTK's FL_MENU_INVISIBLE: the item is not shown, but its shortcut fires.")
+(defconstant +menu-item-toggle+ #x02
+  "FLTK's FL_MENU_TOGGLE: the item shows a tick that the application keeps.")
+(defconstant +menu-item-radio+ #x08
+  "FLTK's FL_MENU_RADIO: the item shows a bullet, one of a group.")
+(defconstant +menu-item-checked+ #x04
+  "FLTK's FL_MENU_VALUE: the tick or bullet is on.")
 
-(defun add-menu-item (menu path callback &key (shortcut 0) hidden)
+(defun add-menu-item (menu path callback &key (shortcut 0) hidden radio toggle
+                                              checked)
   "Add the item PATH to MENU, calling CALLBACK when chosen or when SHORTCUT is
 pressed. HIDDEN adds an item that never shows: a second key for a command that
-already has its line in the menu, since an item carries one shortcut."
+already has its line in the menu, since an item carries one shortcut. RADIO and
+TOGGLE draw a bullet or a tick, CHECKED lit; the application keeps them true
+with MENU-SET-ITEM-CHECKED, as FLTK leaves the state to it."
   (let ((token (next-callback-token
                 (lambda (widget-id event value)
                   (declare (ignore event))
@@ -153,10 +162,17 @@ already has its line in the menu, since an item carries one shortcut."
                               shortcut
                               (cffi:callback callback-dispatch)
                               token
-                              (if hidden +menu-item-invisible+ 0)))
+                              (logior (if hidden +menu-item-invisible+ 0)
+                                      (if radio +menu-item-radio+ 0)
+                                      (if toggle +menu-item-toggle+ 0)
+                                      (if checked +menu-item-checked+ 0))))
       (remhash token *callback-registry*)
       (error "Unable to add FLTK menu item ~S." path))
     menu))
+
+(defun menu-set-item-checked (menu path checked-p)
+  "Light or clear the bullet or tick of MENU's item at PATH."
+  (plusp (%menu-set-item-checked (widget-id menu) path (if checked-p 1 0))))
 
 (defun menu-set-item-mode (menu path mode)
   (plusp (%menu-set-item-mode (widget-id menu) path mode)))

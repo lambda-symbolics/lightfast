@@ -264,6 +264,7 @@
    #:message-box
    #:popup-menu
    #:menu-set-item-mode
+   #:menu-set-item-checked
    #:menu-button-set-popup
    #:on
    #:on-action
