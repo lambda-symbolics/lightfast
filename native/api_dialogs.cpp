@@ -213,44 +213,38 @@ char *clfl_choose_directory(const char *title, const char *preset_path)
 
 namespace {
 
-/// Settles FLTK's shared dialog icon so it does not sit askew.
+/// Dresses FLTK's shared dialog icon in a stock picture: the question mark
+/// of a choice, the "i" of a message, the "!" of an alert, drawn the way the
+/// desktop drew them rather than as one bold character in a white square.
 ///
-/// The stock icon is a fifty-pixel white square carrying one character, and
-/// FLTK centres the *font's line box* — ascent plus descent — inside it. A
-/// question mark has no descender, so the space reserved for one is dead weight
-/// underneath and the mark rides against the top edge of its box.
-///
-/// Almost nothing about that can be corrected from out here. The label's size
-/// is rewritten by `Fl_Message::innards` to the icon's size less ten on every
-/// call, moments before the window is shown. Registering a label type that
-/// centres the glyph's own ink does not help: FLTK stores the type and then
-/// never dispatches through it. Nor does alignment — bottom-aligning the label
-/// moves it not at all.
-///
-/// What it does leave alone is the font and the box. So the frame goes: with no
-/// white square around it there is nothing for the glyph to be off-centre in,
-/// and the mark sits beside the message where a dialog icon belongs. The bold
-/// sans face matches the rest of the interface, which the stock Times did not.
-void centre_message_icon()
+/// The stock icon is a fifty-pixel box carrying one character, which FLTK
+/// re-labels and re-sizes on every call. The box goes flat and grey so
+/// nothing frames the picture, the picture is set as the box's image, which
+/// FLTK leaves alone, and the character is blanked for this one dialog —
+/// `fl_message_icon_label` applies to the next call only, so it is asked
+/// before each.
+void dress_message_icon(const char *icon_name)
 {
     if (Fl_Widget *icon = fl_message_icon()) {
-        icon->labelfont(FL_HELVETICA_BOLD);
         icon->box(FL_FLAT_BOX);
         icon->color(FL_BACKGROUND_COLOR);
+        icon->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
+        icon->image(stock_icon_pixmap(icon_name));
     }
+    fl_message_icon_label("");
 }
 
 } // namespace
 
 void clfl_message_box(const char *message)
 {
-    centre_message_icon();
+    dress_message_icon("information");
     fl_message("%s", message ? message : "");
 }
 
 void clfl_alert_box(const char *message)
 {
-    centre_message_icon();
+    dress_message_icon("exclamation");
     fl_alert("%s", message ? message : "");
 }
 
@@ -259,7 +253,7 @@ int clfl_choice_box(const char *message,
                     const char *button1,
                     const char *button2)
 {
-    centre_message_icon();
+    dress_message_icon("question");
     return fl_choice("%s",
                      button0 && *button0 ? button0 : nullptr,
                      button1 && *button1 ? button1 : nullptr,

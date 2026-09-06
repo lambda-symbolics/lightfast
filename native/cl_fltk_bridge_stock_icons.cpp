@@ -72,6 +72,10 @@ Fl_Pixmap *stock_icon(const char *name)
     static Fl_Pixmap actual_pixels_icon(kActualPixelsIcon);
     static Fl_Pixmap compare_icon(kCompareIcon);
     static Fl_Pixmap camera_icon(kCameraIcon);
+    static Fl_Pixmap question_icon(kQuestionIcon);
+    static Fl_Pixmap information_icon(kInformationIcon);
+    static Fl_Pixmap exclamation_icon(kExclamationIcon);
+    static Fl_Pixmap home_icon(kHomeIcon);
     static Fl_Pixmap paste_icon(kPasteIcon);
     static Fl_Pixmap dropper_icon(kDropperIcon);
     static Fl_Pixmap film_border_icon(kFilmBorderIcon);
@@ -154,6 +158,10 @@ Fl_Pixmap *stock_icon(const char *name)
         {"actual-pixels", &actual_pixels_icon},
         {"compare", &compare_icon},
         {"camera", &camera_icon},
+        {"question", &question_icon},
+        {"information", &information_icon},
+        {"exclamation", &exclamation_icon},
+        {"home", &home_icon},
         {"paste", &paste_icon},
         {"dropper", &dropper_icon},
         {"film-border", &film_border_icon},
