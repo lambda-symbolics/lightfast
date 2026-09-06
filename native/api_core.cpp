@@ -106,6 +106,51 @@ void clfl_window_set_escape_closes(widget_id id, int enabled)
     set_window_escape_closes(find_widget(id), enabled != 0);
 }
 
+/// Makes the window modal: while it is shown, the application's other
+/// windows take no input, the way a dialog that asks a question should hold
+/// the floor until it is answered.
+void clfl_window_set_modal(widget_id id, int enabled)
+{
+    if (auto *window = dynamic_cast<Fl_Window *>(find_widget(id))) {
+        if (enabled) {
+            window->set_modal();
+        } else {
+            window->set_non_modal();
+        }
+    }
+}
+
+/// How many clicks the mouse event being handled is into a series: 0 for a
+/// single click, 1 for a double click. Valid only inside a callback.
+int clfl_event_clicks()
+{
+    return Fl::event_clicks();
+}
+
+/// The key of the keyboard event being handled, as FLTK numbers keys. Valid
+/// only inside a callback; lets a text field's callback tell Enter from a
+/// keystroke that changed the text.
+int clfl_event_key()
+{
+    return Fl::event_key();
+}
+
+/// Gives the widget the keyboard focus, so its callbacks see the keys.
+void clfl_widget_take_focus(widget_id id)
+{
+    if (Fl_Widget *widget = find_widget(id)) {
+        widget->take_focus();
+    }
+}
+
+/// When the widget runs its callback, as FLTK's FL_WHEN_* bits.
+void clfl_widget_set_when(widget_id id, int when)
+{
+    if (Fl_Widget *widget = find_widget(id)) {
+        widget->when(static_cast<uchar>(when));
+    }
+}
+
 void clfl_window_set_size_range(widget_id id,
                                 int min_width,
                                 int min_height,

@@ -357,6 +357,11 @@
    #:window-app-id
    #:window-cancel-close
    #:window-escape-closes
+   #:window-set-modal
+   #:event-clicks
+   #:event-key
+   #:take-focus
+   #:set-when
    #:widget-x
    #:widget-y
    #:with-group

@@ -18,6 +18,51 @@
   (%window-hide (widget-id widget))
   widget)
 
+(defun window-set-modal (widget enabled-p)
+  "Whether WIDGET, a window, holds the floor while shown.
+
+A modal window takes every click and key for itself; the application's other
+windows wait. Set before the window is shown."
+  (%window-set-modal (widget-id widget) (if enabled-p 1 0))
+  widget)
+
+(defun event-clicks ()
+  "How many clicks the mouse event now being handled is into a series.
+
+Zero for a single click, one for a double click. Meaningful only inside a
+push or release callback."
+  (%event-clicks))
+
+(defun event-key ()
+  "The key of the keyboard event now being handled, as FLTK numbers keys.
+
+Meaningful only inside a callback. A text field whose callback runs on both a
+change and Enter tells the two apart by it."
+  (%event-key))
+
+(defun take-focus (widget)
+  "Give WIDGET the keyboard focus, so its callbacks see the keys."
+  (%widget-take-focus (widget-id widget))
+  widget)
+
+(defparameter *callback-triggers*
+  '((:never . 0) (:changed . 1) (:not-changed . 2) (:release . 4)
+    (:release-always . 6) (:enter-key . 8) (:enter-key-always . 10))
+  "FLTK's FL_WHEN_* bits by name.")
+
+(defun set-when (widget &rest triggers)
+  "Run WIDGET's callback on TRIGGERS: :CHANGED, :RELEASE, :ENTER-KEY and the
+other FL_WHEN_* names. A text field asked for :CHANGED and :ENTER-KEY reports
+every edit and also Enter, which EVENT-KEY then tells apart."
+  (%widget-set-when (widget-id widget)
+                    (reduce #'logior
+                            (mapcar (lambda (trigger)
+                                      (or (cdr (assoc trigger *callback-triggers*))
+                                          (error "Unknown callback trigger ~S" trigger)))
+                                    triggers)
+                            :initial-value 0))
+  widget)
+
 (defun window-escape-closes (widget enabled-p)
   "Whether the Escape key closes WIDGET, a window, as FLTK has it do by default.
 

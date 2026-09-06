@@ -89,6 +89,21 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
 (cffi:defcfun ("clfl_window_cancel_close" %window-cancel-close) :void
   (id :long-long))
 
+(cffi:defcfun ("clfl_window_set_modal" %window-set-modal) :void
+  (id :long-long)
+  (enabled :int))
+
+(cffi:defcfun ("clfl_event_clicks" %event-clicks) :int)
+
+(cffi:defcfun ("clfl_event_key" %event-key) :int)
+
+(cffi:defcfun ("clfl_widget_take_focus" %widget-take-focus) :void
+  (id :long-long))
+
+(cffi:defcfun ("clfl_widget_set_when" %widget-set-when) :void
+  (id :long-long)
+  (when :int))
+
 (cffi:defcfun ("clfl_window_set_escape_closes" %window-set-escape-closes) :void
   (id      :long-long)
   (enabled :int))
