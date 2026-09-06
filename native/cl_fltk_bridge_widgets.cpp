@@ -47,6 +47,43 @@ std::string ellipsized_label(const char *label, int available_width)
 
 Fl_Tile *g_active_tile_drag = nullptr;
 
+/// Whether EVENT is a keystroke on one of the four arrow keys.
+///
+/// Fl_Group turns an arrow key nobody claimed into a move of the keyboard
+/// focus to the next child that will take it, and reports the key handled: it
+/// never reached the window, so an application could not bind the arrows to
+/// anything while a canvas held the focus. The containers here decline the
+/// arrows instead and let them climb to the window, whose menu bar gets first
+/// refusal; Tab still walks the fields as before.
+bool arrow_keystroke(int event)
+{
+    if (event != FL_KEYDOWN) {
+        return false;
+    }
+    switch (Fl::event_key()) {
+    case FL_Left:
+    case FL_Right:
+    case FL_Up:
+    case FL_Down:
+        return true;
+    default:
+        return false;
+    }
+}
+
+/// Offers EVENT to WINDOW's menu bar as a shortcut; true when an item took it.
+bool menu_bar_takes(Fl_Group *window)
+{
+    for (int index = 0; index < window->children(); ++index) {
+        if (auto *bar = dynamic_cast<Fl_Menu_Bar *>(window->child(index))) {
+            if (bar->takesevents() && bar->handle(FL_SHORTCUT)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 class ClflWindow final : public Fl_Double_Window {
 public:
     ClflWindow(int x, int y, int w, int h, const char *label)
@@ -79,15 +116,13 @@ public:
         // focus, and an application's accelerators on those keys never fired.
         // The menu bar is asked here instead, before that pass; what it does
         // not claim goes round as usual, and a focused text field or slider
-        // has already had first refusal.
-        if (event == FL_KEYDOWN) {
-            for (int index = 0; index < children(); ++index) {
-                if (auto *bar = dynamic_cast<Fl_Menu_Bar *>(child(index))) {
-                    if (bar->takesevents() && bar->handle(FL_SHORTCUT)) {
-                        return 1;
-                    }
-                }
-            }
+        // has already had first refusal. Asked on the shortcut pass as well,
+        // which is the only pass a key makes when nothing holds the focus.
+        if ((event == FL_KEYDOWN || event == FL_SHORTCUT) && menu_bar_takes(this)) {
+            return 1;
+        }
+        if (arrow_keystroke(event)) {
+            return 0;
         }
         // An Escape nobody claimed comes back round as a shortcut, and when
         // the window declines that too FLTK runs the window's callback — a
@@ -119,6 +154,14 @@ public:
     {
         copy_label(label ? label : "");
         align(FL_ALIGN_LEFT | FL_ALIGN_TOP | FL_ALIGN_INSIDE);
+    }
+
+    int handle(int event) override
+    {
+        if (arrow_keystroke(event)) {
+            return 0;
+        }
+        return Fl_Group::handle(event);
     }
 
     void resize(int x, int y, int w, int h) override
@@ -160,6 +203,9 @@ public:
 
     int handle(int event) override
     {
+        if (arrow_keystroke(event)) {
+            return 0;
+        }
         switch (event) {
         case FL_PUSH:
             capture_child_geometry();
