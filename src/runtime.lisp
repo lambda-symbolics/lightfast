@@ -135,7 +135,13 @@ application asks about unsaved work before the window goes."
         (funcall callback event-widget))
       :event event))
 
-(defun add-menu-item (menu path callback &key (shortcut 0))
+(defconstant +menu-item-invisible+ #x10
+  "FLTK's FL_MENU_INVISIBLE: the item is not shown, but its shortcut fires.")
+
+(defun add-menu-item (menu path callback &key (shortcut 0) hidden)
+  "Add the item PATH to MENU, calling CALLBACK when chosen or when SHORTCUT is
+pressed. HIDDEN adds an item that never shows: a second key for a command that
+already has its line in the menu, since an item carries one shortcut."
   (let ((token (next-callback-token
                 (lambda (widget-id event value)
                   (declare (ignore event))
@@ -146,7 +152,8 @@ application asks about unsaved work before the window goes."
                               path
                               shortcut
                               (cffi:callback callback-dispatch)
-                              token))
+                              token
+                              (if hidden +menu-item-invisible+ 0)))
       (remhash token *callback-registry*)
       (error "Unable to add FLTK menu item ~S." path))
     menu))

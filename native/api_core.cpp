@@ -207,11 +207,16 @@ int clfl_widget_set_callback(widget_id id,
     return 1;
 }
 
+/// Adds a menu item; FLAGS are FLTK's menu item flags, of which the one worth
+/// naming is FL_MENU_INVISIBLE: an item that never shows but whose shortcut
+/// still fires, which is how a command gets a second key without a second line
+/// in the menu.
 int clfl_menu_add(widget_id id,
                   const char *path,
                   int shortcut,
                   clfl_callback callback,
-                  widget_id token)
+                  widget_id token,
+                  int flags)
 {
     auto *menu = dynamic_cast<Fl_Menu_ *>(find_widget(id));
     if (!menu || !path || !*path) {
@@ -226,7 +231,7 @@ int clfl_menu_add(widget_id id,
     MenuCallback *raw_callback = menu_callback.get();
     g_menu_callbacks.push_back(std::move(menu_callback));
 
-    menu->add(path, shortcut, menu_dispatch_callback, raw_callback);
+    menu->add(path, shortcut, menu_dispatch_callback, raw_callback, flags);
     return 1;
 }
 

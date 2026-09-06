@@ -161,7 +161,8 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
   (path     :string)
   (shortcut :int)
   (callback :pointer)
-  (token    :long-long))
+  (token    :long-long)
+  (flags    :int))
 
 (cffi:defcfun ("clfl_menu_set_item_mode" %menu-set-item-mode) :int
   (id   :long-long)
