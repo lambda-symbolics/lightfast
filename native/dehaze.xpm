@@ -1,0 +1,26 @@
+/* XPM */
+static const char *const kDehazeIcon[] = {
+    "16 16 6 1",
+    ". c None",
+    "K c #000000",
+    "D c #808080",
+    "L c #c0c0c0",
+    "B c #0000ff",
+    "Y c #ffff00",
+    "................",
+    "............YY..",
+    "...........YYYY.",
+    "............YY..",
+    "......K.........",
+    ".....KDK........",
+    "....KDDDK...K...",
+    "...KDDDDDK.KDK..",
+    "..KDDDDDDDKDDDK.",
+    ".KDDDDDDDDDDDDDK",
+    "LLLLLLLLLLLLLLLL",
+    "................",
+    "LLLLLLLLLLLLLLLL",
+    "................",
+    "LLLLLLLLLLLLLLLL",
+    "................"
+};

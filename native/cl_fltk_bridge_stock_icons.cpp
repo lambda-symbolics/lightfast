@@ -67,6 +67,9 @@ Fl_Pixmap *stock_icon(const char *name)
     static Fl_Pixmap negative_icon(kNegativeIcon);
     static Fl_Pixmap hdr_icon(kHdrIcon);
     static Fl_Pixmap dust_icon(kDustIcon);
+    static Fl_Pixmap vignette_icon(kVignetteIcon);
+    static Fl_Pixmap clarity_icon(kClarityIcon);
+    static Fl_Pixmap dehaze_icon(kDehazeIcon);
     static Fl_Pixmap folder_up_icon(kFolderUpIcon);
     static Fl_Pixmap chevron_right_icon(kChevronRightIcon);
     static Fl_Pixmap chevron_right_all_icon(kChevronRightAllIcon);
@@ -161,6 +164,9 @@ Fl_Pixmap *stock_icon(const char *name)
         {"negative", &negative_icon},
         {"hdr", &hdr_icon},
         {"dust", &dust_icon},
+        {"vignette", &vignette_icon},
+        {"clarity", &clarity_icon},
+        {"dehaze", &dehaze_icon},
         {"folder-up", &folder_up_icon},
         {"chevron-right", &chevron_right_icon},
         {"chevron-right-all", &chevron_right_all_icon},

@@ -1,0 +1,25 @@
+/* XPM */
+static const char *const kClarityIcon[] = {
+    "16 16 5 1",
+    ". c None",
+    "K c #000000",
+    "D c #808080",
+    "L c #c0c0c0",
+    "W c #ffffff",
+    "................",
+    ".......K........",
+    "......KWK.......",
+    ".....KWWWK......",
+    "....KWWLWWK.....",
+    "...KWWLDLWWK....",
+    "..KWWLDKDLWWK...",
+    ".KWWLDKKKDLWWK..",
+    "..KWWLDKDLWWK...",
+    "...KWWLDLWWK....",
+    "....KWWLWWK.....",
+    ".....KWWWK......",
+    "......KWK.......",
+    ".......K........",
+    "................",
+    "................"
+};
