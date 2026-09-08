@@ -65,6 +65,7 @@ Fl_Pixmap *stock_icon(const char *name)
     static Fl_Pixmap blend_icon(kBlendIcon);
     static Fl_Pixmap color_subtract_icon(kColorSubtractIcon);
     static Fl_Pixmap negative_icon(kNegativeIcon);
+    static Fl_Pixmap hdr_icon(kHdrIcon);
     static Fl_Pixmap rotate_icon(kRotateIcon);
     static Fl_Pixmap flip_icon(kFlipIcon);
     static Fl_Pixmap curves_icon(kCurvesIcon);
@@ -151,6 +152,7 @@ Fl_Pixmap *stock_icon(const char *name)
         {"blend", &blend_icon},
         {"color-subtract", &color_subtract_icon},
         {"negative", &negative_icon},
+        {"hdr", &hdr_icon},
         {"rotate", &rotate_icon},
         {"flip", &flip_icon},
         {"curves", &curves_icon},

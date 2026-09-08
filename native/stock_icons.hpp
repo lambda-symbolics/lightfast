@@ -57,6 +57,7 @@
 #include "blend.xpm"
 #include "color-subtract.xpm"
 #include "negative.xpm"
+#include "hdr.xpm"
 #include "rotate.xpm"
 #include "flip.xpm"
 #include "curves.xpm"
