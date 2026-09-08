@@ -67,6 +67,12 @@ Fl_Pixmap *stock_icon(const char *name)
     static Fl_Pixmap negative_icon(kNegativeIcon);
     static Fl_Pixmap hdr_icon(kHdrIcon);
     static Fl_Pixmap dust_icon(kDustIcon);
+    static Fl_Pixmap folder_up_icon(kFolderUpIcon);
+    static Fl_Pixmap chevron_right_icon(kChevronRightIcon);
+    static Fl_Pixmap chevron_right_all_icon(kChevronRightAllIcon);
+    static Fl_Pixmap chevron_left_icon(kChevronLeftIcon);
+    static Fl_Pixmap select_all_icon(kSelectAllIcon);
+    static Fl_Pixmap cancel_icon(kCancelIcon);
     static Fl_Pixmap rotate_icon(kRotateIcon);
     static Fl_Pixmap flip_icon(kFlipIcon);
     static Fl_Pixmap curves_icon(kCurvesIcon);
@@ -155,6 +161,12 @@ Fl_Pixmap *stock_icon(const char *name)
         {"negative", &negative_icon},
         {"hdr", &hdr_icon},
         {"dust", &dust_icon},
+        {"folder-up", &folder_up_icon},
+        {"chevron-right", &chevron_right_icon},
+        {"chevron-right-all", &chevron_right_all_icon},
+        {"chevron-left", &chevron_left_icon},
+        {"select-all", &select_all_icon},
+        {"cancel", &cancel_icon},
         {"rotate", &rotate_icon},
         {"flip", &flip_icon},
         {"curves", &curves_icon},

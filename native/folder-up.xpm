@@ -1,0 +1,25 @@
+/* XPM */
+static const char *const kFolderUpIcon[] = {
+    "16 16 5 1",
+    ". c None",
+    "K c #000000",
+    "Y c #ffff00",
+    "y c #ffff80",
+    "D c #808080",
+    "................",
+    "................",
+    "..KKKKK.........",
+    "..KyyyKKKKKKKK..",
+    "..KyyyyyyyyyyK..",
+    "..KyyyyyyKyyyK..",
+    "..KyyyyyKKKyyK..",
+    "..KyyyyKKKKKyK..",
+    "..KyyyyyyKyyyK..",
+    "..KyyyyyyKyyyK..",
+    "..KYYYYYYKYYYK..",
+    "..KYYYYYYYYYYK..",
+    "..KKKKKKKKKKKK..",
+    "...DDDDDDDDDD...",
+    "................",
+    "................"
+};
