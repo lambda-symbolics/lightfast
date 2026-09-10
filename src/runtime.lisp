@@ -222,6 +222,12 @@ with MENU-SET-ITEM-CHECKED, as FLTK leaves the state to it."
 (defun menu-set-item-mode (menu path mode)
   (plusp (%menu-set-item-mode (widget-id menu) path mode)))
 
+(defun menu-set-item-label (menu path label)
+  "Rename MENU's item at PATH to LABEL, keeping its callback, shortcut and
+flags. The item answers to its new path from then on, so keep the labels you
+give: a recent-files list is a fixed set of items renamed as the list changes."
+  (plusp (%menu-set-item-label (widget-id menu) path label)))
+
 (defun add-item (widget label)
   (ecase (widget-kind widget)
     (#.+widget-choice+

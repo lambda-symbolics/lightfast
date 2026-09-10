@@ -189,6 +189,11 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
   (path :string)
   (mode :int))
 
+(cffi:defcfun ("clfl_menu_set_item_label" %menu-set-item-label) :int
+  (id    :long-long)
+  (path  :string)
+  (label :string))
+
 (cffi:defcfun ("clfl_widget_set_box" %widget-set-box) :void
   (id  :long-long)
   (box :int))

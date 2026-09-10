@@ -265,6 +265,7 @@
    #:popup-menu
    #:menu-set-item-mode
    #:menu-set-item-checked
+   #:menu-set-item-label
    #:menu-button-set-popup
    #:on
    #:on-action

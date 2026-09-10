@@ -315,4 +315,25 @@ int clfl_menu_set_item_mode(widget_id id, const char *path, int mode)
     return 1;
 }
 
+/// Renames the item at PATH to LABEL, keeping its callback, shortcut and flags.
+/// The item is found by its current path afterwards, so a caller renaming items
+/// keeps track of the labels it gave them. This is what a recent-files list is
+/// made of: a fixed set of items relabelled as the list changes.
+int clfl_menu_set_item_label(widget_id id, const char *path, const char *label)
+{
+    auto *menu = dynamic_cast<Fl_Menu_ *>(find_widget(id));
+    if (!menu || !path || !*path || !label) {
+        return 0;
+    }
+
+    const int index = menu->find_index(path);
+    if (index < 0) {
+        return 0;
+    }
+
+    menu->replace(index, label);
+    menu->redraw();
+    return 1;
+}
+
 }
