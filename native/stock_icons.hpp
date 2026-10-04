@@ -81,6 +81,8 @@
 #include "home.xpm"
 #include "paste.xpm"
 #include "dropper.xpm"
+#include "crosshair.xpm"
+#include "maximize.xpm"
 #include "film-border.xpm"
 #include "orfeus.xpm"
 #include "orfeus-32.xpm"

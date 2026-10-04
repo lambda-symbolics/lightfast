@@ -89,6 +89,8 @@ Fl_Pixmap *stock_icon(const char *name)
     static Fl_Pixmap home_icon(kHomeIcon);
     static Fl_Pixmap paste_icon(kPasteIcon);
     static Fl_Pixmap dropper_icon(kDropperIcon);
+    static Fl_Pixmap crosshair_icon(kCrosshairIcon);
+    static Fl_Pixmap maximize_icon(kMaximizeIcon);
     static Fl_Pixmap film_border_icon(kFilmBorderIcon);
     static Fl_Pixmap orfeus_icon(kOrfeusIcon);
     static Fl_Pixmap orfeus_32_icon(kOrfeus32Icon);
@@ -186,6 +188,8 @@ Fl_Pixmap *stock_icon(const char *name)
         {"home", &home_icon},
         {"paste", &paste_icon},
         {"dropper", &dropper_icon},
+        {"crosshair", &crosshair_icon},
+        {"maximize", &maximize_icon},
         {"film-border", &film_border_icon},
         {"orfeus", &orfeus_icon},
         {"orfeus-32", &orfeus_32_icon},
