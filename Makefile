@@ -10,11 +10,13 @@ SOURCES := native/api_core.cpp \
            native/api_dialogs.cpp \
            native/api_fonts.cpp \
            native/api_runtime.cpp \
+           native/api_text.cpp \
            native/api_widgets.cpp \
            native/cl_fltk_bridge_state.cpp \
            native/cl_fltk_bridge_events.cpp \
            native/cl_fltk_bridge_style.cpp \
            native/cl_fltk_bridge_tables.cpp \
+           native/cl_fltk_bridge_text.cpp \
            native/cl_fltk_bridge_stock_icons.cpp \
            native/cl_fltk_bridge_values.cpp \
            native/cl_fltk_bridge_widgets.cpp
@@ -23,7 +25,7 @@ CXXFLAGS += -std=c++17 -fPIC -O2 -Wall -Wextra $(shell $(FLTK_CONFIG) --cxxflags
 LDFLAGS += -shared $(shell $(FLTK_CONFIG) --ldflags)
 LISP_ENV := ASDF_OUTPUT_TRANSLATIONS=$(CURDIR)/:$(CURDIR)/build/common-lisp-cache/
 
-.PHONY: all native smoke layout-smoke widget-smoke awake-smoke font-smoke demo layout-visual flat-theme-visual scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
+.PHONY: all native smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke demo layout-visual flat-theme-visual scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
 
 all: native
 
@@ -47,6 +49,9 @@ awake-smoke: native
 
 font-smoke: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-fonts.lisp
+
+text-smoke: native
+	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-text.lisp
 
 demo: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load examples/demo.lisp --eval '(lightfast-demo:main)'

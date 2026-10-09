@@ -799,28 +799,6 @@ private:
     }
 };
 
-class BufferedTextDisplay final : public Fl_Text_Display {
-public:
-    BufferedTextDisplay(int x, int y, int w, int h, const char *label)
-        : Fl_Text_Display(x, y, w, h, label),
-          buffer_(std::make_unique<Fl_Text_Buffer>())
-    {
-        buffer(buffer_.get());
-        textfont(theme().mono_font);
-        textsize(theme().text_size);
-        wrap_mode(WRAP_AT_BOUNDS, 0);
-    }
-
-    ~BufferedTextDisplay() override
-    {
-        buffer(nullptr);
-        buffer_.reset();
-    }
-
-private:
-    std::unique_ptr<Fl_Text_Buffer> buffer_;
-};
-
 class BufferedTextEditor final : public Fl_Text_Editor {
 public:
     BufferedTextEditor(int x, int y, int w, int h, const char *label)

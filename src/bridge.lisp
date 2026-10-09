@@ -591,6 +591,62 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
   (id   :long-long)
   (type :int))
 
+(cffi:defcfun ("clfl_text_set_styles" %text-set-styles) :int
+  (id          :long-long)
+  (count       :int)
+  (fonts       :pointer)
+  (sizes       :pointer)
+  (colors      :pointer)
+  (attributes  :pointer)
+  (backgrounds :pointer))
+
+(cffi:defcfun ("clfl_text_append_styled" %text-append-styled) :int
+  (id     :long-long)
+  (text   :string)
+  (styles :pointer))
+
+(cffi:defcfun ("clfl_text_replace_styled" %text-replace-styled) :int
+  (id     :long-long)
+  (start  :int)
+  (end    :int)
+  (text   :string)
+  (styles :pointer))
+
+(cffi:defcfun ("clfl_text_length" %text-length) :int
+  (id :long-long))
+
+(cffi:defcfun ("clfl_text_range" %text-range) :pointer
+  (id    :long-long)
+  (start :int)
+  (end   :int))
+
+(cffi:defcfun ("clfl_text_selection" %text-selection) :pointer
+  (id :long-long))
+
+(cffi:defcfun ("clfl_text_scroll_to_end" %text-scroll-to-end) :int
+  (id :long-long))
+
+(cffi:defcfun ("clfl_text_top_line" %text-top-line) :int
+  (id :long-long))
+
+(cffi:defcfun ("clfl_text_scroll_to_line" %text-scroll-to-line) :int
+  (id   :long-long)
+  (line :int))
+
+(cffi:defcfun ("clfl_text_line_of_position" %text-line-of-position) :int
+  (id       :long-long)
+  (position :int))
+
+(cffi:defcfun ("clfl_text_position_at" %text-position-at) :int
+  (id :long-long)
+  (x  :int)
+  (y  :int))
+
+(cffi:defcfun ("clfl_text_set_wrap" %text-set-wrap) :int
+  (id     :long-long)
+  (mode   :int)
+  (margin :int))
+
 (cffi:defcfun ("clfl_terminal_append" %terminal-append) :int
   (id   :long-long)
   (text :string))

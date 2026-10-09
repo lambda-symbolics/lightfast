@@ -95,6 +95,23 @@
    #:+widget-adjuster+
    #:+widget-table+
    #:+widget-tile+
+   #:+text-attribute-background+
+   #:+text-attribute-background-to-end+
+   #:+text-attribute-underline+
+   #:+text-attribute-strike-through+
+   #:character-byte-length
+   #:string-byte-length
+   #:text-append-styled
+   #:text-length
+   #:text-line-of-position
+   #:text-position-at
+   #:text-range
+   #:text-replace-styled
+   #:text-scroll-to-end
+   #:text-selection
+   #:text-set-styles
+   #:text-set-wrap
+   #:text-top-line
    #:add-item
    #:add-check-item
    #:add-menu-item

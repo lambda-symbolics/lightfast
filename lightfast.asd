@@ -13,6 +13,7 @@
      (:file "core")
      (:file "runtime")
      (:file "fonts")
+     (:file "text")
      (:file "widgets")
      (:file "geometry")
      (:file "layout-engine")

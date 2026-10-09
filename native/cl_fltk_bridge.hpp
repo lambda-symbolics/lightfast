@@ -244,6 +244,32 @@ struct Theme {
 };
 Theme &theme();
 
+/// A text display owning its text buffer and, once styles are set, a style
+/// buffer of the same length whose letters index the style table.
+class BufferedTextDisplay final : public Fl_Text_Display {
+public:
+    BufferedTextDisplay(int x, int y, int w, int h, const char *label);
+    ~BufferedTextDisplay() override;
+
+    /// Replace the style table; entries are (font, size, 0xRRGGBB, attributes, 0xRRGGBB background).
+    void set_styles(int count, const int *fonts, const int *sizes, const unsigned *colors,
+                    const unsigned *attributes, const unsigned *backgrounds);
+    /// Append TEXT with one style letter per byte in STYLES, or style A throughout.
+    bool append_styled(const char *text, const char *styles);
+    /// Replace the bytes START to END with TEXT and STYLES.
+    bool replace_styled(int start, int end, const char *text, const char *styles);
+    /// The byte position under the widget-relative point, or -1 outside the text.
+    int position_at(int x, int y);
+    int handle(int event) override;
+
+private:
+    std::unique_ptr<Fl_Text_Buffer> buffer_;
+    std::unique_ptr<Fl_Text_Buffer> style_buffer_;
+    std::vector<Style_Table_Entry> styles_;
+    std::string style_fill(const char *text, const char *styles, bool *ok) const;
+    void copy_selection();
+};
+
 void apply_scrollbar_style(Fl_Scrollbar *scrollbar);
 void apply_scrollbar_styles(Fl_Widget *widget);
 void apply_common_style(Fl_Widget *widget);
