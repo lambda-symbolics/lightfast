@@ -447,6 +447,30 @@ give: a recent-files list is a fixed set of items renamed as the list changes."
   (%widget-set-label-font (widget-id widget) font)
   widget)
 
+(defparameter *label-alignments*
+  '((:center . 0) (:top . 1) (:bottom . 2) (:left . 4) (:right . 8)
+    (:inside . 16) (:clip . 64) (:wrap . 128))
+  "FLTK's FL_ALIGN_* bits by name.")
+
+(defun set-label-align (widget &rest alignments)
+  "Place WIDGET's label by ALIGNMENTS: :LEFT, :RIGHT, :TOP, :BOTTOM, :CENTER,
+with :INSIDE to keep it within the widget, :WRAP to break long labels and
+:CLIP to cut what does not fit. A label that reads like text wants
+(:LEFT :INSIDE); FLTK centers by default."
+  (%widget-set-label-align (widget-id widget)
+                           (reduce #'logior
+                                   (mapcar (lambda (alignment)
+                                             (or (rest (assoc alignment *label-alignments*))
+                                                 (error "Unknown label alignment ~S" alignment)))
+                                           alignments)
+                                   :initial-value 0))
+  widget)
+
+(defun set-label-color-rgb (widget &key red green blue)
+  "Color WIDGET's label text; the theme's foreground is the default."
+  (%widget-set-label-color-rgb (widget-id widget) red green blue)
+  widget)
+
 (defun set-tooltip (widget tooltip)
   (%widget-set-tooltip (widget-id widget) (or tooltip ""))
   widget)

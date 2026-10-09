@@ -333,6 +333,8 @@
    #:set-cursor
    #:cursor-shapes
    #:*cursor-shapes*
+   #:set-label-align
+   #:set-label-color-rgb
    #:set-label-font
    #:set-label-size
    #:set-range

@@ -102,6 +102,24 @@ void clfl_widget_set_label_font(widget_id id, int font)
     }
 }
 
+void clfl_widget_set_label_align(widget_id id, int align)
+{
+    if (Fl_Widget *widget = find_widget(id)) {
+        widget->align(static_cast<Fl_Align>(align));
+        widget->redraw_label();
+        widget->redraw();
+    }
+}
+
+void clfl_widget_set_label_color_rgb(widget_id id, int red, int green, int blue)
+{
+    if (Fl_Widget *widget = find_widget(id)) {
+        widget->labelcolor(fl_rgb_color(static_cast<uchar>(red), static_cast<uchar>(green), static_cast<uchar>(blue)));
+        widget->redraw_label();
+        widget->redraw();
+    }
+}
+
 void clfl_widget_set_tooltip(widget_id id, const char *tooltip)
 {
     if (Fl_Widget *widget = find_widget(id)) {
