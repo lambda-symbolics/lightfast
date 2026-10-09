@@ -38,6 +38,37 @@ draws one substrate, hairline boxes and inverted selection:
 lists what is installed, and `measure-text` returns the width, height and
 descent of a string in a face. `make flat-theme-visual` shows a gallery.
 
+## Styled text
+
+A text display takes a style table and text whose every character carries a
+style index; positions at this boundary are UTF-8 bytes:
+
+```lisp
+(lightfast:text-set-styles display
+  (list (list :font serif :size 16 :color '(0 0 0))
+        (list :font mono  :size 15 :color '(0 0 0))))
+(lightfast:text-append-styled display '(("Prose, then " . 0) ("(code)" . 1)))
+(lightfast:text-replace-styled display 0 (lightfast:string-byte-length "Prose") '(("Text" . 0)))
+```
+
+`text-position-at` maps a click to a byte position, `text-line-of-position`
+and `text-top-line` support scrolling, and `text-selection` reads what the
+user selected; Ctrl+C copies it. Text editors and displays offer every key to
+an `+event-key+` callback first, which may call `consume-event` to keep it
+from the widget.
+
+## Threads and the event loop
+
+Call `enable-thread-wakeups` once on the GUI thread, then let other threads
+hand over work and call `awake`. `run-with-idle` runs the loop and calls an
+idle function before the first wait and after every wakeup, which is where
+the GUI thread drains that work:
+
+```lisp
+(lightfast:enable-thread-wakeups)
+(lightfast:run-with-idle (lambda () (drain-queue)))
+```
+
 ## Automatic layout
 
 Lightfast includes a deterministic, single-line flex layout engine for ordinary
