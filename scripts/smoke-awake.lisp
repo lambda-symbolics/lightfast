@@ -14,3 +14,18 @@
       (assert (< elapsed 2.0) () "wait was not woken early: ~,2F s" elapsed)
       (format t "~&awake smoke passed in ~,2F s~%" elapsed)))
   (lightfast:destroy window))
+
+;;; RUN-WITH-IDLE: a worker wakes the loop twice, then closes the window;
+;;; the idle function must run before the first wait and after each wakeup.
+(let* ((window (lightfast:make-window :width 200 :height 100 :label "run-with-idle"))
+       (idle-calls 0)
+       (worker (sb-thread:make-thread
+                (lambda ()
+                  (sleep 0.2) (lightfast:awake)
+                  (sleep 0.2) (lightfast:awake)
+                  (sleep 0.2) (lightfast:quit)))))
+  (lightfast:show window)
+  (lightfast:run-with-idle (lambda () (incf idle-calls)))
+  (sb-thread:join-thread worker)
+  (assert (>= idle-calls 3) () "idle ran only ~D times" idle-calls)
+  (format t "~&run-with-idle smoke passed with ~D idle calls~%" idle-calls))

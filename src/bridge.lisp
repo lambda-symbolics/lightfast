@@ -698,6 +698,8 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
 (cffi:defcfun ("clfl_run" %run) :int)
 (cffi:defcfun ("clfl_check" %check) :int)
 
+(cffi:defcfun ("clfl_wait_for_event" %wait-for-event) :int)
+
 (cffi:defcfun ("clfl_wait" %wait) :int
   (seconds :double))
 

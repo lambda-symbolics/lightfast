@@ -72,4 +72,11 @@ int clfl_wait(double seconds)
     return Fl::wait(seconds);
 }
 
+int clfl_wait_for_event()
+{
+    // The no-argument Fl::wait blocks until an event, a timeout or an awake,
+    // and reports whether any window is still open.
+    return Fl::wait();
+}
+
 }

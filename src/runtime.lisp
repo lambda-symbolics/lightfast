@@ -580,6 +580,25 @@ widgets; other threads hand their work over and call AWAKE."
   (load-library)
   (%enable-thread-wakeups))
 
+(defun wait-for-event ()
+  "Block until FLTK has handled an event, a timer, or an AWAKE, and return
+true while any window is still open. Unlike WAIT with a timeout, a return
+means something happened."
+  (plusp (%wait-for-event)))
+
+(defun run-with-idle (function)
+  "Run the event loop until the last window closes or QUIT is called, calling
+FUNCTION with no arguments before the first wait and after every wakeup.
+
+This is the loop for an application fed by other threads: they push work and
+call AWAKE, FUNCTION drains the work on this thread, and FLTK sleeps in
+between instead of polling."
+  (loop
+    (funcall function)
+    (unless (wait-for-event)
+      (return)))
+  nil)
+
 (defun awake ()
   "Wake the event loop from another thread so that a pending WAIT returns.
 

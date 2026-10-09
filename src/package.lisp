@@ -308,6 +308,7 @@
    #:resize-widget-to-rect
    #:resize-widget
    #:run
+   #:run-with-idle
    #:set-box
    #:set-color-chooser-rgb
    #:set-color-rgb
@@ -356,6 +357,7 @@
    #:wizard-next
    #:wizard-previous
    #:wait
+   #:wait-for-event
    #:widget
    #:widget-height
    #:widget-id
