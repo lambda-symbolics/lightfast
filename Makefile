@@ -43,24 +43,16 @@ smoke: native
 layout-smoke:
 	$(LISP_ENV) sbcl --noinform --non-interactive --load scripts/smoke-layout.lisp
 
-widget-check: smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke
-
-smoke: native
+widget-smoke: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-widgets.lisp
 
-awake-check: smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke
-
-smoke: native
+awake-smoke: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-awake.lisp
 
-font-check: smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke
-
-smoke: native
+font-smoke: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-fonts.lisp
 
-text-check: smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke
-
-smoke: native
+text-smoke: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-text.lisp
 
 demo: native
