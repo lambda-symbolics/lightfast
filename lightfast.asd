@@ -12,6 +12,7 @@
      (:file "bridge")
      (:file "core")
      (:file "runtime")
+     (:file "fonts")
      (:file "widgets")
      (:file "geometry")
      (:file "layout-engine")

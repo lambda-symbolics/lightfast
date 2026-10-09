@@ -214,6 +214,22 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
   (id   :long-long)
   (size :int))
 
+(cffi:defcfun ("clfl_font_load" %font-load) :int
+  (name :string))
+
+(cffi:defcfun ("clfl_font_name" %font-name) :pointer
+  (font :int))
+
+(cffi:defcfun ("clfl_font_system_names" %font-system-names) :pointer)
+
+(cffi:defcfun ("clfl_font_measure" %font-measure) :int
+  (font    :int)
+  (size    :int)
+  (text    :string)
+  (width   :pointer)
+  (height  :pointer)
+  (descent :pointer))
+
 (cffi:defcfun ("clfl_widget_set_text_font" %widget-set-text-font) :void
   (id   :long-long)
   (font :int))

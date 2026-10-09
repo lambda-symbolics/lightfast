@@ -154,6 +154,7 @@
    #:file-browser-set-filetype
    #:file-browser-set-filter
    #:flex-fixed
+   #:font-name
    #:flex-layout
    #:flex-set-gap
    #:flex-set-margin
@@ -186,6 +187,7 @@
    #:layout-placement-parent
    #:layout-placement-rect
    #:layout-placement-target
+   #:load-font
    #:load-library
    #:make-box
    #:make-browser
@@ -260,6 +262,7 @@
    #:make-value-output
    #:make-value-slider
    #:make-wizard
+   #:measure-text
    #:make-window
    #:choose-color
    #:input-dialog
@@ -322,6 +325,7 @@
    #:set-text-size
    #:show
    #:shortcut-button-shortcut
+   #:system-font-names
    #:table-cell
    #:table-clear-rows
    #:table-column

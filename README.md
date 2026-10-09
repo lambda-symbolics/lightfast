@@ -10,6 +10,7 @@ make smoke
 make layout-smoke
 make widget-smoke
 make awake-smoke
+make font-smoke
 make demo
 ```
 
