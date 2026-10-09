@@ -43,6 +43,18 @@ void clfl_quit()
     request_quit();
 }
 
+void clfl_enable_thread_wakeups()
+{
+    // Fl::lock() initialises FLTK's thread support; the main thread keeps the
+    // lock and Fl::wait releases it while it sleeps, as FLTK documents.
+    Fl::lock();
+}
+
+void clfl_awake()
+{
+    Fl::awake();
+}
+
 int clfl_run()
 {
     g_quit_requested = false;

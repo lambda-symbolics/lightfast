@@ -533,6 +533,22 @@ first recovers the 1/10 the programmer meant."
 (defun run ()
   (%run))
 
+(defun enable-thread-wakeups ()
+  "Prepare FLTK so that AWAKE may be called from any thread.
+
+Call this once on the thread that will run the event loop, before RUN or the
+first WAIT. FLTK's own rule applies afterwards: only that thread touches
+widgets; other threads hand their work over and call AWAKE."
+  (load-library)
+  (%enable-thread-wakeups))
+
+(defun awake ()
+  "Wake the event loop from another thread so that a pending WAIT returns.
+
+Pair it with a queue the event-loop thread drains: a worker pushes a result,
+calls AWAKE, and the loop picks it up without polling on a timer."
+  (%awake))
+
 (defun check ()
   (%check))
 

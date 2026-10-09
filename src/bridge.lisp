@@ -659,6 +659,10 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
 
 (cffi:defcfun ("clfl_quit" %quit) :void)
 
+(cffi:defcfun ("clfl_enable_thread_wakeups" %enable-thread-wakeups) :void)
+
+(cffi:defcfun ("clfl_awake" %awake) :void)
+
 (cffi:defcfun ("clfl_run" %run) :int)
 (cffi:defcfun ("clfl_check" %check) :int)
 

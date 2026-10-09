@@ -102,6 +102,7 @@
    #:add-timeout
    #:alert-box
    #:apply-classic-theme
+   #:awake
    #:apply-layout
    #:browser-select
    #:browser-selected-indices
@@ -138,6 +139,7 @@
    #:draw-stock-icon
    #:window-set-icon
    #:draw-filled-rect
+   #:enable-thread-wakeups
    #:draw-font
    #:draw-line
    #:draw-pop-clip

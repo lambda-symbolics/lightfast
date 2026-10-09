@@ -9,6 +9,7 @@ make
 make smoke
 make layout-smoke
 make widget-smoke
+make awake-smoke
 make demo
 ```
 
