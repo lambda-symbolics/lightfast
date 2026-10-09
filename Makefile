@@ -25,7 +25,7 @@ CXXFLAGS += -std=c++17 -fPIC -O2 -Wall -Wextra $(shell $(FLTK_CONFIG) --cxxflags
 LDFLAGS += -shared $(shell $(FLTK_CONFIG) --ldflags)
 LISP_ENV := ASDF_OUTPUT_TRANSLATIONS=$(CURDIR)/:$(CURDIR)/build/common-lisp-cache/
 
-.PHONY: all native smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke demo layout-visual flat-theme-visual scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
+.PHONY: all native check smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke demo layout-visual flat-theme-visual scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
 
 all: native
 
@@ -35,22 +35,32 @@ $(BRIDGE): $(SOURCES) native/cl_fltk_bridge.hpp native/stock_icons.hpp $(STOCK_I
 	mkdir -p build
 	$(CXX) $(CXXFLAGS) $(SOURCES) -o $@ $(LDFLAGS)
 
+check: smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke
+
 smoke: native
 	$(LISP_ENV) sbcl --noinform --non-interactive --load scripts/smoke-load.lisp
 
 layout-smoke:
 	$(LISP_ENV) sbcl --noinform --non-interactive --load scripts/smoke-layout.lisp
 
-widget-smoke: native
+widget-check: smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke
+
+smoke: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-widgets.lisp
 
-awake-smoke: native
+awake-check: smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke
+
+smoke: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-awake.lisp
 
-font-smoke: native
+font-check: smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke
+
+smoke: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-fonts.lisp
 
-text-smoke: native
+text-check: smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke
+
+smoke: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-text.lisp
 
 demo: native

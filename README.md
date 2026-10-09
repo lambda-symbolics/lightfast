@@ -6,11 +6,13 @@ Requires SBCL with ASDF and CFFI, FLTK 1.4 with `fltk-config`, and a C++17 compi
 
 ```sh
 make
+make check        # every smoke test below
 make smoke
 make layout-smoke
 make widget-smoke
 make awake-smoke
 make font-smoke
+make text-smoke
 make demo
 ```
 
