@@ -20,6 +20,24 @@ make demo
 
 The `cl-fltk` ASDF system and package nickname are aliases for Lightfast.
 
+## Themes and fonts
+
+Widgets take their box, colors and fonts from the active theme at creation.
+`apply-classic-theme` is the gray bevelled desktop look; `apply-flat-theme`
+draws one substrate, hairline boxes and inverted selection:
+
+```lisp
+(lightfast:apply-flat-theme :background '(255 254 250)
+                            :foreground '(0 0 0)
+                            :label-font (lightfast:load-font "Times New Roman")
+                            :label-size 16
+                            :mono-font  (lightfast:load-font "CMU Typewriter Text"))
+```
+
+`load-font` takes a face by its family and style words, `system-font-names`
+lists what is installed, and `measure-text` returns the width, height and
+descent of a string in a face. `make flat-theme-visual` shows a gallery.
+
 ## Automatic layout
 
 Lightfast includes a deterministic, single-line flex layout engine for ordinary

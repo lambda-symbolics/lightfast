@@ -23,7 +23,7 @@ CXXFLAGS += -std=c++17 -fPIC -O2 -Wall -Wextra $(shell $(FLTK_CONFIG) --cxxflags
 LDFLAGS += -shared $(shell $(FLTK_CONFIG) --ldflags)
 LISP_ENV := ASDF_OUTPUT_TRANSLATIONS=$(CURDIR)/:$(CURDIR)/build/common-lisp-cache/
 
-.PHONY: all native smoke layout-smoke widget-smoke awake-smoke font-smoke demo layout-visual scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
+.PHONY: all native smoke layout-smoke widget-smoke awake-smoke font-smoke demo layout-visual flat-theme-visual scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
 
 all: native
 
@@ -59,6 +59,9 @@ scrollbar-visual: native
 
 button-ellipsis-visual: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load scripts/visual-button-ellipsis.lisp
+
+flat-theme-visual: native
+	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load scripts/visual-flat-theme.lisp
 
 modern-widgets-visual: native
 	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load scripts/visual-modern-widgets.lisp

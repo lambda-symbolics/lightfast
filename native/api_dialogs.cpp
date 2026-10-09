@@ -72,15 +72,16 @@ char *clfl_input_dialog(const char *message, const char *initial)
     Fl_Input input(12, 30, 336, 26,
                    message && *message ? message : "Value:");
     input.align(FL_ALIGN_TOP_LEFT);
-    input.labelsize(12);
-    input.textsize(12);
+    input.labelsize(theme().label_size);
+    input.textfont(theme().text_font);
+    input.textsize(theme().text_size);
     input.value(initial ? initial : "");
     // Select the initial text so typing replaces it outright.
     input.insert_position(input.size(), 0);
     Fl_Return_Button ok(188, 70, 76, 26, "OK");
     Fl_Button cancel(272, 70, 76, 26, "Cancel");
-    ok.labelsize(12);
-    cancel.labelsize(12);
+    ok.labelsize(theme().label_size);
+    cancel.labelsize(theme().label_size);
     window.end();
     InputState state{false, &window};
     ok.callback(

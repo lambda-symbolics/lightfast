@@ -68,6 +68,22 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
 
 (cffi:defcfun ("clfl_apply_classic_theme" %apply-classic-theme) :void)
 
+(cffi:defcfun ("clfl_apply_flat_theme" %apply-flat-theme) :void
+  (background-red   :int)
+  (background-green :int)
+  (background-blue  :int)
+  (foreground-red   :int)
+  (foreground-green :int)
+  (foreground-blue  :int)
+  (selection-red    :int)
+  (selection-green  :int)
+  (selection-blue   :int)
+  (label-font       :int)
+  (label-size       :int)
+  (text-font        :int)
+  (text-size        :int)
+  (mono-font        :int))
+
 (cffi:defcfun ("clfl_widget_create" %widget-create) :long-long
   (kind      :int)
   (parent-id :long-long)

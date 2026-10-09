@@ -55,6 +55,7 @@
 #include <FL/Fl_Text_Display.H>
 #include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Tile.H>
+#include <FL/Fl_Tooltip.H>
 #include <FL/Fl_Tree.H>
 #include <FL/Fl_Valuator.H>
 #include <FL/Fl_Value_Input.H>
@@ -220,6 +221,28 @@ Fl_Widget *find_widget(widget_id id);
 Fl_Group *find_group(widget_id id);
 widget_id register_widget(int kind, Fl_Widget *widget);
 void unregister_widget_tree(Fl_Widget *widget);
+
+/// The look every widget is given at creation. Defaults are the classic
+/// desktop look; clfl_apply_flat_theme replaces them before widgets exist.
+struct Theme {
+    int label_size = 12;
+    int text_size = 12;
+    Fl_Font label_font = FL_HELVETICA;
+    Fl_Font text_font = FL_HELVETICA;
+    Fl_Font mono_font = FL_COURIER;
+    Fl_Color field_color = FL_WHITE;
+    Fl_Color selection_color = fl_rgb_color(0, 0, 128);
+    Fl_Color rule_color = fl_rgb_color(224, 224, 224);
+    Fl_Color scrollbar_track_color = fl_rgb_color(224, 224, 224);
+    Fl_Color scrollbar_slider_color = fl_rgb_color(144, 144, 144);
+    Fl_Color indicator_shadow_color = FL_DARK3;
+    Fl_Color indicator_highlight_color = FL_WHITE;
+    Fl_Boxtype raised_box = FL_UP_BOX;
+    Fl_Boxtype sunken_box = FL_DOWN_BOX;
+    Fl_Boxtype pressed_box = FL_DOWN_BOX;
+    Fl_Boxtype thin_raised_box = FL_THIN_UP_BOX;
+};
+Theme &theme();
 
 void apply_scrollbar_style(Fl_Scrollbar *scrollbar);
 void apply_scrollbar_styles(Fl_Widget *widget);

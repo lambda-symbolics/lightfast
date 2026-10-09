@@ -12,6 +12,98 @@ void clfl_apply_classic_theme()
     Fl::foreground(0, 0, 0);
     Fl::set_color(FL_SELECTION_COLOR, 0, 0, 128);
     Fl::visible_focus(0);
+    theme() = Theme();
+}
+
+namespace {
+
+/// A box drawn as one hairline of foreground ink around a flat fill.
+void flat_hairline_box(int x, int y, int w, int h, Fl_Color color)
+{
+    fl_color(color);
+    fl_rectf(x + 1, y + 1, w - 2, h - 2);
+    fl_color(FL_FOREGROUND_COLOR);
+    fl_rect(x, y, w, h);
+}
+
+/// The hairline alone, for frames that leave their inside untouched.
+void flat_hairline_frame(int x, int y, int w, int h, Fl_Color)
+{
+    fl_color(FL_FOREGROUND_COLOR);
+    fl_rect(x, y, w, h);
+}
+
+/// A flat fill with no edge at all.
+void flat_plain_box(int x, int y, int w, int h, Fl_Color color)
+{
+    fl_color(color);
+    fl_rectf(x, y, w, h);
+}
+
+const Fl_Boxtype FLAT_HAIRLINE_BOX = FL_FREE_BOXTYPE;
+const Fl_Boxtype FLAT_HAIRLINE_FRAME = static_cast<Fl_Boxtype>(FL_FREE_BOXTYPE + 1);
+const Fl_Boxtype FLAT_PLAIN_BOX = static_cast<Fl_Boxtype>(FL_FREE_BOXTYPE + 2);
+
+} // namespace
+
+void clfl_apply_flat_theme(int background_red, int background_green, int background_blue,
+                           int foreground_red, int foreground_green, int foreground_blue,
+                           int selection_red, int selection_green, int selection_blue,
+                           int label_font, int label_size,
+                           int text_font, int text_size,
+                           int mono_font)
+{
+    Fl::scheme("none");
+    Fl::background(background_red, background_green, background_blue);
+    Fl::background2(background_red, background_green, background_blue);
+    Fl::foreground(foreground_red, foreground_green, foreground_blue);
+    Fl::set_color(FL_SELECTION_COLOR, selection_red, selection_green, selection_blue);
+    Fl::visible_focus(1);
+    Fl::scrollbar_size(12);
+
+    Fl::set_boxtype(FLAT_HAIRLINE_BOX, flat_hairline_box, 1, 1, 2, 2);
+    Fl::set_boxtype(FLAT_HAIRLINE_FRAME, flat_hairline_frame, 1, 1, 2, 2);
+    Fl::set_boxtype(FLAT_PLAIN_BOX, flat_plain_box, 0, 0, 0, 0);
+    // Every bevel FLTK or a widget asks for becomes the hairline, so menus,
+    // tooltips and widgets created by FLTK itself follow the theme too.
+    Fl::set_boxtype(FL_UP_BOX, FLAT_HAIRLINE_BOX);
+    Fl::set_boxtype(FL_DOWN_BOX, FLAT_HAIRLINE_BOX);
+    Fl::set_boxtype(FL_THIN_UP_BOX, FLAT_HAIRLINE_BOX);
+    Fl::set_boxtype(FL_THIN_DOWN_BOX, FLAT_HAIRLINE_BOX);
+    Fl::set_boxtype(FL_UP_FRAME, FLAT_HAIRLINE_FRAME);
+    Fl::set_boxtype(FL_DOWN_FRAME, FLAT_HAIRLINE_FRAME);
+    Fl::set_boxtype(FL_THIN_UP_FRAME, FLAT_HAIRLINE_FRAME);
+    Fl::set_boxtype(FL_THIN_DOWN_FRAME, FLAT_HAIRLINE_FRAME);
+    Fl::set_boxtype(FL_ENGRAVED_BOX, FLAT_HAIRLINE_BOX);
+    Fl::set_boxtype(FL_EMBOSSED_BOX, FLAT_HAIRLINE_BOX);
+    Fl::set_boxtype(FL_ENGRAVED_FRAME, FLAT_HAIRLINE_FRAME);
+    Fl::set_boxtype(FL_EMBOSSED_FRAME, FLAT_HAIRLINE_FRAME);
+    Fl::set_boxtype(FL_ROUND_UP_BOX, FLAT_HAIRLINE_BOX);
+    Fl::set_boxtype(FL_ROUND_DOWN_BOX, FLAT_HAIRLINE_BOX);
+
+    Fl_Tooltip::color(FL_BACKGROUND_COLOR);
+    Fl_Tooltip::textcolor(FL_FOREGROUND_COLOR);
+    Fl_Tooltip::font(static_cast<Fl_Font>(label_font));
+    Fl_Tooltip::size(label_size);
+
+    Theme flat;
+    flat.label_size = label_size;
+    flat.text_size = text_size;
+    flat.label_font = static_cast<Fl_Font>(label_font);
+    flat.text_font = static_cast<Fl_Font>(text_font);
+    flat.mono_font = static_cast<Fl_Font>(mono_font);
+    flat.field_color = FL_BACKGROUND_COLOR;
+    flat.selection_color = FL_SELECTION_COLOR;
+    flat.rule_color = FL_FOREGROUND_COLOR;
+    flat.scrollbar_track_color = FL_BACKGROUND_COLOR;
+    flat.scrollbar_slider_color = FL_FOREGROUND_COLOR;
+    flat.indicator_shadow_color = FL_FOREGROUND_COLOR;
+    flat.indicator_highlight_color = FL_FOREGROUND_COLOR;
+    flat.raised_box = FLAT_HAIRLINE_BOX;
+    flat.sunken_box = FLAT_HAIRLINE_BOX;
+    flat.pressed_box = FLAT_HAIRLINE_BOX;
+    flat.thin_raised_box = FLAT_HAIRLINE_BOX;
+    theme() = flat;
 }
 
 widget_id clfl_widget_create(int kind,

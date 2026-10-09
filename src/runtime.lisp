@@ -7,8 +7,38 @@
   widget)
 
 (defun apply-classic-theme ()
+  "Give widgets created from now on the classic desktop look: gray bevels,
+white fields, dark blue selection, no visible focus ring."
   (load-library)
   (%apply-classic-theme))
+
+(defun apply-flat-theme (&key (background '(255 255 255))
+                              (foreground '(0 0 0))
+                              (selection foreground)
+                              (label-font +font-helvetica+)
+                              (label-size 12)
+                              (text-font label-font)
+                              (text-size label-size)
+                              (mono-font 4))
+  "Give widgets created from now on a flat look: one BACKGROUND for windows
+and fields alike, FOREGROUND ink for text and every edge, SELECTION filling
+selected and pressed states, hairline boxes in place of all bevels, and a
+visible focus ring.
+
+Colors are (RED GREEN BLUE) lists of 0 to 255. Fonts are numbers from
+LOAD-FONT or the built-in constants; MONO-FONT is used by text displays,
+editors, terminals and log browsers, defaulting to FLTK's Courier. Call this
+before creating widgets: FLTK fixes a widget's box, colors and fonts at
+creation, and the theme only supplies those defaults."
+  (load-library)
+  (destructuring-bind (background-red background-green background-blue) background
+    (destructuring-bind (foreground-red foreground-green foreground-blue) foreground
+      (destructuring-bind (selection-red selection-green selection-blue) selection
+        (%apply-flat-theme background-red background-green background-blue
+                           foreground-red foreground-green foreground-blue
+                           selection-red selection-green selection-blue
+                           label-font label-size text-font text-size mono-font))))
+  nil)
 
 (defun show (widget)
   (%window-show (widget-id widget))

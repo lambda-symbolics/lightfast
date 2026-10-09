@@ -424,7 +424,7 @@ public:
     void draw() override
     {
         constexpr int arrow_width = 18;
-        const Fl_Boxtype box_type = FL_DOWN_BOX;
+        const Fl_Boxtype box_type = theme().sunken_box;
         const int dx = Fl::box_dx(box_type);
         const int dy = Fl::box_dy(box_type);
         const int arrow_x = x() + w() - arrow_width - dx;
@@ -434,7 +434,7 @@ public:
         const int text_w = std::max(0, w() - arrow_width - (2 * dx) - 8);
 
         draw_box(box_type, FL_BACKGROUND2_COLOR);
-        draw_box(FL_UP_BOX, arrow_x, arrow_y, arrow_width, arrow_h, color());
+        draw_box(theme().raised_box, arrow_x, arrow_y, arrow_width, arrow_h, color());
 
         fl_color(active_r() ? labelcolor() : fl_inactive(labelcolor()));
         const int mid_x = arrow_x + (arrow_width / 2);
@@ -731,7 +731,10 @@ public:
         fl_color(color());
         fl_rectf(x(), y(), w(), h());
 
-        const int indicator_size = indicator_ == Indicator::Radio ? 10 : 11;
+        // The classic indicator is 11 px beside 12 px labels; larger labels
+        // get a proportionally larger mark.
+        const int base_size = indicator_ == Indicator::Radio ? 10 : 11;
+        const int indicator_size = std::max(base_size, base_size + labelsize() - 12);
         const int indicator_x = x() + 2;
         const int indicator_y = y() + ((h() - indicator_size) / 2);
 
@@ -758,34 +761,39 @@ private:
 
     void draw_square(int x, int y, int size)
     {
-        fl_color(FL_DARK3);
+        fl_color(theme().indicator_shadow_color);
         fl_line(x, y, x + size - 1, y);
         fl_line(x, y, x, y + size - 1);
-        fl_color(FL_WHITE);
+        fl_color(theme().indicator_highlight_color);
         fl_line(x + 1, y + size - 1, x + size - 1, y + size - 1);
         fl_line(x + size - 1, y + 1, x + size - 1, y + size - 1);
         fl_color(indicator_ == Indicator::Light && value()
                      ? selection_color()
-                     : FL_WHITE);
+                     : theme().field_color);
         fl_rectf(x + 1, y + 1, size - 2, size - 2);
 
         if (indicator_ == Indicator::Check && value()) {
-            fl_color(FL_BLACK);
-            fl_line(x + 2, y + 5, x + 4, y + 8);
-            fl_line(x + 4, y + 8, x + 8, y + 2);
-            fl_line(x + 3, y + 5, x + 4, y + 7);
-            fl_line(x + 4, y + 7, x + 8, y + 1);
+            // The tick is drawn for an 11 px square and scaled with it.
+            const double scale = size / 11.0;
+            const auto at = [scale](int offset) {
+                return static_cast<int>(std::lround(offset * scale));
+            };
+            fl_color(FL_FOREGROUND_COLOR);
+            fl_line(x + at(2), y + at(5), x + at(4), y + at(8));
+            fl_line(x + at(4), y + at(8), x + at(8), y + at(2));
+            fl_line(x + at(3), y + at(5), x + at(4), y + at(7));
+            fl_line(x + at(4), y + at(7), x + at(8), y + at(1));
         }
     }
 
     void draw_radio(int x, int y, int size)
     {
-        fl_color(FL_WHITE);
+        fl_color(theme().field_color);
         fl_pie(x, y, size, size, 0.0, 360.0);
-        fl_color(FL_BLACK);
+        fl_color(FL_FOREGROUND_COLOR);
         fl_arc(x, y, size, size, 0.0, 360.0);
         if (value()) {
-            fl_color(FL_BLACK);
+            fl_color(FL_FOREGROUND_COLOR);
             fl_pie(x + 3, y + 3, size - 6, size - 6, 0.0, 360.0);
         }
     }
@@ -798,8 +806,8 @@ public:
           buffer_(std::make_unique<Fl_Text_Buffer>())
     {
         buffer(buffer_.get());
-        textfont(FL_COURIER);
-        textsize(12);
+        textfont(theme().mono_font);
+        textsize(theme().text_size);
         wrap_mode(WRAP_AT_BOUNDS, 0);
     }
 
@@ -820,8 +828,8 @@ public:
           buffer_(std::make_unique<Fl_Text_Buffer>())
     {
         buffer(buffer_.get());
-        textfont(FL_COURIER);
-        textsize(12);
+        textfont(theme().mono_font);
+        textsize(theme().text_size);
         wrap_mode(WRAP_AT_BOUNDS, 0);
     }
 
@@ -841,8 +849,8 @@ public:
     ClassicCanvas(int x, int y, int w, int h, const char *label)
         : Fl_Widget(x, y, w, h, label)
     {
-        box(FL_DOWN_BOX);
-        color(FL_WHITE);
+        box(theme().sunken_box);
+        color(theme().field_color);
     }
 
     void draw() override
@@ -908,7 +916,7 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
     }
     case WIDGET_BOX: {
         auto *box = new Fl_Box(x, y, w, h, text);
-        box->box(FL_UP_BOX);
+        box->box(theme().raised_box);
         apply_common_style(box);
         return box;
     }
@@ -944,90 +952,98 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
     case WIDGET_INPUT: {
         auto *input = new ClassicSingleLineInput<Fl_Input>(x, y, w, h, text);
         input->when(FL_WHEN_CHANGED);
-        input->textsize(12);
+        input->textfont(theme().text_font);
+        input->textsize(theme().text_size);
         apply_inset_style(input);
         return input;
     }
     case WIDGET_SECRET_INPUT: {
         auto *input = new ClassicSingleLineInput<Fl_Secret_Input>(x, y, w, h, text);
         input->when(FL_WHEN_CHANGED);
-        input->textsize(12);
+        input->textfont(theme().text_font);
+        input->textsize(theme().text_size);
         apply_inset_style(input);
         return input;
     }
     case WIDGET_INT_INPUT: {
         auto *input = new ClassicSingleLineInput<Fl_Int_Input>(x, y, w, h, text);
         input->when(FL_WHEN_CHANGED);
-        input->textsize(12);
+        input->textfont(theme().text_font);
+        input->textsize(theme().text_size);
         apply_inset_style(input);
         return input;
     }
     case WIDGET_FLOAT_INPUT: {
         auto *input = new ClassicSingleLineInput<Fl_Float_Input>(x, y, w, h, text);
         input->when(FL_WHEN_CHANGED);
-        input->textsize(12);
+        input->textfont(theme().text_font);
+        input->textsize(theme().text_size);
         apply_inset_style(input);
         return input;
     }
     case WIDGET_MULTILINE_INPUT: {
         auto *input = new Fl_Multiline_Input(x, y, w, h, text);
         input->when(FL_WHEN_CHANGED);
-        input->textfont(FL_COURIER);
-        input->textsize(12);
+        input->textfont(theme().mono_font);
+        input->textsize(theme().text_size);
         apply_inset_style(input);
         return input;
     }
     case WIDGET_OUTPUT: {
         auto *output = new ClassicSingleLineInput<Fl_Output>(x, y, w, h, text);
-        output->textsize(12);
+        output->textfont(theme().text_font);
+        output->textsize(theme().text_size);
         apply_inset_style(output);
         return output;
     }
     case WIDGET_MULTILINE_OUTPUT: {
         auto *output = new Fl_Multiline_Output(x, y, w, h, text);
-        output->textfont(FL_COURIER);
-        output->textsize(12);
+        output->textfont(theme().mono_font);
+        output->textsize(theme().text_size);
         apply_inset_style(output);
         return output;
     }
     case WIDGET_TEXT_DISPLAY: {
         auto *display = new BufferedTextDisplay(x, y, w, h, text);
-        display->box(FL_DOWN_BOX);
+        display->box(theme().sunken_box);
         apply_common_style(display);
         return display;
     }
     case WIDGET_TEXT_EDITOR: {
         auto *editor = new BufferedTextEditor(x, y, w, h, text);
-        editor->box(FL_DOWN_BOX);
+        editor->box(theme().sunken_box);
         editor->when(FL_WHEN_CHANGED);
         apply_common_style(editor);
         return editor;
     }
     case WIDGET_HELP_VIEW: {
         auto *help = new Fl_Help_View(x, y, w, h, text);
-        help->box(FL_DOWN_BOX);
-        help->textsize(12);
+        help->box(theme().sunken_box);
+        help->textfont(theme().text_font);
+        help->textsize(theme().text_size);
         apply_common_style(help);
         return help;
     }
     case WIDGET_CLOCK: {
         auto *clock = new Fl_Clock(x, y, w, h, text);
-        clock->box(FL_DOWN_BOX);
+        clock->box(theme().sunken_box);
         apply_common_style(clock);
         return clock;
     }
     case WIDGET_CHOICE: {
         auto *choice = new ClassicChoice(x, y, w, h, text);
         choice->when(FL_WHEN_CHANGED);
-        choice->textsize(12);
+        choice->textfont(theme().text_font);
+        choice->textsize(theme().text_size);
         apply_inset_style(choice);
         return choice;
     }
     case WIDGET_INPUT_CHOICE: {
         auto *choice = new Fl_Input_Choice(x, y, w, h, text);
         choice->when(FL_WHEN_CHANGED);
-        choice->textsize(12);
-        choice->box(FL_DOWN_BOX);
+        choice->textfont(theme().text_font);
+        choice->textsize(theme().text_size);
+        choice->box(theme().sunken_box);
         apply_common_style(choice);
         return choice;
     }
@@ -1035,25 +1051,25 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
         auto *browser = new Fl_Browser(x, y, w, h, text);
         browser->type(FL_HOLD_BROWSER);
         browser->when(FL_WHEN_RELEASE_ALWAYS);
-        browser->textfont(FL_COURIER);
-        browser->textsize(12);
+        browser->textfont(theme().mono_font);
+        browser->textsize(theme().text_size);
         apply_inset_style(browser);
         return browser;
     }
     case WIDGET_CHECK_BROWSER: {
         auto *browser = new Fl_Check_Browser(x, y, w, h, text);
-        browser->box(FL_DOWN_BOX);
-        browser->textfont(FL_HELVETICA);
-        browser->textsize(12);
+        browser->box(theme().sunken_box);
+        browser->textfont(theme().text_font);
+        browser->textsize(theme().text_size);
         browser->when(FL_WHEN_CHANGED);
         apply_common_style(browser);
         return browser;
     }
     case WIDGET_FILE_BROWSER: {
         auto *browser = new Fl_File_Browser(x, y, w, h, text);
-        browser->box(FL_DOWN_BOX);
-        browser->textfont(FL_HELVETICA);
-        browser->textsize(12);
+        browser->box(theme().sunken_box);
+        browser->textfont(theme().text_font);
+        browser->textsize(theme().text_size);
         browser->filetype(Fl_File_Browser::FILES);
         apply_common_style(browser);
         return browser;
@@ -1068,43 +1084,48 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
     }
     case WIDGET_MENU_BAR: {
         auto *menu = new Fl_Menu_Bar(x, y, w, h, text);
-        menu->box(FL_UP_BOX);
-        menu->textsize(12);
+        menu->box(theme().raised_box);
+        menu->textfont(theme().text_font);
+        menu->textsize(theme().text_size);
         return menu;
     }
     case WIDGET_MENU_BUTTON: {
         auto *menu = new ClassicMenuButton(x, y, w, h, text);
-        menu->box(FL_UP_BOX);
-        menu->down_box(FL_DOWN_BOX);
-        menu->textsize(12);
-        menu->labelsize(12);
+        menu->box(theme().raised_box);
+        menu->down_box(theme().pressed_box);
+        menu->textfont(theme().text_font);
+        menu->textsize(theme().text_size);
+        menu->labelsize(theme().label_size);
         return menu;
     }
     case WIDGET_CHECK_BUTTON: {
         auto *check = new ClassicToggleButton(x, y, w, h, text, ClassicToggleButton::Indicator::Check);
         check->type(FL_TOGGLE_BUTTON);
         check->when(FL_WHEN_CHANGED);
-        check->labelsize(12);
-        check->labelcolor(FL_BLACK);
-        check->selection_color(FL_BLACK);
+        check->labelfont(theme().label_font);
+        check->labelsize(theme().label_size);
+        check->labelcolor(FL_FOREGROUND_COLOR);
+        check->selection_color(FL_FOREGROUND_COLOR);
         check->color(FL_BACKGROUND_COLOR);
         return check;
     }
     case WIDGET_VALUE_INPUT: {
         auto *input = new ClassicValueInput(x, y, w, h, text);
         input->when(FL_WHEN_CHANGED);
-        input->textsize(12);
+        input->textfont(theme().text_font);
+        input->textsize(theme().text_size);
         apply_inset_style(input);
         return input;
     }
     case WIDGET_VALUE_SLIDER: {
         auto *slider = new Fl_Hor_Value_Slider(x, y, w, h, text);
-        slider->box(FL_DOWN_BOX);
+        slider->box(theme().sunken_box);
         slider->bounds(0.0, 100.0);
         slider->step(1.0);
         slider->value(50.0);
         slider->when(FL_WHEN_CHANGED);
-        slider->textsize(12);
+        slider->textfont(theme().text_font);
+        slider->textsize(theme().text_size);
         apply_common_style(slider);
         return slider;
     }
@@ -1136,8 +1157,8 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
     }
     case WIDGET_TABS: {
         auto *tabs = new Fl_Tabs(x, y, w, h, text);
-        tabs->box(FL_THIN_UP_BOX);
-        tabs->labelsize(12);
+        tabs->box(theme().thin_raised_box);
+        tabs->labelsize(theme().label_size);
         return tabs;
     }
     case WIDGET_TAB_PAGE: {
@@ -1148,18 +1169,18 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
     }
     case WIDGET_PROGRESS: {
         auto *progress = new Fl_Progress(x, y, w, h, text);
-        progress->box(FL_DOWN_BOX);
+        progress->box(theme().sunken_box);
         progress->minimum(0.0);
         progress->maximum(100.0);
         progress->value(0.0);
-        progress->color(FL_WHITE);
-        progress->selection_color(fl_rgb_color(0, 0, 128));
+        progress->color(theme().field_color);
+        progress->selection_color(theme().selection_color);
         apply_common_style(progress);
         return progress;
     }
     case WIDGET_SLIDER: {
         auto *slider = new Fl_Hor_Slider(x, y, w, h, text);
-        slider->box(FL_DOWN_BOX);
+        slider->box(theme().sunken_box);
         slider->bounds(0.0, 100.0);
         slider->step(1.0);
         slider->value(50.0);
@@ -1170,7 +1191,7 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
     case WIDGET_VERTICAL_SLIDER: {
         auto *slider = new Fl_Slider(x, y, w, h, text);
         slider->type(FL_VERT_NICE_SLIDER);
-        slider->box(FL_DOWN_BOX);
+        slider->box(theme().sunken_box);
         slider->bounds(100.0, 0.0);
         slider->step(1.0);
         slider->value(50.0);
@@ -1180,7 +1201,7 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
     }
     case WIDGET_STATUS_BAR: {
         auto *status = new ClassicStatusBox(x, y, w, h, text);
-        status->box(FL_DOWN_BOX);
+        status->box(theme().sunken_box);
         apply_common_style(status);
         return status;
     }
@@ -1188,9 +1209,10 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
         auto *button = new ClassicToggleButton(x, y, w, h, text, ClassicToggleButton::Indicator::Light);
         button->type(FL_TOGGLE_BUTTON);
         button->when(FL_WHEN_CHANGED);
-        button->labelsize(12);
-        button->labelcolor(FL_BLACK);
-        button->selection_color(fl_rgb_color(0, 0, 128));
+        button->labelfont(theme().label_font);
+        button->labelsize(theme().label_size);
+        button->labelcolor(FL_FOREGROUND_COLOR);
+        button->selection_color(theme().selection_color);
         button->color(FL_BACKGROUND_COLOR);
         return button;
     }
@@ -1198,9 +1220,10 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
         auto *button = new ClassicToggleButton(x, y, w, h, text, ClassicToggleButton::Indicator::Radio);
         button->type(FL_RADIO_BUTTON);
         button->when(FL_WHEN_CHANGED);
-        button->labelsize(12);
-        button->labelcolor(FL_BLACK);
-        button->selection_color(FL_BLACK);
+        button->labelfont(theme().label_font);
+        button->labelsize(theme().label_size);
+        button->labelcolor(FL_FOREGROUND_COLOR);
+        button->selection_color(FL_FOREGROUND_COLOR);
         button->color(FL_BACKGROUND_COLOR);
         return button;
     }
@@ -1211,7 +1234,8 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
         counter->step(1.0);
         counter->value(1.0);
         counter->when(FL_WHEN_CHANGED);
-        counter->textsize(12);
+        counter->textfont(theme().text_font);
+        counter->textsize(theme().text_size);
         apply_common_style(counter);
         return counter;
     }
@@ -1220,7 +1244,8 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
         spinner->range(0.0, 100.0);
         spinner->step(1.0);
         spinner->value(1.0);
-        spinner->textsize(12);
+        spinner->textfont(theme().text_font);
+        spinner->textsize(theme().text_size);
         spinner->when(FL_WHEN_CHANGED);
         apply_common_style(spinner);
         return spinner;
@@ -1246,11 +1271,11 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
     }
     case WIDGET_TREE: {
         auto *tree = new Fl_Tree(x, y, w, h, text);
-        tree->box(FL_DOWN_BOX);
+        tree->box(theme().sunken_box);
         tree->showroot(0);
         tree->connectorstyle(FL_TREE_CONNECTOR_DOTTED);
         tree->selectmode(FL_TREE_SELECT_SINGLE);
-        tree->item_labelsize(12);
+        tree->item_labelsize(theme().label_size);
         tree->when(FL_WHEN_CHANGED);
         apply_common_style(tree);
         return tree;
@@ -1258,14 +1283,16 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
     case WIDGET_FILE_INPUT: {
         auto *input = new Fl_File_Input(x, y, w, h, text);
         input->when(FL_WHEN_CHANGED);
-        input->textsize(12);
+        input->textfont(theme().text_font);
+        input->textsize(theme().text_size);
         apply_inset_style(input);
         return input;
     }
     case WIDGET_VALUE_OUTPUT: {
         auto *output = new Fl_Value_Output(x, y, w, h, text);
         output->when(FL_WHEN_CHANGED);
-        output->textsize(12);
+        output->textfont(theme().text_font);
+        output->textsize(theme().text_size);
         apply_inset_style(output);
         return output;
     }
@@ -1298,20 +1325,23 @@ Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label
     case WIDGET_CHART: {
         auto *chart = new Fl_Chart(x, y, w, h, text);
         chart->type(FL_BAR_CHART);
-        chart->textsize(12);
+        chart->textfont(theme().text_font);
+        chart->textsize(theme().text_size);
         apply_inset_style(chart);
         return chart;
     }
     case WIDGET_SCHEME_CHOICE: {
         auto *choice = new Fl_Scheme_Choice(x, y, w, h, text);
         choice->when(FL_WHEN_CHANGED);
-        choice->textsize(12);
+        choice->textfont(theme().text_font);
+        choice->textsize(theme().text_size);
         apply_inset_style(choice);
         return choice;
     }
     case WIDGET_TERMINAL: {
         auto *terminal = new Fl_Terminal(x, y, w, h, text);
-        terminal->textsize(12);
+        terminal->textfont(theme().text_font);
+        terminal->textsize(theme().text_size);
         apply_inset_style(terminal);
         return terminal;
     }

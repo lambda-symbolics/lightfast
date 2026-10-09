@@ -102,6 +102,7 @@
    #:add-timeout
    #:alert-box
    #:apply-classic-theme
+   #:apply-flat-theme
    #:awake
    #:apply-layout
    #:browser-select

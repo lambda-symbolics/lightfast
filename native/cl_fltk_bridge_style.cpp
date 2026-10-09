@@ -2,15 +2,21 @@
 
 namespace clfl_bridge {
 
+Theme &theme()
+{
+    static Theme current;
+    return current;
+}
+
 void apply_scrollbar_style(Fl_Scrollbar *scrollbar)
 {
     if (!scrollbar) {
         return;
     }
-    scrollbar->box(FL_DOWN_BOX);
-    scrollbar->slider(FL_UP_BOX);
-    scrollbar->color(fl_rgb_color(224, 224, 224));
-    scrollbar->selection_color(fl_rgb_color(144, 144, 144));
+    scrollbar->box(theme().sunken_box);
+    scrollbar->slider(theme().raised_box);
+    scrollbar->color(theme().scrollbar_track_color);
+    scrollbar->selection_color(theme().scrollbar_slider_color);
 }
 
 void apply_scrollbar_styles(Fl_Widget *widget)
@@ -30,23 +36,25 @@ void apply_scrollbar_styles(Fl_Widget *widget)
 
 void apply_common_style(Fl_Widget *widget)
 {
-    widget->labelsize(12);
-    widget->labelcolor(FL_BLACK);
+    widget->labelfont(theme().label_font);
+    widget->labelsize(theme().label_size);
+    widget->labelcolor(FL_FOREGROUND_COLOR);
     apply_scrollbar_styles(widget);
 }
 
 void apply_inset_style(Fl_Widget *widget)
 {
-    widget->box(FL_DOWN_BOX);
+    widget->box(theme().sunken_box);
     apply_common_style(widget);
 }
 
 void apply_button_style(Fl_Button *button)
 {
-    button->box(FL_UP_BOX);
-    button->down_box(FL_DOWN_BOX);
-    button->labelsize(12);
-    button->labelcolor(FL_BLACK);
+    button->box(theme().raised_box);
+    button->down_box(theme().pressed_box);
+    button->labelfont(theme().label_font);
+    button->labelsize(theme().label_size);
+    button->labelcolor(FL_FOREGROUND_COLOR);
 }
 
 } // namespace clfl_bridge

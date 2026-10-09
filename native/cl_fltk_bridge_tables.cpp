@@ -7,10 +7,10 @@ public:
     ClassicTable(int x, int y, int w, int h, const char *label)
         : Fl_Table_Row(x, y, w, h, label)
     {
-        box(FL_DOWN_BOX);
-        table_box(FL_DOWN_BOX);
-        color(FL_WHITE);
-        selection_color(fl_rgb_color(0, 0, 128));
+        box(theme().sunken_box);
+        table_box(theme().sunken_box);
+        color(theme().field_color);
+        selection_color(theme().selection_color);
         row_header(0);
         col_header(1);
         col_header_height(22);
@@ -161,7 +161,7 @@ public:
     {
         switch (context) {
         case CONTEXT_STARTPAGE:
-            fl_font(FL_HELVETICA, 12);
+            fl_font(theme().text_font, theme().text_size);
             return;
         case CONTEXT_COL_HEADER:
             draw_header_cell(column, x, y, width, height);
@@ -195,9 +195,9 @@ private:
     void draw_header_cell(int column, int x, int y, int width, int height)
     {
         fl_push_clip(x, y, width, height);
-        fl_draw_box(FL_UP_BOX, x, y, width, height, FL_BACKGROUND_COLOR);
-        fl_font(FL_HELVETICA, 12);
-        fl_color(FL_BLACK);
+        fl_draw_box(theme().raised_box, x, y, width, height, FL_BACKGROUND_COLOR);
+        fl_font(theme().text_font, theme().text_size);
+        fl_color(FL_FOREGROUND_COLOR);
         const char *label =
             (column >= 0 && column < static_cast<int>(column_labels_.size()))
                 ? column_labels_[column].c_str()
@@ -272,18 +272,18 @@ private:
         const bool selected = row_selected(row);
         const char *value = cell(row, column);
         fl_push_clip(x, y, width, height);
-        fl_color(selected ? selection_color() : FL_WHITE);
+        fl_color(selected ? selection_color() : theme().field_color);
         fl_rectf(x, y, width, height);
         if (column == 0 && value && marker_icon_value(value)) {
             draw_marker_icon(value, x, y, width, height, selected);
         } else {
-            fl_font(FL_HELVETICA, 12);
-            fl_color(selected ? FL_WHITE : FL_BLACK);
+            fl_font(theme().text_font, theme().text_size);
+            fl_color(selected ? theme().field_color : FL_FOREGROUND_COLOR);
             fl_draw(value, x + 5, y + 1, width - 8, height - 2, FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
         }
         fl_color(FL_LIGHT2);
         fl_line(x, y + height - 1, x + width, y + height - 1);
-        fl_color(fl_rgb_color(224, 224, 224));
+        fl_color(theme().rule_color);
         fl_line(x + width - 1, y, x + width - 1, y + height);
         fl_pop_clip();
     }
