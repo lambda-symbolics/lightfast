@@ -140,7 +140,7 @@ int BufferedTextDisplay::handle(int event)
             copy_selection();
             return 1;
         }
-        if (dispatch_input_callback(this, EVENT_KEY, key_event_value())) {
+        if (dispatch_consumable_input(this, EVENT_KEY, key_event_value())) {
             return 1;
         }
         break;

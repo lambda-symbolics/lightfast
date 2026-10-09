@@ -214,6 +214,11 @@ void clfl_window_set_modal(widget_id id, int enabled)
 
 /// How many clicks the mouse event being handled is into a series: 0 for a
 /// single click, 1 for a double click. Valid only inside a callback.
+void clfl_event_consume()
+{
+    g_event_consumed = true;
+}
+
 int clfl_event_clicks()
 {
     return Fl::event_clicks();

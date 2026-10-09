@@ -56,6 +56,16 @@ windows wait. Set before the window is shown."
   (%window-set-modal (widget-id widget) (if enabled-p 1 0))
   widget)
 
+(defun consume-event ()
+  "Claim the key event now being handled, so the widget does not act on it.
+
+Only meaningful inside a callback installed with :EVENT +EVENT-KEY+ on a text
+editor or text display: those widgets offer every key to the application
+first, and a key the application consumes never reaches the editor's own
+bindings. A composer uses it to send on Ctrl+Enter while Enter still breaks
+the line."
+  (%event-consume))
+
 (defun event-clicks ()
   "How many clicks the mouse event now being handled is into a series.
 

@@ -141,6 +141,7 @@
    #:choose-save-file
    #:choice-box
    #:compute-layout
+   #:consume-event
    #:chart-add
    #:chart-clear
    #:chart-insert

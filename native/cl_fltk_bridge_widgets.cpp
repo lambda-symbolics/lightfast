@@ -817,6 +817,17 @@ public:
         buffer_.reset();
     }
 
+    int handle(int event) override
+    {
+        // The application sees a key before the editor does, so that a
+        // composer can claim Ctrl+Enter or Escape with CONSUME-EVENT and
+        // leave every other key to ordinary editing.
+        if (event == FL_KEYDOWN && dispatch_consumable_input(this, EVENT_KEY, key_event_value())) {
+            return 1;
+        }
+        return Fl_Text_Editor::handle(event);
+    }
+
 private:
     std::unique_ptr<Fl_Text_Buffer> buffer_;
 };

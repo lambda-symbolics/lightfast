@@ -204,6 +204,11 @@ extern std::vector<std::unique_ptr<MenuCallback>> g_menu_callbacks;
 extern bool g_quit_requested;
 /// Set by clfl_window_cancel_close from inside a close callback: the window stays.
 extern bool g_window_close_cancelled;
+/// Set by clfl_event_consume from inside an input callback: the widget does
+/// not pass the event on to FLTK's own handling.
+extern bool g_event_consumed;
+/// Run the input callback for EVENT and report whether it consumed the event.
+bool dispatch_consumable_input(Fl_Widget *widget, int event, const std::string &value);
 /// Title text owned on behalf of each window: Fl_Window::label() keeps the
 /// pointer it is given rather than a copy, and it is that call, not
 /// copy_label(), that reaches the window manager.

@@ -161,6 +161,15 @@ bool dispatch_input_callback(Fl_Widget *widget, int event, const std::string &va
     return true;
 }
 
+bool dispatch_consumable_input(Fl_Widget *widget, int event, const std::string &value)
+{
+    g_event_consumed = false;
+    dispatch_input_callback(widget, event, value);
+    const bool consumed = g_event_consumed;
+    g_event_consumed = false;
+    return consumed;
+}
+
 void window_event_callback(Fl_Widget *widget, void *)
 {
     const auto found = g_widget_ids.find(widget);

@@ -109,6 +109,8 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
   (id :long-long)
   (enabled :int))
 
+(cffi:defcfun ("clfl_event_consume" %event-consume) :void)
+
 (cffi:defcfun ("clfl_event_clicks" %event-clicks) :int)
 
 (cffi:defcfun ("clfl_event_key" %event-key) :int)
