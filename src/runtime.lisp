@@ -412,10 +412,18 @@ give: a recent-files list is a fixed set of items renamed as the list changes."
   widget)
 
 (defun set-text-size (widget size)
+  "Set the size of the text WIDGET shows or edits, as distinct from its label.
+
+Reaches inputs, outputs, choices, menus, browsers, text displays and editors,
+help views, terminals, charts and value fields."
   (%widget-set-text-size (widget-id widget) size)
   widget)
 
 (defun set-text-font (widget font)
+  "Set the face of the text WIDGET shows or edits to font number FONT.
+
+FONT is a built-in number such as +FONT-HELVETICA+ or one returned by
+LOAD-FONT. Reaches the same widgets as SET-TEXT-SIZE."
   (%widget-set-text-font (widget-id widget) font)
   widget)
 

@@ -189,10 +189,17 @@ void set_widget_text_size(widget_id id, int size)
         input->textsize(size);
     } else if (auto *output = dynamic_cast<Fl_Output *>(find_widget(id))) {
         output->textsize(size);
-    } else if (auto *choice = dynamic_cast<Fl_Choice *>(find_widget(id))) {
-        choice->textsize(size);
+    } else if (auto *menu = dynamic_cast<Fl_Menu_ *>(find_widget(id))) {
+        menu->textsize(size);
     } else if (auto *browser = dynamic_cast<Fl_Browser *>(find_widget(id))) {
         browser->textsize(size);
+    } else if (auto *text_display = dynamic_cast<Fl_Text_Display *>(find_widget(id))) {
+        text_display->textsize(size);
+        text_display->redraw();
+    } else if (auto *help = dynamic_cast<Fl_Help_View *>(find_widget(id))) {
+        help->textsize(size);
+    } else if (auto *input_choice = dynamic_cast<Fl_Input_Choice *>(find_widget(id))) {
+        input_choice->textsize(size);
     } else if (classic_value_input_set_text_size(find_widget(id), size)) {
     } else if (auto *value_input = dynamic_cast<Fl_Value_Input *>(find_widget(id))) {
         value_input->textsize(size);
@@ -208,8 +215,17 @@ void set_widget_text_font(widget_id id, int font)
         input->textfont(font);
     } else if (auto *output = dynamic_cast<Fl_Output *>(find_widget(id))) {
         output->textfont(font);
+    } else if (auto *menu = dynamic_cast<Fl_Menu_ *>(find_widget(id))) {
+        menu->textfont(font);
     } else if (auto *browser = dynamic_cast<Fl_Browser *>(find_widget(id))) {
         browser->textfont(font);
+    } else if (auto *text_display = dynamic_cast<Fl_Text_Display *>(find_widget(id))) {
+        text_display->textfont(font);
+        text_display->redraw();
+    } else if (auto *help = dynamic_cast<Fl_Help_View *>(find_widget(id))) {
+        help->textfont(font);
+    } else if (auto *input_choice = dynamic_cast<Fl_Input_Choice *>(find_widget(id))) {
+        input_choice->textfont(font);
     } else if (classic_value_input_set_text_font(find_widget(id), font)) {
     } else if (auto *value_slider = dynamic_cast<Fl_Value_Slider *>(find_widget(id))) {
         value_slider->textfont(font);
