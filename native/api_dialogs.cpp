@@ -1,5 +1,9 @@
 #include "cl_fltk_bridge.hpp"
 
+#include <FL/Fl_Menu_Button.H>
+
+#include <cstdint>
+
 using namespace clfl_bridge;
 
 namespace {
@@ -27,39 +31,36 @@ int clfl_popup_menu(const char **items, int count)
     if (!items || count <= 0) {
         return -1;
     }
-    std::vector<Fl_Menu_Item> entries;
-    std::vector<int> original_indexes;
-    entries.reserve(count + 1);
+    // A menu button never shown carries the items: its add() understands
+    // "section/item" paths, so nested choices need no item table by hand,
+    // and it takes the theme's text face and size so the popup reads like
+    // the rest of the window.
+    Fl_Group *saved = Fl_Group::current();
+    Fl_Group::current(nullptr);
+    Fl_Menu_Button button(0, 0, 1, 1);
+    Fl_Group::current(saved);
+    button.textfont(theme().text_font);
+    button.textsize(theme().text_size);
+    int added = 0;
     for (int index = 0; index < count; ++index) {
         const char *label = items[index] ? items[index] : "";
         if (std::strcmp(label, "-") == 0) {
-            if (!entries.empty()) {
-                entries.back().flags |= FL_MENU_DIVIDER;
+            if (added > 0) {
+                const_cast<Fl_Menu_Item *>(&button.menu()[button.size() - 2])->flags |= FL_MENU_DIVIDER;
             }
             continue;
         }
-        Fl_Menu_Item entry = {};
-        entry.text = label;
-        entry.labelsize_ = 12;
-        entries.push_back(entry);
-        original_indexes.push_back(index);
+        button.add(label, 0, nullptr, reinterpret_cast<void *>(static_cast<intptr_t>(index + 1)), 0);
+        ++added;
     }
-    if (entries.empty()) {
+    if (added == 0) {
         return -1;
     }
-    Fl_Menu_Item terminator = {};
-    entries.push_back(terminator);
-    const Fl_Menu_Item *picked =
-        entries.data()->popup(Fl::event_x(), Fl::event_y());
-    if (!picked) {
+    const Fl_Menu_Item *picked = button.menu()->popup(Fl::event_x(), Fl::event_y(), nullptr, nullptr, &button);
+    if (!picked || !picked->user_data()) {
         return -1;
     }
-    const auto position = picked - entries.data();
-    if (position < 0 ||
-        position >= static_cast<long>(original_indexes.size())) {
-        return -1;
-    }
-    return original_indexes[position];
+    return static_cast<int>(reinterpret_cast<intptr_t>(picked->user_data())) - 1;
 }
 
 char *clfl_input_dialog(const char *message, const char *initial)

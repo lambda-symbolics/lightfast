@@ -48,7 +48,10 @@ traps SBCL leaves unmasked, which used to surface as SIGFPE."
   "Show a popup menu of ITEMS at the mouse cursor.
 
 Returns the chosen zero-based index, or NIL when dismissed. An item string
-of \"-\" is not selectable; it draws a divider under the previous item."
+of \"-\" is not selectable; it draws a divider under the previous item. An
+item of the form \"section/item\" goes into the submenu \"section\"; the index
+returned is the item's position in ITEMS either way. The menu takes the
+theme's text face and size."
   (load-library)
   (let* ((count (length items))
          (pointers (mapcar (lambda (item)
