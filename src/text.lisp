@@ -159,3 +159,28 @@ MARGIN pixels, or :BOUNDS at the widget's width."
                      (:bounds 3))
                    margin)
    'text-set-wrap widget))
+
+(defun text-insert-position (widget)
+  "Return the byte position of the caret in the text display or editor WIDGET."
+  (let ((position (%text-insert-position (widget-id widget))))
+    (when (minusp position)
+      (error "~S is not a text display or editor." widget))
+    position))
+
+(defun (setf text-insert-position) (position widget)
+  "Move the caret of WIDGET to byte POSITION and scroll it into view."
+  (%call-widget-operation (%text-set-insert-position (widget-id widget) position)
+                          'text-insert-position widget)
+  position)
+
+(defun text-replace (widget start end text)
+  "Replace the bytes START to END of WIDGET, a text display or editor, with
+TEXT. On a styled display the new text takes the first style."
+  (%call-widget-operation (%text-replace (widget-id widget) start end text) 'text-replace widget))
+
+(defun text-insert (widget text)
+  "Insert TEXT at the caret of WIDGET and leave the caret after it."
+  (let ((position (text-insert-position widget)))
+    (text-replace widget position position text)
+    (setf (text-insert-position widget) (+ position (string-byte-length text)))
+    widget))

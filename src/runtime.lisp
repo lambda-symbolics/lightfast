@@ -297,6 +297,17 @@ give: a recent-files list is a fixed set of items renamed as the list changes."
      (%tree-add (widget-id widget) label)))
   widget)
 
+(defun browser-set-scrollbars (widget mode)
+  "Choose which scrollbars WIDGET, a browser, may show: :NONE, :VERTICAL,
+:HORIZONTAL or :BOTH. A list meant to clip long lines wants :VERTICAL."
+  (%browser-set-scrollbars (widget-id widget)
+                           (ecase mode
+                             (:none 0)
+                             (:vertical 1)
+                             (:horizontal 2)
+                             (:both 3)))
+  widget)
+
 (defun browser-select (widget index)
   (%browser-select (widget-id widget) index)
   widget)

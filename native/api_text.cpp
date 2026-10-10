@@ -113,6 +113,36 @@ int clfl_text_position_at(widget_id id, int x, int y)
     return display ? display->position_at(x, y) : -1;
 }
 
+int clfl_text_insert_position(widget_id id)
+{
+    Fl_Text_Display *display = any_display(id);
+    return display ? display->insert_position() : -1;
+}
+
+int clfl_text_set_insert_position(widget_id id, int position)
+{
+    Fl_Text_Display *display = any_display(id);
+    if (!display || !display->buffer() || position < 0 || position > display->buffer()->length()) {
+        return 0;
+    }
+    display->insert_position(position);
+    display->show_insert_position();
+    return 1;
+}
+
+int clfl_text_replace(widget_id id, int start, int end, const char *text)
+{
+    Fl_Text_Display *display = any_display(id);
+    if (!display || !display->buffer() || !text || start < 0 || end < start || end > display->buffer()->length()) {
+        return 0;
+    }
+    if (auto *styled = dynamic_cast<BufferedTextDisplay *>(display)) {
+        return styled->replace_styled(start, end, text, nullptr) ? 1 : 0;
+    }
+    display->buffer()->replace(start, end, text);
+    return 1;
+}
+
 int clfl_text_set_wrap(widget_id id, int mode, int margin)
 {
     Fl_Text_Display *display = any_display(id);

@@ -195,6 +195,8 @@ void set_widget_text_size(widget_id id, int size)
         browser->textsize(size);
     } else if (auto *text_display = dynamic_cast<Fl_Text_Display *>(find_widget(id))) {
         text_display->textsize(size);
+        // Line metrics and the caret follow the font only after a resize.
+        text_display->resize(text_display->x(), text_display->y(), text_display->w(), text_display->h());
         text_display->redraw();
     } else if (auto *help = dynamic_cast<Fl_Help_View *>(find_widget(id))) {
         help->textsize(size);
@@ -221,6 +223,7 @@ void set_widget_text_font(widget_id id, int font)
         browser->textfont(font);
     } else if (auto *text_display = dynamic_cast<Fl_Text_Display *>(find_widget(id))) {
         text_display->textfont(font);
+        text_display->resize(text_display->x(), text_display->y(), text_display->w(), text_display->h());
         text_display->redraw();
     } else if (auto *help = dynamic_cast<Fl_Help_View *>(find_widget(id))) {
         help->textfont(font);

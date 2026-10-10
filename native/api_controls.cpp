@@ -75,6 +75,15 @@ void clfl_browser_set_column_widths(widget_id id, const int *widths, int count)
     browser->redraw();
 }
 
+void clfl_browser_set_scrollbars(widget_id id, int mode)
+{
+    if (auto *browser = dynamic_cast<Fl_Browser_ *>(find_widget(id))) {
+        // MODE: 0 none, 1 vertical, 2 horizontal, 3 both.
+        browser->has_scrollbar(static_cast<uchar>(mode));
+        browser->redraw();
+    }
+}
+
 void clfl_tree_add(widget_id id, const char *path)
 {
     if (auto *tree = dynamic_cast<Fl_Tree *>(find_widget(id))) {

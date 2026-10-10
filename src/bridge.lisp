@@ -661,6 +661,23 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
   (x  :int)
   (y  :int))
 
+(cffi:defcfun ("clfl_text_insert_position" %text-insert-position) :int
+  (id :long-long))
+
+(cffi:defcfun ("clfl_text_set_insert_position" %text-set-insert-position) :int
+  (id       :long-long)
+  (position :int))
+
+(cffi:defcfun ("clfl_text_replace" %text-replace) :int
+  (id    :long-long)
+  (start :int)
+  (end   :int)
+  (text  :string))
+
+(cffi:defcfun ("clfl_browser_set_scrollbars" %browser-set-scrollbars) :void
+  (id   :long-long)
+  (mode :int))
+
 (cffi:defcfun ("clfl_text_set_wrap" %text-set-wrap) :int
   (id     :long-long)
   (mode   :int)

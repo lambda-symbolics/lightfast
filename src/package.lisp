@@ -102,10 +102,13 @@
    #:character-byte-length
    #:string-byte-length
    #:text-append-styled
+   #:text-insert
+   #:text-insert-position
    #:text-length
    #:text-line-of-position
    #:text-position-at
    #:text-range
+   #:text-replace
    #:text-replace-styled
    #:text-scroll-to-end
    #:text-selection
@@ -126,6 +129,7 @@
    #:browser-select
    #:browser-selected-indices
    #:browser-set-column-widths
+   #:browser-set-scrollbars
    #:browser-set-selected-p
    #:browser-set-selection-mode
    #:check
