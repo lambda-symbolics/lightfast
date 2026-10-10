@@ -180,6 +180,10 @@
    #:file-browser-set-filter
    #:flex-fixed
    #:font-name
+   #:font-files
+   #:font-line-gaps
+   #:fold-font-line-gap
+   #:correct-font-baselines
    #:flex-layout
    #:flex-set-gap
    #:flex-set-margin

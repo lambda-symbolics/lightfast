@@ -23,8 +23,8 @@ SOURCES := native/api_core.cpp \
            native/cl_fltk_bridge_values.cpp \
            native/cl_fltk_bridge_widgets.cpp
 STOCK_ICONS := $(wildcard native/*.xpm)
-CXXFLAGS += -std=c++17 -fPIC -O2 -Wall -Wextra $(shell $(FLTK_CONFIG) --cxxflags)
-LDFLAGS += -shared $(shell $(FLTK_CONFIG) --ldflags)
+CXXFLAGS += -std=c++17 -fPIC -O2 -Wall -Wextra $(shell $(FLTK_CONFIG) --cxxflags) $(shell pkg-config --cflags pangoft2 fontconfig)
+LDFLAGS += -shared $(shell $(FLTK_CONFIG) --ldflags) $(shell pkg-config --libs pangoft2 fontconfig)
 LISP_ENV := ASDF_OUTPUT_TRANSLATIONS=$(CURDIR)/:$(CURDIR)/build/common-lisp-cache/
 
 .PHONY: all native check smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke demo layout-visual flat-theme-visual scrollbar-visual button-ellipsis-visual modern-widgets-visual clean

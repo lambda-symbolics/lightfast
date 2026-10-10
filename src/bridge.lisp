@@ -257,6 +257,15 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
 
 (cffi:defcfun ("clfl_font_system_names" %font-system-names) :pointer)
 
+(cffi:defcfun ("clfl_font_files" %font-files) :pointer
+  (family :string))
+
+(cffi:defcfun ("clfl_font_substitute" %font-substitute) :int
+  (files          :pointer)
+  (count          :int)
+  (rejected       :pointer)
+  (rejected-count :int))
+
 (cffi:defcfun ("clfl_font_measure" %font-measure) :int
   (font    :int)
   (size    :int)

@@ -31,3 +31,20 @@
             () "baselines differ after alignment")
     (lightfast:destroy window))
   (format t "~&Lightfast font smoke passed with ~D faces; first is ~S.~%" (length names) first-name))
+
+;; Folding a line gap keeps every byte but the metrics and checksums, and the
+;; copy reads back with zero gaps.
+(let* ((gapped (loop for (name) in (lightfast:system-font-names)
+                     for files = (lightfast:font-files name)
+                     for file = (car (first files))
+                     when (and file (lightfast:font-line-gaps file)
+                               (/= 0 (lightfast:font-line-gaps file)))
+                       return file)))
+  (if gapped
+      (let ((copy (namestring (uiop:xdg-cache-home "lightfast/smoke/" (file-namestring gapped)))))
+        (assert (lightfast:fold-font-line-gap gapped copy))
+        (multiple-value-bind (hhea typo) (lightfast:font-line-gaps copy)
+          (assert (= 0 hhea) () "hhea gap ~D remains after folding" hhea)
+          (assert (or (null typo) (= 0 typo)) () "typographic gap ~D remains after folding" typo))
+        (format t "~&Folded the line gap of ~A.~%" gapped))
+      (format t "~&No installed font carries a line gap; folding not exercised.~%")))

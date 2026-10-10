@@ -43,6 +43,20 @@ draws one substrate, hairline boxes and inverted selection:
 lists what is installed, and `measure-text` returns the width, height and
 descent of a string in a face. `make flat-theme-visual` shows a gallery.
 
+FLTK's Cairo driver draws a face with a line gap in its metrics above the
+baseline it was asked for, by the gap. `correct-font-baselines` folds the gap
+into the ascender in a cached copy of each affected file and makes this
+process use the copies, so the face lands on the baseline beside other faces
+in a text display and beside widgets aligned with `align-baselines`. Call it
+once after `load-library`, before loading fonts:
+
+```lisp
+(lightfast:correct-font-baselines '("Times New Roman MT Std" "CMU Typewriter Text"))
+```
+
+`font-files` lists a family's files, `font-line-gaps` reads a file's gaps and
+`fold-font-line-gap` writes one corrected copy.
+
 ## Styled text
 
 A text display takes a style table and text whose every character carries a
