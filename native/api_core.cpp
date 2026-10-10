@@ -340,7 +340,12 @@ int clfl_widget_set_callback(widget_id id,
     }
 
     entry->callbacks[event] = CallbackSlot{callback, token};
-    entry->default_event = event;
+    // Only the widget's own callback events may become the default that
+    // FLTK's callback dispatches to; an input callback such as EVENT_KEY is
+    // fired by the widget's handle() with its own value format.
+    if (event == EVENT_ACTIVATE || event == EVENT_CHANGE) {
+        entry->default_event = event;
+    }
     if (entry->kind == WIDGET_WINDOW) {
         entry->widget->callback(window_event_callback);
     } else {

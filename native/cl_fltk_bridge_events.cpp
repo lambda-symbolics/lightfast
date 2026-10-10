@@ -21,7 +21,8 @@ void dispatch_callback(Fl_Widget *widget, void *)
     if (callback == entry->callbacks.end()) {
         callback = entry->callbacks.find(EVENT_CHANGE);
     }
-    if (callback == entry->callbacks.end() || !callback->second.callback) {
+    if (callback == entry->callbacks.end() || !callback->second.callback ||
+        (callback->first != EVENT_ACTIVATE && callback->first != EVENT_CHANGE)) {
         return;
     }
     const std::string value = widget_callback_value_string(widget);
