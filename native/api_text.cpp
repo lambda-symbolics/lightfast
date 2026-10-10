@@ -82,6 +82,23 @@ int clfl_text_scroll_to_end(widget_id id)
     return 1;
 }
 
+int clfl_text_at_end(widget_id id)
+{
+    Fl_Text_Display *display = any_display(id);
+    if (!display || !display->buffer()) {
+        return -1;
+    }
+    // The last line is in view when the display can place it: its position
+    // maps to a line at or above the bottom of the visible rows.
+    int x = 0;
+    int y = 0;
+    const int last = display->buffer()->length();
+    if (!display->position_to_xy(last, &x, &y)) {
+        return 0;
+    }
+    return y < display->y() + display->h() ? 1 : 0;
+}
+
 int clfl_text_top_line(widget_id id)
 {
     Fl_Text_Display *display = any_display(id);

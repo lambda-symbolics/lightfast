@@ -73,8 +73,8 @@ style index; positions at this boundary are UTF-8 bytes:
 (lightfast:text-replace-styled display 0 (lightfast:string-byte-length "Prose") '(("Text" . 0)))
 ```
 
-`text-position-at` maps a click to a byte position, `text-line-of-position`
-and `text-top-line` support scrolling, and `text-selection` reads what the
+`text-position-at` maps a click to a byte position, `text-line-of-position`,
+`text-top-line` and `text-at-end-p` support scrolling and following, and `text-selection` reads what the
 user selected; Ctrl+C copies it. Text editors and displays offer every key to
 an `+event-key+` callback first, which may call `consume-event` to keep it
 from the widget.

@@ -126,6 +126,13 @@ UTF-8 bytes. RUNS is a list of (TEXT . STYLE-INDEX)."
   "Scroll WIDGET so that the end of its text is visible."
   (%call-widget-operation (%text-scroll-to-end (widget-id widget)) 'text-scroll-to-end widget))
 
+(defun text-at-end-p (widget)
+  "Return T when WIDGET, a text display or editor, shows the end of its text."
+  (let ((result (%text-at-end (widget-id widget))))
+    (when (minusp result)
+      (error "~S is not a text display." widget))
+    (plusp result)))
+
 (defun text-top-line (widget)
   "Return the one-based number of the first line WIDGET shows."
   (%text-top-line (widget-id widget)))

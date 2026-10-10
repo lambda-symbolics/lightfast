@@ -654,6 +654,9 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
 (cffi:defcfun ("clfl_text_scroll_to_end" %text-scroll-to-end) :int
   (id :long-long))
 
+(cffi:defcfun ("clfl_text_at_end" %text-at-end) :int
+  (id :long-long))
+
 (cffi:defcfun ("clfl_text_top_line" %text-top-line) :int
   (id :long-long))
 

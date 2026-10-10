@@ -111,6 +111,7 @@
    #:text-replace
    #:text-replace-styled
    #:text-scroll-to-end
+   #:text-at-end-p
    #:text-selection
    #:text-set-styles
    #:text-set-wrap
