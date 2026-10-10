@@ -228,6 +228,9 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
   (id   :long-long)
   (font :int))
 
+(cffi:defcfun ("clfl_widget_baseline" %widget-baseline) :int
+  (id :long-long))
+
 (cffi:defcfun ("clfl_widget_set_label_align" %widget-set-label-align) :void
   (id    :long-long)
   (align :int))

@@ -113,6 +113,7 @@
    #:text-set-wrap
    #:text-top-line
    #:add-item
+   #:align-baselines
    #:add-check-item
    #:add-menu-item
    #:add-menu-tree
@@ -380,6 +381,7 @@
    #:wait
    #:wait-for-event
    #:widget
+   #:widget-baseline
    #:widget-height
    #:widget-id
    #:widget-kind

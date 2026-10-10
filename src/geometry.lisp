@@ -138,3 +138,31 @@
     (resize-widget-to-rect label label-rect)
     (resize-widget-to-rect control control-rect))
   rect)
+
+
+;;; Baselines
+
+(defun widget-baseline (widget)
+  "Return the distance from the top of WIDGET to the baseline of its text, as
+FLTK will draw it: the text font of inputs, choices and menus, else the label
+font, centered inside the box. Two widgets in one row look aligned when their
+baselines, not their tops or centers, meet."
+  (let ((baseline (%widget-baseline (widget-id widget))))
+    (when (minusp baseline)
+      (error "Cannot find the baseline of ~S." widget))
+    baseline))
+
+(defun align-baselines (widgets &key (reference (first widgets)))
+  "Move WIDGETS vertically so that their text baselines meet REFERENCE's.
+Call it after a layout has placed the row; widths and heights are kept. The
+move is a plain repositioning, so a later relayout starts afresh."
+  (when widgets
+    (refresh-geometry reference)
+    (let ((target (+ (widget-y reference) (widget-baseline reference))))
+      (dolist (widget widgets)
+        (unless (eq widget reference)
+          (refresh-geometry widget)
+          (let ((shift (- target (+ (widget-y widget) (widget-baseline widget)))))
+            (unless (zerop shift)
+              (resize-widget widget :y (+ (widget-y widget) shift))))))))
+  widgets)

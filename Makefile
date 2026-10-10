@@ -5,6 +5,7 @@ RUN_DISPLAY ?= :0
 BRIDGE := build/liblightfast.so
 SOURCES := native/api_core.cpp \
            native/api_geometry.cpp \
+           native/api_metrics.cpp \
            native/api_drawing.cpp \
            native/api_capture.cpp \
            native/api_controls.cpp \
