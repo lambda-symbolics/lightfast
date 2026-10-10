@@ -39,6 +39,11 @@ extern "C" {
 void clfl_widget_set_box(widget_id id, int box)
 {
     if (Fl_Widget *widget = find_widget(id)) {
+        // Fl_Browser_ draws FL_DOWN_BOX when its box is FL_NO_BOX; a plain
+        // fill is what a caller asking for no box sees on every other widget.
+        if (box == FL_NO_BOX && dynamic_cast<Fl_Browser_ *>(widget)) {
+            box = FL_FLAT_BOX;
+        }
         widget->box(static_cast<Fl_Boxtype>(box));
         widget->redraw();
     }
