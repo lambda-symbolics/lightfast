@@ -126,6 +126,17 @@ UTF-8 bytes. RUNS is a list of (TEXT . STYLE-INDEX)."
   "Scroll WIDGET so that the end of its text is visible."
   (%call-widget-operation (%text-scroll-to-end (widget-id widget)) 'text-scroll-to-end widget))
 
+(defun text-set-scrollbars (widget mode)
+  "Choose which scrollbars WIDGET, a text display or editor, may show: :NONE,
+:VERTICAL, :HORIZONTAL or :BOTH. A display sized to its text wants :NONE."
+  (%call-widget-operation (%text-set-scrollbars (widget-id widget)
+                                                (ecase mode
+                                                  (:none 0)
+                                                  (:horizontal 1)
+                                                  (:vertical 2)
+                                                  (:both 3)))
+                          'text-set-scrollbars widget))
+
 (defun text-at-end-p (widget)
   "Return T when WIDGET, a text display or editor, shows the end of its text."
   (let ((result (%text-at-end (widget-id widget))))

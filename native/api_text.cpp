@@ -82,6 +82,27 @@ int clfl_text_scroll_to_end(widget_id id)
     return 1;
 }
 
+int clfl_text_set_scrollbars(widget_id id, int mode)
+{
+    Fl_Text_Display *display = any_display(id);
+    if (!display) {
+        return 0;
+    }
+    // MODE: 0 none, 1 horizontal, 2 vertical, 3 both, as for browsers. The
+    // display shows a scrollbar only on the sides its alignment names.
+    int align = 0;
+    if (mode & 1) {
+        align |= FL_ALIGN_BOTTOM;
+    }
+    if (mode & 2) {
+        align |= FL_ALIGN_RIGHT;
+    }
+    display->scrollbar_align(static_cast<Fl_Align>(align));
+    display->resize(display->x(), display->y(), display->w(), display->h());
+    display->redraw();
+    return 1;
+}
+
 int clfl_text_at_end(widget_id id)
 {
     Fl_Text_Display *display = any_display(id);
