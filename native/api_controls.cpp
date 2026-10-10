@@ -78,7 +78,8 @@ void clfl_browser_set_column_widths(widget_id id, const int *widths, int count)
 void clfl_browser_set_scrollbars(widget_id id, int mode)
 {
     if (auto *browser = dynamic_cast<Fl_Browser_ *>(find_widget(id))) {
-        // MODE: 0 none, 1 vertical, 2 horizontal, 3 both.
+        // MODE as Fl_Browser_::has_scrollbar takes it: 0 none, 1 horizontal,
+        // 2 vertical, 3 both.
         browser->has_scrollbar(static_cast<uchar>(mode));
         browser->redraw();
     }

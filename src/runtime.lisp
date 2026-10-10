@@ -301,10 +301,11 @@ give: a recent-files list is a fixed set of items renamed as the list changes."
   "Choose which scrollbars WIDGET, a browser, may show: :NONE, :VERTICAL,
 :HORIZONTAL or :BOTH. A list meant to clip long lines wants :VERTICAL."
   (%browser-set-scrollbars (widget-id widget)
+                           ;; FLTK: HORIZONTAL 1, VERTICAL 2, BOTH 3.
                            (ecase mode
                              (:none 0)
-                             (:vertical 1)
-                             (:horizontal 2)
+                             (:vertical 2)
+                             (:horizontal 1)
                              (:both 3)))
   widget)
 
