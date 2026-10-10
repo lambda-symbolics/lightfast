@@ -22,6 +22,9 @@ make demo
 
 The `cl-fltk` ASDF system and package nickname are aliases for Lightfast.
 
+Windows are resizable by default, so tiling compositors tile them; use
+`set-size-range` with equal minimum and maximum sizes for a fixed window.
+
 ## Themes and fonts
 
 Widgets take their box, colors and fonts from the active theme at creation.

@@ -89,6 +89,11 @@ public:
     ClflWindow(int x, int y, int w, int h, const char *label)
         : Fl_Double_Window(x, y, w, h, label)
     {
+        // A window without a resizable target is fixed-size in FLTK's eyes,
+        // which makes it send equal minimum and maximum size hints; a tiling
+        // compositor then floats it and refuses to resize it. Applications
+        // lay their children out themselves, so the window as a whole resizes.
+        resizable(this);
     }
 
     void escape_closes(bool enabled) { escape_closes_ = enabled; }
