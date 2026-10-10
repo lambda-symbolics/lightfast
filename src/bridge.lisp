@@ -143,6 +143,10 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
 (cffi:defcfun ("clfl_widget_redraw" %widget-redraw) :void
   (id :long-long))
 
+(cffi:defcfun ("clfl_window_capture_ppm" %window-capture-ppm) :int
+  (id   :long-long)
+  (path :string))
+
 (cffi:defcfun ("clfl_widget_set_label" %widget-set-label) :void
   (id    :long-long)
   (label :string))

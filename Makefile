@@ -6,6 +6,7 @@ BRIDGE := build/liblightfast.so
 SOURCES := native/api_core.cpp \
            native/api_geometry.cpp \
            native/api_drawing.cpp \
+           native/api_capture.cpp \
            native/api_controls.cpp \
            native/api_dialogs.cpp \
            native/api_fonts.cpp \

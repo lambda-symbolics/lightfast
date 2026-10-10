@@ -142,6 +142,7 @@
    #:choice-box
    #:compute-layout
    #:consume-event
+   #:capture-window
    #:chart-add
    #:chart-clear
    #:chart-insert

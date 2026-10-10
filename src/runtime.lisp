@@ -112,6 +112,17 @@ ENABLED-P false the window swallows Escape and stays."
   (%window-set-escape-closes (widget-id widget) (if enabled-p 1 0))
   widget)
 
+(defun capture-window (window path)
+  "Render WINDOW offscreen and write its pixels to PATH as a binary PPM file.
+
+The window must be shown and laid out. The capture comes from FLTK's own
+drawing, so it does not depend on the compositor and works for a window that
+is tiled, hidden behind another, or scrolled out of view. Convert the PPM with
+any image tool. Signals an error when the window cannot be captured."
+  (unless (plusp (%window-capture-ppm (widget-id window) (namestring path)))
+    (error "Cannot capture window ~D to ~A." (widget-id window) path))
+  path)
+
 (defun window-cancel-close (widget)
   "Keep WIDGET, a window, open despite the close its callback is handling.
 
