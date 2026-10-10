@@ -54,6 +54,9 @@ once after `load-library`, before loading fonts:
 (lightfast:correct-font-baselines '("Times New Roman MT Std" "CMU Typewriter Text"))
 ```
 
+`browser-set-scrollbars` chooses which scrollbars a browser may show and
+`browser-set-line-spacing` gives its rows room above and below the text.
+
 `font-files` lists a family's files, `font-line-gaps` reads a file's gaps and
 `fold-font-line-gap` writes one corrected copy.
 

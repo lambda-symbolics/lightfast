@@ -130,6 +130,7 @@
    #:browser-selected-indices
    #:browser-set-column-widths
    #:browser-set-scrollbars
+   #:browser-set-line-spacing
    #:browser-set-selected-p
    #:browser-set-selection-mode
    #:check

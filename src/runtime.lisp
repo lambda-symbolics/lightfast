@@ -309,6 +309,12 @@ give: a recent-files list is a fixed set of items renamed as the list changes."
                              (:both 3)))
   widget)
 
+(defun browser-set-line-spacing (widget pixels)
+  "Add PIXELS of space between the lines of WIDGET, a browser, so rows have
+room above and below their text."
+  (%browser-set-line-spacing (widget-id widget) pixels)
+  widget)
+
 (defun browser-select (widget index)
   (%browser-select (widget-id widget) index)
   widget)

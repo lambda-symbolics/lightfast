@@ -85,6 +85,14 @@ void clfl_browser_set_scrollbars(widget_id id, int mode)
     }
 }
 
+void clfl_browser_set_line_spacing(widget_id id, int pixels)
+{
+    if (auto *browser = dynamic_cast<Fl_Browser *>(find_widget(id))) {
+        browser->linespacing(pixels < 0 ? 0 : pixels);
+        browser->redraw();
+    }
+}
+
 void clfl_tree_add(widget_id id, const char *path)
 {
     if (auto *tree = dynamic_cast<Fl_Tree *>(find_widget(id))) {

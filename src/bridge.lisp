@@ -687,6 +687,10 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
   (id   :long-long)
   (mode :int))
 
+(cffi:defcfun ("clfl_browser_set_line_spacing" %browser-set-line-spacing) :void
+  (id     :long-long)
+  (pixels :int))
+
 (cffi:defcfun ("clfl_text_set_wrap" %text-set-wrap) :int
   (id     :long-long)
   (mode   :int)
