@@ -801,6 +801,16 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
 (cffi:defcfun ("clfl_remove_timeout" %remove-timeout) :int
   (id :long-long))
 
+(cffi:defcfun ("clfl_add_wakeup" %add-wakeup) :long-long
+  (callback :pointer)
+  (token    :long-long))
+
+(cffi:defcfun ("clfl_wake" %wake) :int
+  (id :long-long))
+
+(cffi:defcfun ("clfl_remove_wakeup" %remove-wakeup) :int
+  (id :long-long))
+
 (cffi:defcfun ("clfl_quit" %quit) :void)
 
 (cffi:defcfun ("clfl_enable_thread_wakeups" %enable-thread-wakeups) :void)

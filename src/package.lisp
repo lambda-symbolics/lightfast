@@ -123,6 +123,7 @@
    #:add-menu-item
    #:add-menu-tree
    #:add-timeout
+   #:add-wakeup
    #:alert-box
    #:apply-classic-theme
    #:apply-flat-theme
@@ -316,6 +317,7 @@
    #:quit
    #:redraw
    #:remove-timeout
+   #:remove-wakeup
    #:radio-group
    #:radio-group-buttons
    #:radio-group-value
@@ -391,6 +393,7 @@
    #:wizard-previous
    #:wait
    #:wait-for-event
+   #:wake
    #:widget
    #:widget-baseline
    #:widget-height

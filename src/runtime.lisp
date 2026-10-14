@@ -464,6 +464,30 @@ room above and below their text."
 (defun remove-timeout (id)
   (plusp (%remove-timeout id)))
 
+(defun add-wakeup (callback)
+  "Register CALLBACK to run on the interface thread whenever WAKE is called
+with the returned id. WAKE may be called from any thread; wakes that arrive
+before the callback has run are folded into one call. Call this on the
+interface thread."
+  (load-library)
+  (let* ((token (next-callback-token
+                 (lambda (widget-id event value)
+                   (declare (ignore widget-id event value))
+                   (funcall callback))))
+         (id (%add-wakeup (cffi:callback callback-dispatch) token)))
+    (when (zerop id)
+      (remhash token *callback-registry*)
+      (error "Unable to add FLTK wakeup."))
+    id))
+
+(defun wake (id)
+  "Ask the interface thread to run the callback registered as ID. Safe to call
+from any thread."
+  (plusp (%wake id)))
+
+(defun remove-wakeup (id)
+  (plusp (%remove-wakeup id)))
+
 (defun set-box (widget box)
   (%widget-set-box (widget-id widget) box)
   widget)
