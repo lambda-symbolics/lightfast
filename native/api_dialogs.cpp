@@ -255,7 +255,11 @@ int clfl_choice_box(const char *message,
                     const char *button1,
                     const char *button2)
 {
-    dress_message_icon("question");
+    // Left at FLTK's own built-in question icon, not a stock picture like
+    // the information and alert boxes above: the first custom question-mark
+    // replacement was rejected, and the one after it (asked for as a revert
+    // to this built-in icon) replaced it with a different custom picture
+    // instead of actually reverting. This is the real revert.
     return fl_choice("%s",
                      button0 && *button0 ? button0 : nullptr,
                      button1 && *button1 ? button1 : nullptr,

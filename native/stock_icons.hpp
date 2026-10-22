@@ -75,7 +75,6 @@
 #include "actual-pixels.xpm"
 #include "compare.xpm"
 #include "camera.xpm"
-#include "question.xpm"
 #include "information.xpm"
 #include "exclamation.xpm"
 #include "home.xpm"
