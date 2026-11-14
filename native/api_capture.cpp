@@ -8,18 +8,29 @@ extern "C" {
 
 /// Render the window ID offscreen and write its pixels as a binary PPM file at
 /// PATH. Returns 1 on success, 0 when the window is unknown or the file cannot
-/// be written. The window must be shown so that FLTK has laid it out.
+/// be written. A window that was never shown is drawn at the size it was
+/// given, which is how a picture is taken where there is no screen to show
+/// it on, or at a size the window system would not grant.
 int clfl_window_capture_ppm(widget_id id, const char *path)
 {
     auto *window = dynamic_cast<Fl_Window *>(find_widget(id));
     if (!window || !path || !*path || window->w() <= 0 || window->h() <= 0) {
         return 0;
     }
+    // FLTK draws nothing for a widget it holds invisible, and a window is
+    // invisible until it is shown.
+    const bool unseen = !window->visible();
+    if (unseen) {
+        window->set_visible();
+    }
     Fl_Image_Surface surface(window->w(), window->h());
     surface.set_current();
     surface.draw(window);
     Fl_RGB_Image *image = surface.image();
     Fl_Display_Device::display_device()->set_current();
+    if (unseen) {
+        window->clear_visible();
+    }
     if (!image) {
         return 0;
     }
