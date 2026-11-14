@@ -53,7 +53,13 @@ SOURCES := native/api_core.cpp \
            native/cl_fltk_bridge_widgets.cpp
 STOCK_ICONS := $(wildcard native/*.xpm)
 CXXFLAGS += -std=c++17 -fPIC -O2 -Wall -Wextra $(shell $(FLTK_CONFIG) --use-images --cxxflags) $(HOST_CXXFLAGS)
-LDFLAGS += $(HOST_LDFLAGS) $(shell $(FLTK_CONFIG) --use-images --ldflags) $(HOST_LIBS)
+FLTK_LDFLAGS := $(shell $(FLTK_CONFIG) --use-images --ldflags)
+# pkgsrc's fltk-config names libpng twice, as png16 and as png, and installs
+# only the first, so the second is dropped where the first is named.
+ifneq ($(filter -lpng16,$(FLTK_LDFLAGS)),)
+FLTK_LDFLAGS := $(filter-out -lpng,$(FLTK_LDFLAGS))
+endif
+LDFLAGS += $(HOST_LDFLAGS) $(FLTK_LDFLAGS) $(HOST_LIBS)
 # The checks load the system from this tree, wherever it is checked out, ahead
 # of any other copy ASDF knows about, and keep their FASLs under build/.
 LISP_ENV := CL_SOURCE_REGISTRY=$(CURDIR)/:$(CL_SOURCE_REGISTRY) ASDF_OUTPUT_TRANSLATIONS=$(CURDIR)/:$(CURDIR)/build/common-lisp-cache/
