@@ -136,7 +136,8 @@ int BufferedTextDisplay::handle(int event)
         dispatch_input_callback(this, EVENT_RELEASE, mouse_event_value(this));
         break;
     case FL_KEYDOWN:
-        if ((Fl::event_state() & FL_CTRL) && (Fl::event_key() == 'c' || Fl::event_key() == FL_Insert)) {
+        // FL_COMMAND is Control, and Command on macOS.
+        if ((Fl::event_state() & FL_COMMAND) && (Fl::event_key() == 'c' || Fl::event_key() == FL_Insert)) {
             copy_selection();
             return 1;
         }
