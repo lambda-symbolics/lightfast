@@ -47,7 +47,7 @@ LDFLAGS += $(HOST_LDFLAGS) $(shell $(FLTK_CONFIG) --use-images --ldflags) $(HOST
 # of any other copy ASDF knows about, and keep their FASLs under build/.
 LISP_ENV := CL_SOURCE_REGISTRY=$(CURDIR)/:$(CL_SOURCE_REGISTRY) ASDF_OUTPUT_TRANSLATIONS=$(CURDIR)/:$(CURDIR)/build/common-lisp-cache/
 
-.PHONY: all native check smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke canvas-smoke demo layout-visual flat-theme-visual scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
+.PHONY: all native check smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke canvas-smoke demo layout-visual flat-theme-visual flat-theme-capture scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
 
 all: native
 
@@ -94,6 +94,11 @@ button-ellipsis-visual: native
 
 flat-theme-visual: native
 	$(LISP_ENV) $(GUI_ENV) sbcl --load scripts/visual-flat-theme.lisp
+
+# The gallery rendered offscreen to build/visual-flat-theme.ppm, for a look at
+# what FLTK draws without a compositor or a person at the screen.
+flat-theme-capture: native
+	$(LISP_ENV) $(GUI_ENV) sbcl --noinform --non-interactive --load scripts/visual-flat-theme.lisp --capture build/visual-flat-theme.ppm
 
 modern-widgets-visual: native
 	$(LISP_ENV) $(GUI_ENV) sbcl --load scripts/visual-modern-widgets.lisp

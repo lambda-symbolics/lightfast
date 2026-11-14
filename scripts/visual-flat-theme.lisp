@@ -3,11 +3,25 @@
 (lightfast:load-library)
 
 ;;; A gallery of ordinary widgets under the flat theme, for inspection by eye.
-;;; Pass --classic to see the same gallery under the classic theme.
+;;; Pass --classic to see the same gallery under the classic theme, and
+;;; --capture PATH to render the window offscreen to a PPM file and leave,
+;;; which needs no compositor and is how the gallery is looked at from CI.
+
+;; The monospaced face comes from the file the tests carry, so the gallery
+;; shows it on a machine that never installed it.
+(lightfast:register-font-file
+ (merge-pathnames "tests/fixtures/cmu-typewriter-regular.ttf"
+                  (asdf:system-source-directory :lightfast)))
 
 (let* ((classic-p (member "--classic" sb-ext:*posix-argv* :test #'string=))
-       (serif (lightfast:load-font "Times New Roman MT Std"))
-       (serif-bold (lightfast:load-font "Times New Roman MT Std Bold"))
+       (capture-path (second (member "--capture" sb-ext:*posix-argv* :test #'string=)))
+       ;; The first serif family this machine has; FLTK's fallback when none.
+       (serif-family (or (find-if #'lightfast:font-files
+                                  '("Times New Roman MT Std" "Times New Roman"
+                                    "Liberation Serif" "DejaVu Serif"))
+                         "Times New Roman"))
+       (serif (lightfast:load-font serif-family))
+       (serif-bold (lightfast:load-font (format nil "~A Bold" serif-family)))
        (mono (lightfast:load-font "CMU Typewriter Text")))
   (if classic-p
       (lightfast:apply-classic-theme)
@@ -64,10 +78,16 @@
     (lightfast:make-label :parent page :x 16 :y 20 :width 400 :height 30
                           :label "Body text in Times New Roman, 16 px, on paper.")
     (lightfast:show window)
-    (if (member "--shot" sb-ext:*posix-argv* :test #'string=)
-        (progn (loop repeat 40 do (lightfast:wait 0.05))
-               (uiop:run-program (list "grim" (if classic-p "/tmp/lightfast-classic.png" "/tmp/lightfast-flat.png"))
-                                 :ignore-error-status t)
-               (lightfast:destroy window))
-        (lightfast:run))))
+    (cond (capture-path
+           (loop repeat 10 do (lightfast:wait 0.05))
+           (ensure-directories-exist capture-path)
+           (lightfast:capture-window window capture-path)
+           (lightfast:destroy window))
+          ((member "--shot" sb-ext:*posix-argv* :test #'string=)
+           (loop repeat 40 do (lightfast:wait 0.05))
+           (uiop:run-program (list "grim" (if classic-p "/tmp/lightfast-classic.png" "/tmp/lightfast-flat.png"))
+                             :ignore-error-status t)
+           (lightfast:destroy window))
+          (t
+           (lightfast:run)))))
 (uiop:quit 0)
