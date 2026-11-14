@@ -1,0 +1,147 @@
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      # Ubuntu 24.04 packages FLTK 1.3, so FLTK 1.4 is built from the release
+      # tarball: X11 with Cairo and Pango, which is the text path Lightfast's
+      # font code talks to. Wayland is left out; the checks run under Xvfb.
+      FLTK_VERSION: 1.4.5
+      FLTK_SHA256: eede1fb2b8e9c2e581e77082e15252145855c79aad30070ee3b24aabe2f926f1
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install the compiler, SBCL, the X11 and font libraries and Xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            build-essential cmake pkg-config sbcl xvfb xauth imagemagick \
+            libx11-dev libxext-dev libxft-dev libxinerama-dev libxcursor-dev \
+            libxfixes-dev libxrender-dev libcairo2-dev libpango1.0-dev \
+            libfontconfig1-dev libpng-dev libjpeg-dev zlib1g-dev \
+            fonts-dejavu-core
+
+      - name: Restore FLTK
+        id: fltk
+        uses: actions/cache@v4
+        with:
+          path: ~/fltk
+          key: fltk-${{ env.FLTK_VERSION }}-ubuntu-24.04-x11-cairo-pango-1
+
+      - name: Build FLTK
+        if: steps.fltk.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSL -o /tmp/fltk.tar.gz \
+            "https://github.com/fltk/fltk/releases/download/release-${FLTK_VERSION}/fltk-${FLTK_VERSION}-source.tar.gz"
+          echo "${FLTK_SHA256}  /tmp/fltk.tar.gz" | sha256sum --check
+          mkdir /tmp/fltk-source
+          tar -xzf /tmp/fltk.tar.gz -C /tmp/fltk-source --strip-components=1
+          cmake -S /tmp/fltk-source -B /tmp/fltk-build \
+            -D CMAKE_BUILD_TYPE=Release \
+            -D CMAKE_INSTALL_PREFIX="$HOME/fltk" \
+            -D CMAKE_POSITION_INDEPENDENT_CODE=ON \
+            -D FLTK_BACKEND_X11=ON \
+            -D FLTK_BACKEND_WAYLAND=OFF \
+            -D FLTK_GRAPHICS_CAIRO=ON \
+            -D FLTK_USE_PANGO=ON \
+            -D FLTK_BUILD_GL=OFF \
+            -D FLTK_BUILD_FORMS=OFF \
+            -D FLTK_BUILD_FLUID=OFF \
+            -D FLTK_BUILD_FLTK_OPTIONS=OFF \
+            -D FLTK_BUILD_TEST=OFF \
+            -D FLTK_BUILD_EXAMPLES=OFF \
+            -D FLTK_BUILD_HTML_DOCS=OFF \
+            -D FLTK_BUILD_PDF_DOCS=OFF
+          cmake --build /tmp/fltk-build --parallel "$(nproc)"
+          cmake --install /tmp/fltk-build
+
+      - name: Put fltk-config on the path
+        run: echo "$HOME/fltk/bin" >> "$GITHUB_PATH"
+
+      - name: Install Quicklisp and CFFI
+        run: |
+          curl -fsSL -o /tmp/quicklisp.lisp https://beta.quicklisp.org/quicklisp.lisp
+          sbcl --non-interactive --load /tmp/quicklisp.lisp \
+            --eval '(quicklisp-quickstart:install)' \
+            --eval '(ql-util:without-prompting (ql:add-to-init-file))' \
+            --eval '(ql:quickload :cffi)'
+
+      - name: Build the native bridge
+        run: make native
+
+      - name: Run the checks that need no display
+        run: make smoke layout-smoke
+
+      - name: Run the checks that open windows, under Xvfb
+        run: |
+          xvfb-run --auto-servernum --server-args="-screen 0 1280x1024x24" \
+            sh -c 'make widget-smoke awake-smoke font-smoke text-smoke canvas-smoke flat-theme-capture RUN_DISPLAY="$DISPLAY"'
+
+      - name: Convert the captures to PNG
+        run: |
+          mkdir -p build/screenshots
+          for capture in build/visual-flat-theme.ppm build/smoke-canvas.ppm; do
+            convert "$capture" "build/screenshots/$(basename "${capture%.ppm}")-linux.png"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-screenshots
+          path: build/screenshots/*.png
+          if-no-files-found: error
+
+  macos:
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install FLTK and SBCL
+        run: |
+          brew install fltk sbcl
+          fltk-config --version
+          sbcl --version
+
+      - name: Install Quicklisp and CFFI
+        run: |
+          curl -fsSL -o /tmp/quicklisp.lisp https://beta.quicklisp.org/quicklisp.lisp
+          sbcl --non-interactive --load /tmp/quicklisp.lisp \
+            --eval '(quicklisp-quickstart:install)' \
+            --eval '(ql-util:without-prompting (ql:add-to-init-file))' \
+            --eval '(ql:quickload :cffi)'
+
+      - name: Build the native bridge
+        run: make native
+
+      - name: Run the checks that need no display
+        run: make smoke layout-smoke
+
+      # The runner has a logged-in window session, so FLTK opens real Cocoa
+      # windows here; nothing stands in for the display.
+      - name: Run the checks that open windows
+        run: make widget-smoke awake-smoke font-smoke text-smoke canvas-smoke
+
+      - name: Render the flat theme gallery offscreen
+        run: make flat-theme-capture
+
+      - name: Convert the captures to PNG
+        run: |
+          mkdir -p build/screenshots
+          for capture in build/visual-flat-theme.ppm build/smoke-canvas.ppm; do
+            sips -s format png "$capture" --out "build/screenshots/$(basename "${capture%.ppm}")-macos.png"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-screenshots
+          path: build/screenshots/*.png
+          if-no-files-found: error
