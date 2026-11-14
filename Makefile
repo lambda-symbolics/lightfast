@@ -1,5 +1,8 @@
 FLTK_CONFIG ?= fltk-config
 CXX ?= c++
+# The Lisp that runs the checks and the galleries. A gallery run unattended
+# wants SBCL="sbcl --non-interactive", so that an error ends it.
+SBCL ?= sbcl
 RUN_DISPLAY ?= :0
 
 # The host decides the library's name, how it is linked and which font system
@@ -74,48 +77,48 @@ check-headless: smoke layout-smoke
 check-display: widget-smoke awake-smoke font-smoke text-smoke canvas-smoke
 
 smoke: native
-	$(LISP_ENV) sbcl --noinform --non-interactive --load scripts/smoke-load.lisp
+	$(LISP_ENV) $(SBCL) --noinform --non-interactive --load scripts/smoke-load.lisp
 
 layout-smoke:
-	$(LISP_ENV) sbcl --noinform --non-interactive --load scripts/smoke-layout.lisp
+	$(LISP_ENV) $(SBCL) --noinform --non-interactive --load scripts/smoke-layout.lisp
 
 widget-smoke: native
-	$(LISP_ENV) $(GUI_ENV) sbcl --noinform --non-interactive --load scripts/smoke-widgets.lisp
+	$(LISP_ENV) $(GUI_ENV) $(SBCL) --noinform --non-interactive --load scripts/smoke-widgets.lisp
 
 awake-smoke: native
-	$(LISP_ENV) $(GUI_ENV) sbcl --noinform --non-interactive --load scripts/smoke-awake.lisp
+	$(LISP_ENV) $(GUI_ENV) $(SBCL) --noinform --non-interactive --load scripts/smoke-awake.lisp
 
 font-smoke: native
-	$(LISP_ENV) $(GUI_ENV) sbcl --noinform --non-interactive --load scripts/smoke-fonts.lisp
+	$(LISP_ENV) $(GUI_ENV) $(SBCL) --noinform --non-interactive --load scripts/smoke-fonts.lisp
 
 text-smoke: native
-	$(LISP_ENV) $(GUI_ENV) sbcl --noinform --non-interactive --load scripts/smoke-text.lisp
+	$(LISP_ENV) $(GUI_ENV) $(SBCL) --noinform --non-interactive --load scripts/smoke-text.lisp
 
 canvas-smoke: native
-	$(LISP_ENV) $(GUI_ENV) sbcl --noinform --non-interactive --load scripts/smoke-canvas.lisp
+	$(LISP_ENV) $(GUI_ENV) $(SBCL) --noinform --non-interactive --load scripts/smoke-canvas.lisp
 
 demo: native
-	$(LISP_ENV) $(GUI_ENV) sbcl --load examples/demo.lisp --eval '(lightfast-demo:main)'
+	$(LISP_ENV) $(GUI_ENV) $(SBCL) --load examples/demo.lisp --eval '(lightfast-demo:main)'
 
 layout-visual: native
-	$(LISP_ENV) $(GUI_ENV) sbcl --load scripts/visual-layout.lisp
+	$(LISP_ENV) $(GUI_ENV) $(SBCL) --load scripts/visual-layout.lisp
 
 scrollbar-visual: native
-	$(LISP_ENV) $(GUI_ENV) sbcl --load scripts/visual-scrollbars.lisp
+	$(LISP_ENV) $(GUI_ENV) $(SBCL) --load scripts/visual-scrollbars.lisp
 
 button-ellipsis-visual: native
-	$(LISP_ENV) $(GUI_ENV) sbcl --load scripts/visual-button-ellipsis.lisp
+	$(LISP_ENV) $(GUI_ENV) $(SBCL) --load scripts/visual-button-ellipsis.lisp
 
 flat-theme-visual: native
-	$(LISP_ENV) $(GUI_ENV) sbcl --load scripts/visual-flat-theme.lisp
+	$(LISP_ENV) $(GUI_ENV) $(SBCL) --load scripts/visual-flat-theme.lisp
 
 # The gallery rendered offscreen to build/visual-flat-theme.ppm, for a look at
 # what FLTK draws without a compositor or a person at the screen.
 flat-theme-capture: native
-	$(LISP_ENV) $(GUI_ENV) sbcl --noinform --non-interactive --load scripts/visual-flat-theme.lisp --capture build/visual-flat-theme.ppm
+	$(LISP_ENV) $(GUI_ENV) $(SBCL) --noinform --non-interactive --load scripts/visual-flat-theme.lisp --capture build/visual-flat-theme.ppm
 
 modern-widgets-visual: native
-	$(LISP_ENV) $(GUI_ENV) sbcl --load scripts/visual-modern-widgets.lisp
+	$(LISP_ENV) $(GUI_ENV) $(SBCL) --load scripts/visual-modern-widgets.lisp
 
 clean:
 	rm -rf build
