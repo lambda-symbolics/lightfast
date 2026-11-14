@@ -79,6 +79,7 @@ jobs:
         run: make check-headless
 
       - name: Run the checks that open windows, under Xvfb
+        timeout-minutes: 10
         run: |
           xvfb-run --auto-servernum --server-args="-screen 0 1280x1024x24" \
             sh -c 'make check-display flat-theme-capture RUN_DISPLAY="$DISPLAY"'
@@ -135,6 +136,7 @@ jobs:
       # The runner has a logged-in window session, so FLTK opens real Cocoa
       # windows here; nothing stands in for the display.
       - name: Run the checks that open windows
+        timeout-minutes: 10
         run: make check-display
 
       - name: Render the flat theme gallery offscreen
