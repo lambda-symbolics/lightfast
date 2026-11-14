@@ -24,7 +24,7 @@ broadening it, and avoid speculative abstractions or silent partial features.
   not leak unexplained native constants into application code.
 - Keep focused subsystems in focused files. Avoid unrelated refactors while
   adding a widget or layout capability.
-- Support Linux x86-64, SBCL, CFFI, C++17, and FLTK 1.4.
+- Support Linux x86-64 and macOS arm64, SBCL, CFFI, C++17, and FLTK 1.4.
 
 ## Common Lisp Style
 
