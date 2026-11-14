@@ -12,6 +12,16 @@
   (assert (= 50 (lightfast:rect-width (first columns))))
   (assert (= 50 (lightfast:rect-width (second columns))))
   (assert (= 61 (lightfast:rect-x (second columns)))))
+;; The bridge is the library make builds for this platform unless the
+;; environment variable LIGHTFAST_LIBRARY names another file.
+(let ((named (uiop:getenv "LIGHTFAST_LIBRARY")))
+  (setf (uiop:getenv "LIGHTFAST_LIBRARY") "")
+  (assert (string= (pathname-type (lightfast::bridge-library-path))
+                   (if (uiop:os-macosx-p) "dylib" "so")))
+  (setf (uiop:getenv "LIGHTFAST_LIBRARY") "/somewhere/else/bridge.library")
+  (assert (string= (namestring (lightfast::bridge-library-path)) "/somewhere/else/bridge.library"))
+  (setf (uiop:getenv "LIGHTFAST_LIBRARY") (or named "")))
+
 ;; Every foreign function is declared with DEFINE-BRIDGE-FUNCTION, which masks
 ;; floating point traps around the call. A plain CFFI:DEFCFUN would skip the
 ;; mask, pass every check on Linux and end the process on macOS.
