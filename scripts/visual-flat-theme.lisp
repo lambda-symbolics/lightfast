@@ -6,6 +6,11 @@
 ;;; Pass --classic to see the same gallery under the classic theme, and
 ;;; --capture PATH to render the window offscreen to a PPM file and leave,
 ;;; which needs no compositor and is how the gallery is looked at from CI.
+;;; With LIGHTFAST_VISUAL_TIMEOUT set to a number of seconds the gallery closes
+;;; itself after that long.
+;;;
+;;; The menu is the system menu bar where there is one: on macOS it sits at
+;;; the top of the screen and the widgets start at the window's top edge.
 
 ;; The monospaced face comes from the file the tests carry, so the gallery
 ;; shows it on a machine that never installed it.
@@ -35,37 +40,45 @@
   (let* ((window (lightfast:make-window :width 760 :height 520
                                         :label (if classic-p "Classic theme" "Flat theme")
                                         :app-id "lightfast-flat-theme"))
-         (menu (lightfast:make-menu-bar :parent window :x 0 :y 0 :width 760 :height 30))
-         (title (lightfast:make-label :parent window :x 24 :y 44 :width 500 :height 32
+         (menu (lightfast:make-menu-bar :parent window :x 0 :y 0 :width 760 :height 30 :system t))
+         ;; Where the widgets below the menu start: a system menu bar takes no
+         ;; room in the window, which is made that much shorter before it has
+         ;; children to scale.
+         (top (if (lightfast:menu-bar-system-p menu) 0 30))
+         (window (lightfast:resize-widget window :height (+ top 490)))
+         (title (lightfast:make-label :parent window :x 24 :y (+ top 14) :width 500 :height 32
                                       :label "Autolith workbench gallery"))
-         (name (lightfast:make-input :parent window :x 120 :y 90 :width 280 :height 32
+         (name (lightfast:make-input :parent window :x 120 :y (+ top 60) :width 280 :height 32
                                      :label "Folder:" :value "/root/common-lisp/aui"))
-         (model (lightfast:make-choice :parent window :x 120 :y 134 :width 280 :height 32
+         (model (lightfast:make-choice :parent window :x 120 :y (+ top 104) :width 280 :height 32
                                        :label "Model:" :items '("gpt-5.6-luna" "claude-haiku-4-5")))
-         (send (lightfast:make-button :parent window :x 420 :y 90 :width 120 :height 32
+         (send (lightfast:make-button :parent window :x 420 :y (+ top 60) :width 120 :height 32
                                       :label "Send"))
-         (stop (lightfast:make-button :parent window :x 420 :y 134 :width 120 :height 32
+         (stop (lightfast:make-button :parent window :x 420 :y (+ top 104) :width 120 :height 32
                                       :label "Stop"))
-         (check (lightfast:make-check-button :parent window :x 560 :y 90 :width 170 :height 32
+         (check (lightfast:make-check-button :parent window :x 560 :y (+ top 60) :width 170 :height 32
                                              :label "Visible reasoning"))
-         (radio (lightfast:make-radio-button :parent window :x 560 :y 134 :width 170 :height 32
+         (radio (lightfast:make-radio-button :parent window :x 560 :y (+ top 104) :width 170 :height 32
                                              :label "Ask before running"))
-         (list (lightfast:make-browser :parent window :x 24 :y 190 :width 300 :height 150))
-         (text (lightfast:make-text-display :parent window :x 340 :y 190 :width 396 :height 150))
-         (progress (lightfast:make-progress :parent window :x 24 :y 356 :width 300 :height 24
+         (list (lightfast:make-browser :parent window :x 24 :y (+ top 160) :width 300 :height 150))
+         (text (lightfast:make-text-display :parent window :x 340 :y (+ top 160) :width 396 :height 150))
+         (progress (lightfast:make-progress :parent window :x 24 :y (+ top 326) :width 300 :height 24
                                             :value "35"))
-         (slider (lightfast:make-slider :parent window :x 340 :y 356 :width 396 :height 24
+         (slider (lightfast:make-slider :parent window :x 340 :y (+ top 326) :width 396 :height 24
                                         :value "50"))
-         (tabs (lightfast:make-tabs :parent window :x 24 :y 396 :width 712 :height 100))
+         (tabs (lightfast:make-tabs :parent window :x 24 :y (+ top 366) :width 712 :height 100))
          (page (lightfast:make-tab-page :parent tabs :x 0 :y 30 :width 712 :height 70
                                         :label "Transcript"))
          (page2 (lightfast:make-tab-page :parent tabs :x 0 :y 30 :width 712 :height 70
                                          :label "Jobs")))
     (declare (ignore model send stop radio progress slider page2))
     (setf (lightfast:value check) "1")
-    (lightfast:add-menu-item menu "Session/New" (lambda (w e v) (declare (ignore w e v))))
-    (lightfast:add-menu-item menu "Session/Resume" (lambda (w e v) (declare (ignore w e v))))
-    (lightfast:add-menu-item menu "View/Inspector" (lambda (w e v) (declare (ignore w e v))))
+    (flet ((nothing (menu path) (declare (ignore menu path))))
+      (lightfast:add-menu-item menu "Session/New" #'nothing
+                               :shortcut (logior lightfast:+modifier-command+ (char-code #\n)))
+      (lightfast:add-menu-item menu "Session/Resume" #'nothing)
+      (lightfast:add-menu-item menu "View/Inspector" #'nothing
+                               :shortcut (logior lightfast:+modifier-command+ (char-code #\i))))
     (lightfast:set-label-font title serif-bold)
     (lightfast:set-label-size title 24)
     (lightfast:set-text-font name serif)
@@ -89,5 +102,9 @@
                              :ignore-error-status t)
            (lightfast:destroy window))
           (t
+           (let ((timeout (uiop:getenvp "LIGHTFAST_VISUAL_TIMEOUT")))
+             (when timeout
+               (lightfast:add-timeout (or (parse-integer timeout :junk-allowed t) 2)
+                                      #'lightfast:quit)))
            (lightfast:run)))))
 (uiop:quit 0)
