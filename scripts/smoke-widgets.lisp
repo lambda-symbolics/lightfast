@@ -727,4 +727,50 @@
             (error () t)))
   (assert (lightfast:destroy window)))
 
+;; A system menu bar is the bar at the top of the screen on macOS and an
+;; ordinary bar everywhere else; there is one to a process, and it goes with
+;; its window.
+(let* ((macos-p (uiop:os-macosx-p))
+       (chosen nil)
+       (window (lightfast:make-window :width 320 :height 120 :label "Lightfast menu smoke"))
+       (bar (lightfast:make-menu-bar :parent window :x 0 :y 0 :width 320 :height 24 :system t))
+       (second (lightfast:make-menu-bar :parent window :x 0 :y 24 :width 320 :height 24 :system t))
+       (plain (lightfast:make-menu-bar :parent window :x 0 :y 48 :width 320 :height 24)))
+  (assert (eq macos-p (lightfast:menu-bar-system-p bar)) ()
+          "the system menu bar is ~:[not ~;~]the system's" (lightfast:menu-bar-system-p bar))
+  (assert (not (lightfast:menu-bar-system-p second)) () "a process has two system menu bars")
+  (assert (not (lightfast:menu-bar-system-p plain)) () "an ordinary menu bar went to the system")
+  (assert (not (lightfast:menu-bar-system-p window)) () "a window is a system menu bar")
+  (assert (= lightfast:+widget-menu-bar+ (lightfast:widget-kind bar)))
+  (assert (= lightfast:+modifier-command+
+             (if macos-p lightfast:+modifier-meta+ lightfast:+modifier-control+)))
+  (assert (= 4 (length (remove-duplicates (list lightfast:+modifier-shift+ lightfast:+modifier-control+
+                                                lightfast:+modifier-alt+ lightfast:+modifier-meta+)))))
+  (dolist (menu (list bar second plain))
+    (lightfast:add-menu-item menu "File/Save"
+                             (lambda (widget path) (declare (ignore widget)) (push path chosen))
+                             :shortcut (logior lightfast:+modifier-command+ (char-code #\s)))
+    (lightfast:add-menu-item menu "File/Wrap" (lambda (widget path) (declare (ignore widget path)))
+                             :toggle t)
+    (lightfast:add-menu-item menu "File/Save too"
+                             (lambda (widget path) (declare (ignore widget)) (push path chosen))
+                             :shortcut (logior lightfast:+modifier-command+ lightfast:+modifier-shift+
+                                               (char-code #\s))
+                             :hidden t)
+    (lightfast:add-menu-tree menu '("View" ("Inspector" identity) ("Zoom" ("In" identity) ("Out" identity))))
+    (assert (lightfast:menu-set-item-checked menu "File/Wrap" t))
+    (assert (lightfast:menu-set-item-label menu "File/Save" "Save now"))
+    (assert (not (lightfast:menu-set-item-label menu "File/Save" "Gone")) ()
+            "a renamed item still answers to its old path"))
+  (lightfast:show window)
+  (loop repeat 5 do (lightfast:wait 0.02))
+  (assert (lightfast:destroy window))
+  ;; The bar went with its window, so the next one asked for is the system's again.
+  (let* ((window (lightfast:make-window :width 320 :height 120 :label "Lightfast menu smoke"))
+         (bar (lightfast:make-menu :parent window :system t
+                                   :items '(("File" ("Close" identity))))))
+    (assert (eq macos-p (lightfast:menu-bar-system-p bar)) ()
+            "the system menu bar did not come back after its window went")
+    (assert (lightfast:destroy window))))
+
 (format t "~&Lightfast smoke test passed.~%")

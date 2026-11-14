@@ -130,12 +130,15 @@
   menu)
 
 (defun make-menu
-    (&key (parent *default-parent*) (x 0) (y 0) (width 320) (height 24) items)
+    (&key (parent *default-parent*) (x 0) (y 0) (width 320) (height 24) items system)
+  "Create a menu bar in PARENT holding ITEMS, each a tree for ADD-MENU-TREE.
+SYSTEM asks for the system menu bar, as MAKE-MENU-BAR describes."
   (let ((menu (make-menu-bar :parent parent
                              :x      x
                              :y      y
                              :width  width
-                             :height height)))
+                             :height height
+                             :system system)))
     (dolist (item items)
       (add-menu-tree menu item))
     menu))

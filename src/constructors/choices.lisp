@@ -85,5 +85,27 @@
       (on widget callback :event +event-change+))
     widget))
 
-(defun make-menu-bar (&key (parent *default-parent*) (x 0) (y 0) (width 320) (height 24) (label ""))
-  (make-widget +widget-menu-bar+ :parent parent :x x :y y :width width :height height :label label))
+(defun %create-system-menu-bar (kind &rest arguments)
+  "The bridge constructor MAKE-WIDGET calls for a system menu bar."
+  (declare (ignore kind))
+  (apply #'%system-menu-bar-create arguments))
+
+(defun make-menu-bar (&key (parent *default-parent*) (x 0) (y 0) (width 320) (height 24) (label "")
+                           system)
+  "Create a menu bar in PARENT for ADD-MENU-ITEM and ADD-MENU-TREE to fill.
+
+With SYSTEM true the bar is the system's own where the system has one: on
+macOS its items appear in the menu bar at the top of the screen and nothing
+is drawn in the window, and everywhere else it is the ordinary bar it would
+have been. MENU-BAR-SYSTEM-P tells which it is, so that a window can give the
+bar no height when it has gone to the system. A process has one system menu
+bar: while it exists, asking for another gives an ordinary bar. On macOS make
+it before the first window is shown, or FLTK's own Window menu is lost."
+  (make-widget +widget-menu-bar+ :parent parent :x x :y y :width width :height height :label label
+                                 :create (if system #'%create-system-menu-bar #'%widget-create)))
+
+(defun menu-bar-system-p (menu)
+  "True when MENU is the system menu bar, as on macOS a bar made with
+MAKE-MENU-BAR :SYSTEM T is. Such a bar shows nothing in its window: lay the
+window out as though the bar had no height."
+  (plusp (%menu-bar-is-system (widget-id menu))))

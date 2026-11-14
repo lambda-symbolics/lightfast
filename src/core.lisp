@@ -34,6 +34,30 @@
 
 (defconstant +menu-divider+ #x80)
 
+;;; Modifier keys, as FLTK numbers them in a shortcut and in the state a key or
+;;; mouse callback is handed. A shortcut is one or more of these with a key:
+;;; (logior +modifier-command+ (char-code #\s)).
+
+(defconstant +modifier-shift+ #x00010000
+  "FLTK's FL_SHIFT: a Shift key.")
+
+(defconstant +modifier-control+ #x00040000
+  "FLTK's FL_CTRL: a Control key, on every platform the key so labelled.")
+
+(defconstant +modifier-alt+ #x00080000
+  "FLTK's FL_ALT: an Alt key, which a Mac keyboard labels Option.")
+
+(defconstant +modifier-meta+ #x00400000
+  "FLTK's FL_META: a Meta or Windows key, which a Mac keyboard labels Command.")
+
+(defconstant +modifier-command+
+  #+darwin #x00400000
+  #-darwin #x00040000
+  "FLTK's FL_COMMAND: the modifier commands go under on this platform, Command
+on macOS and Control everywhere else. A shortcut written with it follows each
+platform's habit, where one written with +MODIFIER-CONTROL+ is Control+S on a
+Mac as well.")
+
 (defconstant +widget-window+ 1)
 
 (defconstant +widget-group+ 2)
@@ -238,17 +262,25 @@ names one to a line.")
         (widget-y parent))
       0))
 
-(defun make-widget (kind &key (parent *default-parent*) (x 0) (y 0) (width 80) (height 24) (label ""))
+(defun make-widget (kind &key (parent *default-parent*) (x 0) (y 0) (width 80) (height 24) (label "")
+                              (create #'%widget-create))
+  "Create a native widget of KIND in PARENT and return its WIDGET.
+
+X and Y are relative to PARENT. CREATE is the bridge's constructor, called with
+KIND, the parent's id, the absolute position, the size and the label, and
+returning the new widget's id or zero; a constructor other than the default
+makes a variant of KIND."
   (load-library)
   (let* ((absolute-x (+ (parent-origin-x parent) x))
          (absolute-y (+ (parent-origin-y parent) y))
-         (id         (%widget-create kind
-                                     (parent-id parent)
-                                     absolute-x
-                                     absolute-y
-                                     width
-                                     height
-                                     label)))
+         (id         (funcall create
+                              kind
+                              (parent-id parent)
+                              absolute-x
+                              absolute-y
+                              width
+                              height
+                              label)))
     (when (zerop id)
       (error "FLTK failed to create widget kind ~D." kind))
     (%make-widget id kind absolute-x absolute-y width height parent)))

@@ -181,6 +181,17 @@ process on macOS the first time Cocoa divided by zero under it."
   (height    :int)
   (label     :string))
 
+(define-bridge-function ("clfl_system_menu_bar_create" %system-menu-bar-create) :long-long
+  (parent-id :long-long)
+  (x         :int)
+  (y         :int)
+  (width     :int)
+  (height    :int)
+  (label     :string))
+
+(define-bridge-function ("clfl_menu_bar_is_system" %menu-bar-is-system) :int
+  (id :long-long))
+
 (define-bridge-function ("clfl_widget_destroy" %widget-destroy) :int
   (id :long-long))
 

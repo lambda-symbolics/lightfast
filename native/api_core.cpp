@@ -1,6 +1,24 @@
 #include "cl_fltk_bridge.hpp"
 
+#include <FL/Fl_Sys_Menu_Bar.H>
+#include <FL/platform.H>
+
 using namespace clfl_bridge;
+
+namespace {
+
+/// Tells a menu bar that its items changed. The system menu bar of macOS is
+/// a copy of the item array made by FLTK, renewed only when asked; an
+/// ordinary bar reads the array as it draws and has nothing to do.
+void menu_items_changed(Fl_Menu_ *menu)
+{
+    if (auto *bar = dynamic_cast<Fl_Menu_Bar *>(menu)) {
+        bar->update();
+    }
+    menu->redraw();
+}
+
+} // namespace
 
 extern "C" {
 
@@ -134,6 +152,61 @@ widget_id clfl_widget_create(int kind,
     }
 
     return register_widget(kind, widget);
+}
+
+/// Creates a menu bar that is the system's own where the system has one. On
+/// macOS that is the bar at the top of the screen: the items go there, and
+/// the widget itself is hidden, drawing nothing and taking no events, though
+/// it stays a child of its parent and goes when the parent goes. Elsewhere
+/// the result is an ordinary bar in the window, and so it is on macOS when
+/// the process already has a system menu bar made here, since there is one
+/// per process. clfl_menu_bar_is_system tells which was made.
+widget_id clfl_system_menu_bar_create(widget_id parent_id,
+                                      int x,
+                                      int y,
+                                      int width,
+                                      int height,
+                                      const char *label)
+{
+#ifdef __APPLE__
+    // Constructing a second Fl_Sys_Menu_Bar makes FLTK delete the first,
+    // which would leave the registry holding a dead widget.
+    if (!fl_sys_menu_bar || g_widget_ids.find(fl_sys_menu_bar) == g_widget_ids.end()) {
+        Fl_Group *parent = nullptr;
+        if (parent_id > 0) {
+            parent = find_group(parent_id);
+            if (!parent) {
+                return 0;
+            }
+        }
+        // The application menu the items are added after exists once the
+        // display is open.
+        fl_open_display();
+        Fl_Group *saved_group = Fl_Group::current();
+        Fl_Group::current(nullptr);
+        auto *bar = new Fl_Sys_Menu_Bar(x, y, width, height, label);
+        Fl_Group::current(saved_group);
+        if (parent) {
+            parent->add(bar);
+        }
+        bar->hide();
+        return register_widget(WIDGET_MENU_BAR, bar);
+    }
+#endif
+    return clfl_widget_create(WIDGET_MENU_BAR, parent_id, x, y, width, height, label);
+}
+
+/// 1 when widget ID is the system menu bar, 0 for a bar drawn in its window
+/// and for anything else.
+int clfl_menu_bar_is_system(widget_id id)
+{
+#ifdef __APPLE__
+    Fl_Widget *widget = find_widget(id);
+    return widget && widget == fl_sys_menu_bar ? 1 : 0;
+#else
+    (void)id;
+    return 0;
+#endif
 }
 
 int clfl_widget_destroy(widget_id id)
@@ -404,6 +477,7 @@ int clfl_menu_add(widget_id id,
     g_menu_callbacks.push_back(std::move(menu_callback));
 
     menu->add(path, shortcut, menu_dispatch_callback, raw_callback, flags);
+    menu_items_changed(menu);
     return 1;
 }
 
@@ -421,7 +495,7 @@ int clfl_menu_set_item_checked(widget_id id, const char *path, int checked)
     }
     const int flags = menu->menu()[index].flags;
     menu->mode(index, checked ? (flags | FL_MENU_VALUE) : (flags & ~FL_MENU_VALUE));
-    menu->redraw();
+    menu_items_changed(menu);
     return 1;
 }
 
@@ -438,7 +512,7 @@ int clfl_menu_set_item_mode(widget_id id, const char *path, int mode)
     }
 
     menu->mode(index, mode);
-    menu->redraw();
+    menu_items_changed(menu);
     return 1;
 }
 
@@ -459,7 +533,7 @@ int clfl_menu_set_item_label(widget_id id, const char *path, const char *label)
     }
 
     menu->replace(index, label);
-    menu->redraw();
+    menu_items_changed(menu);
     return 1;
 }
 

@@ -28,6 +28,11 @@
    #:+font-helvetica+
    #:+font-helvetica-bold+
    #:+menu-divider+
+   #:+modifier-alt+
+   #:+modifier-command+
+   #:+modifier-control+
+   #:+modifier-meta+
+   #:+modifier-shift+
    #:+menu-toggle+
    #:+menu-value+
    #:+space-large+
@@ -321,6 +326,7 @@
    #:input-dialog
    #:message-box
    #:popup-menu
+   #:menu-bar-system-p
    #:menu-set-item-mode
    #:menu-set-item-checked
    #:menu-set-item-label
