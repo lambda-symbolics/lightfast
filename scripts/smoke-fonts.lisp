@@ -1,6 +1,39 @@
 (require :asdf)
 (asdf:load-system :lightfast)
 (lightfast:load-library)
+
+;; An application's own font file: registered for this process alone, then
+;; listed and loaded like an installed face. LIGHTFAST_SMOKE_FONT and
+;; LIGHTFAST_SMOKE_FONT_FAMILY name another file and its family.
+(let* ((fixtures (merge-pathnames "tests/fixtures/" (asdf:system-source-directory :lightfast)))
+       (path (or (uiop:getenvp "LIGHTFAST_SMOKE_FONT")
+                 (merge-pathnames "cmu-typewriter-regular.ttf" fixtures)))
+       (family (or (uiop:getenvp "LIGHTFAST_SMOKE_FONT_FAMILY") "CMU Typewriter Text"))
+       (sample "Lightfast iiii WWWW 0123"))
+  (assert (not (lightfast:register-font-file (merge-pathnames "no-such-font.ttf" fixtures))) ()
+          "a missing font file registered")
+  (assert (not (lightfast:register-font-file (merge-pathnames "cmu-typewriter-OFL.txt" fixtures))) ()
+          "a text file registered as a font")
+  (assert (lightfast:register-font-file path) () "~A did not register" path)
+  (assert (lightfast:register-font-file path) () "registering ~A again failed" path)
+  (multiple-value-bind (all refused)
+      (lightfast:register-font-files (list path (merge-pathnames "no-such-font.ttf" fixtures)))
+    (assert (and (not all) (= 1 (length refused))) () "the refused files are ~S" refused))
+  (assert (find (truename path) (lightfast:font-files family)
+                :key (lambda (entry) (truename (car entry))) :test #'equal)
+          () "~A is not among the files of ~A: ~S" path family (lightfast:font-files family))
+  (assert (find-if (lambda (entry) (search family (car entry))) (lightfast:system-font-names)) ()
+          "~A is not listed among the system's faces" family)
+  ;; A name no font answers to gets the fallback face; the registered family
+  ;; must measure differently from that.
+  (let ((fallback (lightfast:measure-text sample :font (lightfast:load-font "Lightfast No Such Face")
+                                                 :size 20))
+        (registered (lightfast:measure-text sample :font (lightfast:load-font family) :size 20)))
+    (assert (/= fallback registered) ()
+            "~A measures ~D px, the same as the fallback face" family registered)
+    (format t "~&Registered ~A: ~D px against ~D px in the fallback face.~%"
+            family registered fallback)))
+
 (let* ((names (lightfast:system-font-names))
        (first-name (first (first names)))
        (font (lightfast:load-font first-name))

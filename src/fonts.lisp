@@ -35,6 +35,30 @@ is accepted by LOAD-FONT as it is."
             collect (cons (subseq line 0 tab)
                           (parse-integer line :start (1+ tab) :junk-allowed t)))))
 
+(defun register-font-file (path)
+  "Make the font file at PATH, a .ttf or .otf, available to this process
+without installing it, so an application can carry its own typefaces. Returns
+true when the font system took the file, false when PATH is missing or holds
+no font.
+
+Call it on the interface thread before the face is first loaded with LOAD-FONT:
+a face FLTK has already resolved keeps what it resolved to. To have the face
+in SYSTEM-FONT-NAMES as well, register it before that is first called, since
+FLTK lists the faces once. The registration lasts as long as the process, and
+registering a file again changes nothing."
+  (load-library)
+  (let ((file (probe-file path)))
+    (and file
+         (plusp (%font-register-file (uiop:native-namestring file))))))
+
+(defun register-font-files (paths)
+  "Register each font file in PATHS as REGISTER-FONT-FILE does. Returns true
+when every file was taken and, as a second value, the paths that were not."
+  (let ((refused (loop for path in paths
+                       unless (register-font-file path)
+                         collect path)))
+    (values (null refused) refused)))
+
 (defun measure-text (text &key (font 0) (size 12))
   "Measure TEXT drawn in FONT at SIZE.
 

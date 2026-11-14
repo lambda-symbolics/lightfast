@@ -294,6 +294,9 @@ missing and warns when it is older than the native sources beside the system."
   (rejected       :pointer)
   (rejected-count :int))
 
+(cffi:defcfun ("clfl_font_register_file" %font-register-file) :int
+  (path :string))
+
 (cffi:defcfun ("clfl_font_measure" %font-measure) :int
   (font    :int)
   (size    :int)

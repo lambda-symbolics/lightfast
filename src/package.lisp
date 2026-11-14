@@ -206,6 +206,8 @@
    #:font-line-gaps
    #:fold-font-line-gap
    #:correct-font-baselines
+   #:register-font-file
+   #:register-font-files
    #:flex-layout
    #:flex-set-gap
    #:flex-set-margin
