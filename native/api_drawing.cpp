@@ -122,6 +122,8 @@ int clfl_draw_clip_box(int x, int y, int width, int height, int *clip_x, int *cl
     return (cw > 0 && ch > 0) ? 1 : 0;
 }
 
+} // extern "C"
+
 namespace {
 
 struct DitherTile {
@@ -183,6 +185,8 @@ DitherTile &dither_tile(int step, int factor, unsigned char red, unsigned char g
 }
 
 } // namespace
+
+extern "C" {
 
 /// Fills X, Y, WIDTH, HEIGHT with a one-bit dither in the current color: one
 /// unit dot every STEP units, on a grid fixed to the window so neighbouring
