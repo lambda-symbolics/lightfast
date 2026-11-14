@@ -144,7 +144,7 @@ jobs:
       # show: the gallery's window with its title bar and, at the top of the
       # screen, its menus in the system menu bar.
       - name: Photograph the screen with the gallery on it
-        timeout-minutes: 2
+        timeout-minutes: 3
         run: |
           set -x
           mkdir -p build/screenshots
@@ -153,16 +153,31 @@ jobs:
           gallery=$!
           sleep 5
           screencapture -x build/screenshots/screen-macos.png
-          wait "$gallery" || { cat build/gallery.log; exit 1; }
+          # The gallery closes itself. One still there after half a minute is
+          # stuck, and its stacks and the screen say where.
+          for second in $(seq 1 30); do
+            kill -0 "$gallery" 2>/dev/null || break
+            sleep 1
+          done
+          if kill -0 "$gallery" 2>/dev/null; then
+            cat build/gallery.log
+            screencapture -x build/screenshots/screen-stuck-macos.png
+            sample "$(pgrep -n sbcl)" 3 2>&1 | head -200
+            pkill sbcl
+            exit 1
+          fi
+          wait "$gallery"
           cat build/gallery.log
 
       - name: Convert the captures to PNG
+        if: always()
         run: |
           for capture in build/visual-flat-theme.ppm build/smoke-canvas.ppm; do
             sips -s format png "$capture" --out "build/screenshots/$(basename "${capture%.ppm}")-macos.png"
           done
 
       - uses: actions/upload-artifact@v7
+        if: always()
         with:
           name: macos-screenshots
           path: build/screenshots/*.png
