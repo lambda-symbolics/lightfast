@@ -329,5 +329,8 @@ void timer_dispatch_callback(void *data);
 void window_event_callback(Fl_Widget *widget, void *data);
 Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label);
 void request_quit();
+/// Makes the Fl::wait in progress return instead of sleeping on, so that the
+/// event loop sees what a callback just did to the windows.
+void break_event_wait();
 
 } // namespace clfl_bridge

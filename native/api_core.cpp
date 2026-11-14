@@ -219,8 +219,12 @@ int clfl_widget_destroy(widget_id id)
     if (Fl_Group *parent = widget->parent()) {
         parent->remove(widget);
     }
+    const bool window = dynamic_cast<Fl_Window *>(widget) != nullptr;
     unregister_widget_tree(widget);
     delete widget;
+    if (window) {
+        break_event_wait();
+    }
     return 1;
 }
 
@@ -235,6 +239,8 @@ void clfl_window_hide(widget_id id)
 {
     if (Fl_Widget *widget = find_widget(id)) {
         widget->hide();
+        // Hiding the last window ends Fl::run, once the wait in progress is over.
+        break_event_wait();
     }
 }
 

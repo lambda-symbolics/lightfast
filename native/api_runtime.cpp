@@ -52,6 +52,10 @@ void quit_dispatch(void *)
     request_quit();
 }
 
+void no_operation(void *)
+{
+}
+
 void wakeup_dispatch(void *data)
 {
     auto *entry = static_cast<WakeupEntry *>(data);
@@ -62,6 +66,24 @@ void wakeup_dispatch(void *data)
 }
 
 } // namespace
+
+namespace clfl_bridge {
+
+// A callback that hides the last window, or quits, expects the event loop to
+// return. From a timer it would not: FLTK goes on to wait for the next event,
+// and on macOS a window going away sends none, so the loop slept until
+// something else happened to wake it. Fl::awake is no remedy, since it does
+// nothing before Fl::lock, which a program without threads never calls. A
+// timeout that is already due bounds the wait in progress on every platform.
+void break_event_wait()
+{
+    if (!Fl::has_timeout(no_operation)) {
+        Fl::add_timeout(0.0, no_operation);
+    }
+    Fl::awake();
+}
+
+} // namespace clfl_bridge
 
 extern "C" {
 

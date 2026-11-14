@@ -727,6 +727,26 @@
             (error () t)))
   (assert (lightfast:destroy window)))
 
+;; A timer that quits, or hides the last window, after the event queue has
+;; gone quiet ends the event loop. On macOS the loop used to sleep on, since a
+;; window going away sends no event there; the watchdog keeps a relapse from
+;; hanging the checks.
+(flet ((event-loop-ends (action)
+         (let ((window (lightfast:make-window :width 160 :height 80
+                                              :label "Lightfast idle quit smoke"))
+               (watchdog (sb-thread:make-thread
+                          (lambda ()
+                            (sleep 20)
+                            (format *error-output* "~&The event loop did not end.~%")
+                            (sb-ext:exit :code 1 :abort t)))))
+           (lightfast:show window)
+           (lightfast:add-timeout 1.5d0 (lambda () (funcall action window)))
+           (lightfast:run)
+           (sb-thread:terminate-thread watchdog)
+           (assert (lightfast:destroy window)))))
+  (event-loop-ends (lambda (window) (declare (ignore window)) (lightfast:quit)))
+  (event-loop-ends #'lightfast:hide))
+
 ;; A system menu bar is the bar at the top of the screen on macOS and an
 ;; ordinary bar everywhere else; there is one to a process, and it goes with
 ;; its window.

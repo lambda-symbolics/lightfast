@@ -281,7 +281,7 @@ void finish_window_close(Fl_Widget *widget)
     if (g_quit_requested || !any_visible_windows()) {
         clear_timers();
         Fl::program_should_quit(1);
-        Fl::awake();
+        break_event_wait();
     }
 }
 
@@ -301,7 +301,7 @@ void request_quit()
         Fl::hide_all_windows();
     }
     Fl::program_should_quit(1);
-    Fl::awake();
+    break_event_wait();
 }
 
 } // namespace clfl_bridge
