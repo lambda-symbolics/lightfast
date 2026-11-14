@@ -15,6 +15,29 @@
       (format t "~&awake smoke passed in ~,2F s~%" elapsed)))
   (lightfast:destroy window))
 
+;;; A callback from inside the event loop runs with the floating point traps
+;;; Lisp had outside it, although the loop itself runs with them masked.
+(defparameter *zero* 0.0)
+(let* ((window (lightfast:make-window :width 200 :height 100 :label "float traps"))
+       (outside (getf (sb-int:get-floating-point-modes) :traps))
+       (inside :never-ran)
+       (signalled nil))
+  (lightfast:show window)
+  (lightfast:add-timeout 0.05
+                         (lambda ()
+                           (setf inside (getf (sb-int:get-floating-point-modes) :traps)
+                                 signalled (handler-case (progn (/ 1.0 *zero*) nil)
+                                             (division-by-zero () t)))))
+  (loop repeat 40
+        while (eq inside :never-ran)
+        do (lightfast:wait 0.05))
+  (assert (equal inside outside) () "a timer callback ran with traps ~S, not ~S" inside outside)
+  (assert signalled () "division by zero did not signal inside a timer callback")
+  (assert (equal outside (getf (sb-int:get-floating-point-modes) :traps)) ()
+          "the event loop left the traps changed")
+  (lightfast:destroy window)
+  (format t "~&float trap smoke passed with traps ~S~%" outside))
+
 ;;; RUN-WITH-IDLE: a worker wakes the loop twice, then closes the window;
 ;;; the idle function must run before the first wait and after each wakeup.
 (let* ((window (lightfast:make-window :width 200 :height 100 :label "run-with-idle"))

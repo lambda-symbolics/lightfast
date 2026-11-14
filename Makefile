@@ -35,6 +35,7 @@ SOURCES := native/api_core.cpp \
            native/api_capture.cpp \
            native/api_controls.cpp \
            native/api_dialogs.cpp \
+           native/api_floats.cpp \
            native/api_fonts.cpp \
            native/api_runtime.cpp \
            native/api_text.cpp \

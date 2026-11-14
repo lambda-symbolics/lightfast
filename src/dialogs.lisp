@@ -1,43 +1,31 @@
 (in-package #:lightfast)
 
-(defmacro with-dialog-guards (&body body)
-  "Run a modal native dialog with floating point traps masked.
-
-The GTK and kdialog chooser backends do floating point work that trips the
-traps SBCL leaves unmasked, which used to surface as SIGFPE."
-  #+sbcl `(sb-int:with-float-traps-masked
-              (:invalid :divide-by-zero :overflow :underflow :inexact)
-            ,@body)
-  #-sbcl `(progn ,@body))
+;;; Modal dialogs. The native file choosers do floating point work that trips
+;;; the traps SBCL leaves enabled; like every call into the bridge, these run
+;;; with the traps masked by DEFINE-BRIDGE-FUNCTION.
 
 (defun choose-file (&key (title "") (filter "") (preset-file ""))
-  (let ((path (with-dialog-guards
-                (foreign-string (lambda ()
-                                  (%choose-file title filter preset-file))))))
+  (let ((path (foreign-string (lambda ()
+                                (%choose-file title filter preset-file)))))
     (and (plusp (length path))
          path)))
 
 (defun choose-files (&key (title "") (filter "") (preset-file ""))
   "Return every path selected in a native multi-file chooser."
-  (let ((paths (with-dialog-guards
-                 (foreign-string (lambda ()
-                                   (%choose-files title filter
-                                                  preset-file))))))
+  (let ((paths (foreign-string (lambda ()
+                                 (%choose-files title filter preset-file)))))
     (unless (zerop (length paths))
       (uiop:split-string paths :separator '(#\Newline)))))
 
 (defun choose-save-file (&key (title "") (filter "") (preset-file ""))
-  (let ((path (with-dialog-guards
-                (foreign-string (lambda ()
-                                  (%choose-save-file title filter
-                                                     preset-file))))))
+  (let ((path (foreign-string (lambda ()
+                                (%choose-save-file title filter preset-file)))))
     (and (plusp (length path))
          path)))
 
 (defun choose-directory (&key (title "") (preset-path ""))
-  (let ((path (with-dialog-guards
-                (foreign-string (lambda ()
-                                  (%choose-directory title preset-path))))))
+  (let ((path (foreign-string (lambda ()
+                                (%choose-directory title preset-path)))))
     (and (plusp (length path))
          path)))
 
@@ -73,10 +61,9 @@ theme's text face and size."
 Returns the entered string, or NIL when the dialog is cancelled or the
 answer is empty."
   (load-library)
-  (let ((answer (with-dialog-guards
-                  (foreign-string (lambda ()
-                                    (%input-dialog (or message "")
-                                                   (or initial "")))))))
+  (let ((answer (foreign-string (lambda ()
+                                  (%input-dialog (or message "")
+                                                 (or initial ""))))))
     (and (plusp (length answer)) answer)))
 
 (defun choose-color (&key (title "Choose color") (red 1.0d0) (green 1.0d0)
@@ -91,9 +78,7 @@ dialog is cancelled."
     (setf (cffi:mem-ref red-cell :double) (coerce red 'double-float)
           (cffi:mem-ref green-cell :double) (coerce green 'double-float)
           (cffi:mem-ref blue-cell :double) (coerce blue 'double-float))
-    (when (plusp (with-dialog-guards
-                   (%color-chooser (or title "") red-cell green-cell
-                                   blue-cell)))
+    (when (plusp (%color-chooser (or title "") red-cell green-cell blue-cell))
       (values (cffi:mem-ref red-cell :double)
               (cffi:mem-ref green-cell :double)
               (cffi:mem-ref blue-cell :double)))))
