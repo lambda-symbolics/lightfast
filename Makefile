@@ -55,7 +55,7 @@ LDFLAGS += $(HOST_LDFLAGS) $(shell $(FLTK_CONFIG) --use-images --ldflags) $(HOST
 # of any other copy ASDF knows about, and keep their FASLs under build/.
 LISP_ENV := CL_SOURCE_REGISTRY=$(CURDIR)/:$(CL_SOURCE_REGISTRY) ASDF_OUTPUT_TRANSLATIONS=$(CURDIR)/:$(CURDIR)/build/common-lisp-cache/
 
-.PHONY: all native check smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke canvas-smoke demo layout-visual flat-theme-visual flat-theme-capture scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
+.PHONY: all native check check-headless check-display smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke canvas-smoke demo layout-visual flat-theme-visual flat-theme-capture scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
 
 all: native
 
@@ -65,7 +65,13 @@ $(BRIDGE): $(SOURCES) native/cl_fltk_bridge.hpp native/stock_icons.hpp $(STOCK_I
 	mkdir -p build
 	$(CXX) $(CXXFLAGS) $(SOURCES) -o $@ $(LDFLAGS)
 
-check: smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke canvas-smoke
+check: check-headless check-display
+
+# The checks that need no display, and the ones that open windows. CI runs the
+# two groups apart, so a new check joins the group it belongs to.
+check-headless: smoke layout-smoke
+
+check-display: widget-smoke awake-smoke font-smoke text-smoke canvas-smoke
 
 smoke: native
 	$(LISP_ENV) sbcl --noinform --non-interactive --load scripts/smoke-load.lisp
