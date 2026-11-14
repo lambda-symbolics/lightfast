@@ -350,6 +350,76 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
 
 (cffi:defcfun ("clfl_draw_pop_clip" %draw-pop-clip) :void)
 
+(cffi:defcfun ("clfl_draw_set_line_style" %draw-set-line-style) :void
+  (width  :int)
+  (dashed :int))
+
+(cffi:defcfun ("clfl_draw_polygon" %draw-polygon) :void
+  (points :pointer)
+  (count  :int)
+  (filled :int))
+
+(cffi:defcfun ("clfl_draw_text_rotated" %draw-text-rotated) :void
+  (text  :string)
+  (angle :int)
+  (x     :int)
+  (y     :int))
+
+(cffi:defcfun ("clfl_draw_clip_box" %draw-clip-box) :int
+  (x      :int)
+  (y      :int)
+  (width  :int)
+  (height :int)
+  (clip-x :pointer)
+  (clip-y :pointer)
+  (clip-w :pointer)
+  (clip-h :pointer))
+
+(cffi:defcfun ("clfl_draw_dither" %draw-dither) :void
+  (x      :int)
+  (y      :int)
+  (width  :int)
+  (height :int)
+  (step   :int)
+  (red    :int)
+  (green  :int)
+  (blue   :int))
+
+(cffi:defcfun ("clfl_image_load" %image-load) :long-long
+  (path :string))
+
+(cffi:defcfun ("clfl_image_width" %image-width) :int
+  (id :long-long))
+
+(cffi:defcfun ("clfl_image_height" %image-height) :int
+  (id :long-long))
+
+(cffi:defcfun ("clfl_image_draw" %image-draw) :void
+  (id     :long-long)
+  (x      :int)
+  (y      :int)
+  (width  :int)
+  (height :int))
+
+(cffi:defcfun ("clfl_image_release" %image-release) :void
+  (id :long-long))
+
+(cffi:defcfun ("clfl_widget_redraw_region" %widget-redraw-region) :void
+  (id     :long-long)
+  (x      :int)
+  (y      :int)
+  (width  :int)
+  (height :int))
+
+(cffi:defcfun ("clfl_canvas_set_focusable" %canvas-set-focusable) :int
+  (id      :long-long)
+  (enabled :int))
+
+(cffi:defcfun ("clfl_widget_set_placeholder" %widget-set-placeholder) :void
+  (id   :long-long)
+  (text :string)
+  (font :int))
+
 (cffi:defcfun ("clfl_widget_set_range" %widget-set-range) :void
   (id      :long-long)
   (minimum :double)

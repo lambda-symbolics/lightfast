@@ -162,6 +162,65 @@ bool dispatch_input_callback(Fl_Widget *widget, int event, const std::string &va
     return true;
 }
 
+bool has_callback(Fl_Widget *widget, int event)
+{
+    const auto found = g_widget_ids.find(widget);
+    if (found == g_widget_ids.end()) {
+        return false;
+    }
+    Entry *entry = find_entry(found->second);
+    if (!entry) {
+        return false;
+    }
+    const auto callback = entry->callbacks.find(event);
+    return callback != entry->callbacks.end() && callback->second.callback;
+}
+
+namespace {
+
+struct Placeholder {
+    std::string text;
+    int font = 0;
+};
+
+std::unordered_map<Fl_Widget *, Placeholder> g_placeholders;
+
+} // namespace
+
+void set_placeholder(Fl_Widget *widget, const char *text, int font)
+{
+    if (!widget) {
+        return;
+    }
+    if (!text || !*text) {
+        g_placeholders.erase(widget);
+    } else {
+        g_placeholders[widget] = Placeholder{text, font};
+    }
+    widget->redraw();
+}
+
+void forget_placeholder(Fl_Widget *widget)
+{
+    g_placeholders.erase(widget);
+}
+
+void draw_placeholder(Fl_Widget *widget, bool empty, int x, int y, int height, int size)
+{
+    if (!empty) {
+        return;
+    }
+    const auto found = g_placeholders.find(widget);
+    if (found == g_placeholders.end()) {
+        return;
+    }
+    fl_font(static_cast<Fl_Font>(found->second.font), size);
+    fl_color(FL_FOREGROUND_COLOR);
+    const int line = fl_height();
+    const int top = height > 0 ? y + (height - line) / 2 : y;
+    fl_draw(found->second.text.c_str(), x, top + line - fl_descent());
+}
+
 bool dispatch_consumable_input(Fl_Widget *widget, int event, const std::string &value)
 {
     g_event_consumed = false;

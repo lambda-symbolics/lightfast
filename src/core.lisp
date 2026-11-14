@@ -178,6 +178,25 @@
 
 (defconstant +event-key+ 12)
 
+(defconstant +event-move+ 13
+  "The pointer moved over a canvas with no button held.")
+
+(defconstant +event-enter+ 14
+  "The pointer entered a canvas.")
+
+(defconstant +event-leave+ 15
+  "The pointer left a canvas.")
+
+(defconstant +event-focus+ 16
+  "A canvas, text field or editor took the keyboard focus.")
+
+(defconstant +event-unfocus+ 17
+  "A canvas, text field or editor gave the keyboard focus up.")
+
+(defconstant +event-drop+ 18
+  "Text or files were dropped on a canvas; the value is the text, or the file
+names one to a line.")
+
 (defvar *default-parent* nil)
 
 (defstruct (widget (:constructor %make-widget

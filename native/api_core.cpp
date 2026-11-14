@@ -282,6 +282,31 @@ void clfl_widget_redraw(widget_id id)
     }
 }
 
+/// Asks for the part of the widget at X, Y, WIDTH, HEIGHT, measured from its
+/// own corner, to be drawn again; the rest keeps what it shows. A widget that
+/// draws itself reads the region back as its clip box.
+void clfl_widget_redraw_region(widget_id id, int x, int y, int width, int height)
+{
+    if (Fl_Widget *widget = find_widget(id)) {
+        if (width > 0 && height > 0) {
+            widget->damage(FL_DAMAGE_ALL, widget->x() + x, widget->y() + y, width, height);
+        }
+    }
+}
+
+/// Whether a canvas takes the keyboard focus when it is clicked or tabbed to.
+int clfl_canvas_set_focusable(widget_id id, int enabled)
+{
+    return set_canvas_focusable(find_widget(id), enabled != 0) ? 1 : 0;
+}
+
+/// Shows TEXT in FONT inside an empty text field or editor; an empty TEXT
+/// removes it.
+void clfl_widget_set_placeholder(widget_id id, const char *text, int font)
+{
+    set_placeholder(find_widget(id), text, font);
+}
+
 void clfl_widget_set_label(widget_id id, const char *label)
 {
     if (Fl_Widget *widget = find_widget(id)) {

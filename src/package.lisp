@@ -175,6 +175,24 @@
    #:draw-push-clip
    #:draw-rect
    #:draw-text
+   #:+event-move+
+   #:+event-enter+
+   #:+event-leave+
+   #:+event-focus+
+   #:+event-unfocus+
+   #:+event-drop+
+   #:draw-line-style
+   #:draw-polygon
+   #:draw-text-rotated
+   #:draw-clip-box
+   #:draw-dither
+   #:load-image
+   #:image-size
+   #:draw-image
+   #:release-image
+   #:redraw-region
+   #:canvas-set-focusable
+   #:set-placeholder
    #:field
    #:field-control
    #:field-label

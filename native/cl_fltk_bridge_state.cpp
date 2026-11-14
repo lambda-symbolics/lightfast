@@ -94,6 +94,7 @@ void unregister_widget_tree(Fl_Widget *widget)
                            }),
             g_menu_callbacks.end());
         g_widgets.erase(found->second);
+        forget_placeholder(found->first);
         g_widget_ids.erase(found);
     }
 }

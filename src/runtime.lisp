@@ -625,6 +625,97 @@ thing."
 (defun draw-pop-clip ()
   (%draw-pop-clip))
 
+(defun draw-line-style (&key (width 0) dashed)
+  "Draw the lines that follow WIDTH units thick, dashed when DASHED.
+
+A width of zero is FLTK's hairline. The style holds until it is set again, so
+a draw callback that changes it puts it back."
+  (%draw-set-line-style width (if dashed 1 0)))
+
+(defun draw-polygon (points &key filled)
+  "Draw the closed outline through POINTS, a flat list X0 Y0 X1 Y1 and so on,
+in the current color, or fill it when FILLED."
+  (let ((count (floor (length points) 2)))
+    (when (>= count 2)
+      (cffi:with-foreign-object (buffer :int (* 2 count))
+        (loop for value in points
+              for index from 0 below (* 2 count)
+              do (setf (cffi:mem-aref buffer :int index) (round value)))
+        (%draw-polygon buffer count (if filled 1 0))))))
+
+(defun draw-text-rotated (text angle x y)
+  "Draw TEXT in the current font and color, turned ANGLE degrees
+counterclockwise about the start of its baseline at X, Y."
+  (%draw-text-rotated (or text "") angle x y))
+
+(defun draw-clip-box (x y width height)
+  "Return the part of the box X, Y, WIDTH, HEIGHT that is being drawn, as four
+values, and as a fifth whether any of it is.
+
+Inside a draw callback the clip is the region that asked to be redrawn, so a
+canvas showing a long document draws only what falls inside these bounds."
+  (cffi:with-foreign-objects ((clip-x :int) (clip-y :int) (clip-w :int) (clip-h :int))
+    (let ((visible (%draw-clip-box x y width height clip-x clip-y clip-w clip-h)))
+      (values (cffi:mem-ref clip-x :int)
+              (cffi:mem-ref clip-y :int)
+              (cffi:mem-ref clip-w :int)
+              (cffi:mem-ref clip-h :int)
+              (plusp visible)))))
+
+(defun draw-dither (x y width height &key (step 3) (red 0) (green 0) (blue 0))
+  "Fill the box with a one-bit dither: one opaque dot of the color RED, GREEN,
+BLUE every STEP units, the ground showing between them.
+
+The dots sit on a grid fixed to the window, so two fills that touch line up,
+and stay square on a scaled display. STEP 3 reads as a medium tone, 5 as a
+light one."
+  (%draw-dither x y width height step red green blue))
+
+(defun load-image (path)
+  "Load the image file at PATH and return its handle, or NIL when FLTK cannot
+read it. PNG, JPEG, GIF, BMP and SVG are told apart by their content.
+
+Draw it with DRAW-IMAGE inside a draw callback and give it back with
+RELEASE-IMAGE."
+  (load-library)
+  (let ((id (%image-load (namestring path))))
+    (and (plusp id) id)))
+
+(defun image-size (image)
+  "Return IMAGE's own width and height in pixels as two values."
+  (values (%image-width image) (%image-height image)))
+
+(defun draw-image (image x y &key (width 0) (height 0))
+  "Draw IMAGE with its top-left corner at X, Y, scaled to WIDTH by HEIGHT
+units. A side left at zero is drawn at the image's own size. The image keeps
+its full resolution, so it stays sharp on a scaled display."
+  (%image-draw image x y width height))
+
+(defun release-image (image)
+  "Free IMAGE; its handle means nothing afterwards."
+  (%image-release image)
+  nil)
+
+(defun redraw-region (widget x y width height)
+  "Ask for the part of WIDGET at X, Y, WIDTH, HEIGHT, measured from its own
+corner, to be drawn again, leaving the rest as it is.
+
+A canvas reads the region back with DRAW-CLIP-BOX and draws only that."
+  (%widget-redraw-region (widget-id widget) x y width height)
+  widget)
+
+(defun canvas-set-focusable (canvas focusable-p)
+  "Whether CANVAS takes the keyboard focus when clicked. A canvas that only
+shows things leaves the focus with the field the person is typing in."
+  (%canvas-set-focusable (widget-id canvas) (if focusable-p 1 0))
+  canvas)
+
+(defun set-placeholder (widget text &key (font 0))
+  "Show TEXT in FONT inside WIDGET, a text field or editor, while it is empty.
+An empty or NIL TEXT removes the placeholder."
+  (%widget-set-placeholder (widget-id widget) (or text "") font)
+  widget)
+
 (defmacro with-clip ((x y width height) &body body)
   `(progn
      (draw-push-clip ,x ,y ,width ,height)

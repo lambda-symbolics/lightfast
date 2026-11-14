@@ -413,6 +413,28 @@ public:
                        this->y() + Fl::box_dy(box_type) + kTextYOffset,
                        this->w() - Fl::box_dw(box_type),
                        this->h() - Fl::box_dh(box_type));
+        draw_placeholder(this,
+                         this->size() == 0,
+                         this->x() + Fl::box_dx(box_type) + 3,
+                         this->y() + Fl::box_dy(box_type) + kTextYOffset,
+                         this->h() - Fl::box_dh(box_type),
+                         this->textsize());
+    }
+
+    int handle(int event) override
+    {
+        // The application sees a key before the field does, so a search box
+        // can give Up, Down, Enter and Escape to the list it filters and
+        // leave every other key to ordinary editing.
+        if (event == FL_KEYDOWN && dispatch_consumable_input(this, EVENT_KEY, key_event_value())) {
+            return 1;
+        }
+        const int handled = Base::handle(event);
+        if (event == FL_FOCUS || event == FL_UNFOCUS) {
+            dispatch_input_callback(this, event == FL_FOCUS ? EVENT_FOCUS : EVENT_UNFOCUS, "");
+            this->redraw();
+        }
+        return handled;
     }
 
 private:
@@ -822,6 +844,19 @@ public:
         buffer_.reset();
     }
 
+    void draw() override
+    {
+        Fl_Text_Editor::draw();
+        fl_push_clip(text_area.x, text_area.y, text_area.w, text_area.h);
+        draw_placeholder(this,
+                         buffer_ && buffer_->length() == 0,
+                         text_area.x,
+                         text_area.y,
+                         0,
+                         textsize());
+        fl_pop_clip();
+    }
+
     int handle(int event) override
     {
         // The application sees a key before the editor does, so that a
@@ -830,7 +865,11 @@ public:
         if (event == FL_KEYDOWN && dispatch_consumable_input(this, EVENT_KEY, key_event_value())) {
             return 1;
         }
-        return Fl_Text_Editor::handle(event);
+        const int handled = Fl_Text_Editor::handle(event);
+        if (event == FL_FOCUS || event == FL_UNFOCUS) {
+            dispatch_input_callback(this, event == FL_FOCUS ? EVENT_FOCUS : EVENT_UNFOCUS, "");
+        }
+        return handled;
     }
 
 private:
@@ -846,6 +885,8 @@ public:
         box(theme().sunken_box);
         color(theme().field_color);
     }
+
+    void focusable(bool enabled) { focusable_ = enabled; }
 
     void draw() override
     {
@@ -864,7 +905,9 @@ public:
     {
         switch (event) {
         case FL_PUSH:
-            take_focus();
+            if (focusable_) {
+                take_focus();
+            }
             return dispatch_input_callback(this, EVENT_PUSH, mouse_event_value(this)) ? 1 : Fl_Widget::handle(event);
         case FL_DRAG:
             return dispatch_input_callback(this, EVENT_DRAG, mouse_event_value(this)) ? 1 : Fl_Widget::handle(event);
@@ -874,14 +917,55 @@ public:
             return dispatch_input_callback(this, EVENT_WHEEL, mouse_event_value(this)) ? 1 : Fl_Widget::handle(event);
         case FL_KEYDOWN:
             return dispatch_input_callback(this, EVENT_KEY, key_event_value()) ? 1 : Fl_Widget::handle(event);
-        case FL_FOCUS:
-        case FL_UNFOCUS:
+        case FL_ENTER:
+            // FLTK sends FL_MOVE only to the widget that accepted FL_ENTER,
+            // so a canvas that tracks the pointer must claim the entry.
+            dispatch_input_callback(this, EVENT_ENTER, mouse_event_value(this));
+            return (has_callback(this, EVENT_MOVE) || has_callback(this, EVENT_ENTER)) ? 1
+                                                                                         : Fl_Widget::handle(event);
+        case FL_MOVE:
+            return dispatch_input_callback(this, EVENT_MOVE, mouse_event_value(this)) ? 1 : Fl_Widget::handle(event);
+        case FL_LEAVE:
+            dispatch_input_callback(this, EVENT_LEAVE, mouse_event_value(this));
             return 1;
+        case FL_FOCUS:
+            if (!focusable_) {
+                return 0;
+            }
+            dispatch_input_callback(this, EVENT_FOCUS, "");
+            return 1;
+        case FL_UNFOCUS:
+            dispatch_input_callback(this, EVENT_UNFOCUS, "");
+            return 1;
+        case FL_DND_ENTER:
+        case FL_DND_DRAG:
+        case FL_DND_RELEASE:
+            return has_callback(this, EVENT_DROP) ? 1 : Fl_Widget::handle(event);
+        case FL_DND_LEAVE:
+            return 1;
+        case FL_PASTE:
+            // What a drop delivers: the dragged text, or the dropped files'
+            // names one to a line.
+            return dispatch_input_callback(this, EVENT_DROP, Fl::event_text() ? Fl::event_text() : "")
+                       ? 1
+                       : Fl_Widget::handle(event);
         default:
             return Fl_Widget::handle(event);
         }
     }
+
+private:
+    bool focusable_ = true;
 };
+
+bool set_canvas_focusable(Fl_Widget *widget, bool enabled)
+{
+    if (auto *canvas = dynamic_cast<ClassicCanvas *>(widget)) {
+        canvas->focusable(enabled);
+        return true;
+    }
+    return false;
+}
 
 Fl_Widget *create_widget(int kind, int x, int y, int w, int h, const char *label)
 {

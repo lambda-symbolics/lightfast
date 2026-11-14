@@ -155,7 +155,13 @@ enum EventKind {
     EVENT_DRAG,
     EVENT_RELEASE,
     EVENT_WHEEL,
-    EVENT_KEY
+    EVENT_KEY,
+    EVENT_MOVE,
+    EVENT_ENTER,
+    EVENT_LEAVE,
+    EVENT_FOCUS,
+    EVENT_UNFOCUS,
+    EVENT_DROP
 };
 
 struct CallbackSlot {
@@ -174,6 +180,15 @@ struct Entry {
 void dispatch_resize_callback(Fl_Widget *widget);
 void dispatch_draw_callback(Fl_Widget *widget);
 bool dispatch_input_callback(Fl_Widget *widget, int event, const std::string &value);
+/// Whether WIDGET has a callback installed for EVENT.
+bool has_callback(Fl_Widget *widget, int event);
+/// Draws WIDGET's placeholder, when it has one and EMPTY holds, with its
+/// first line's top-left corner at X, Y. HEIGHT centers a single line in a
+/// field that tall; zero places the text as a document's first line.
+void draw_placeholder(Fl_Widget *widget, bool empty, int x, int y, int height, int size);
+void set_placeholder(Fl_Widget *widget, const char *text, int font);
+void forget_placeholder(Fl_Widget *widget);
+bool set_canvas_focusable(Fl_Widget *widget, bool enabled);
 std::string key_event_value();
 std::string mouse_event_value(Fl_Widget *widget);
 void timer_dispatch_callback(void *data);
