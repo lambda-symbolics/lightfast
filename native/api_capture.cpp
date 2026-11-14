@@ -22,6 +22,11 @@ int clfl_window_capture_ppm(widget_id id, const char *path)
     const bool unseen = !window->visible();
     if (unseen) {
         window->set_visible();
+        // A window that is not mapped takes no damage, so FLTK would draw
+        // only those children that still carry their first; mark them all.
+        for (int index = 0; index < window->children(); ++index) {
+            window->child(index)->damage(FL_DAMAGE_ALL);
+        }
     }
     Fl_Image_Surface surface(window->w(), window->h());
     surface.set_current();
