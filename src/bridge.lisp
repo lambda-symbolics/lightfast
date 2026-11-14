@@ -4,32 +4,59 @@
 (defvar *callback-token-counter* 0)
 (defvar *callback-registry* (make-hash-table))
 
+(defparameter *bridge-library-name*
+  #+darwin "liblightfast.dylib"
+  #-darwin "liblightfast.so"
+  "File name of the native bridge that `make native` builds on this platform.")
+
+(defun bridge-library-override ()
+  "Return the bridge named by the environment variable LIGHTFAST_LIBRARY as a
+pathname, or NIL when the variable is unset or empty."
+  (let ((name (uiop:getenv "LIGHTFAST_LIBRARY")))
+    (when (and name (plusp (length name)))
+      (uiop:parse-native-namestring name))))
+
 (defun bridge-library-path ()
-  (merge-pathnames "build/liblightfast.so"
-                   (asdf:system-source-directory :lightfast)))
+  "Return the path of the native bridge LOAD-LIBRARY loads.
+
+The environment variable LIGHTFAST_LIBRARY names the file outright, which is
+how an application that ships a prebuilt bridge points at it. Without it the
+bridge is the one `make native` builds under the system's source directory:
+build/liblightfast.so on Linux, build/liblightfast.dylib on macOS."
+  (or (bridge-library-override)
+      (merge-pathnames (concatenate 'string "build/" *bridge-library-name*)
+                       (asdf:system-source-directory :lightfast))))
 
 (defun bridge-stale-source (path)
   "Return a native source newer than the bridge built at PATH, or NIL.
 
 A pull brings new C and new pixmaps; it does not bring a new shared library.
-Nothing then fails loudly — the old bridge loads, and whatever the new sources
+Nothing then fails loudly: the old bridge loads, and whatever the new sources
 added is simply absent, which looks like a bug in the caller rather than a build
-that never happened. Asking the filesystem is cheap and answers it exactly."
-  (let ((built (ignore-errors (file-write-date path))))
-    (when built
+that never happened. Asking the filesystem is cheap and answers it exactly. A
+bridge shipped without its sources has nothing to be older than."
+  (let ((built (ignore-errors (file-write-date path)))
+        (source-directory (ignore-errors (asdf:system-source-directory :lightfast))))
+    (when (and built source-directory)
       (find-if (lambda (source)
                  (let ((changed (ignore-errors (file-write-date source))))
                    (and changed (> changed built))))
-               (directory (merge-pathnames
-                           "native/*.*"
-                           (asdf:system-source-directory :lightfast)))))))
+               (directory (merge-pathnames "native/*.*" source-directory))))))
 
 (defun load-library ()
+  "Load the native bridge once; later calls do nothing.
+
+The bridge is the file BRIDGE-LIBRARY-PATH returns. Signals an error when it is
+missing and warns when it is older than the native sources beside the system."
   (unless *library-loaded-p*
     (let ((path (bridge-library-path)))
       (unless (probe-file path)
-        (error "Native Lightfast bridge is missing at ~A. Run `make native` first."
-               path))
+        (if (bridge-library-override)
+            (error "Native Lightfast bridge is missing at ~A, the file ~
+                    LIGHTFAST_LIBRARY names."
+                   path)
+            (error "Native Lightfast bridge is missing at ~A. Run `make native` first."
+                   path)))
       (let ((stale (bridge-stale-source path)))
         (when stale
           ;; A warning rather than an error: a build deliberately kept behind
@@ -37,8 +64,9 @@ that never happened. Asking the filesystem is cheap and answers it exactly."
           ;; take the application down over it. Naming the file that is newer
           ;; and the library that is not is enough to act on.
           (warn "Lightfast's native bridge at ~A is older than ~A. ~
-                 Run `make` in ~A, or anything those sources added — new stock ~
-                 icons, new entry points — will be missing without saying so."
+                 Run `make` in ~A, or anything those sources added, such as ~
+                 new stock icons and new entry points, will be missing ~
+                 without saying so."
                 path (file-namestring stale)
                 (asdf:system-source-directory :lightfast))))
       (cffi:load-foreign-library path)

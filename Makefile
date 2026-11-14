@@ -2,7 +2,24 @@ FLTK_CONFIG ?= fltk-config
 CXX ?= c++
 RUN_DISPLAY ?= :0
 
+# The host decides the library's name, how it is linked and which font system
+# the bridge talks to: fontconfig and Pango on Linux, CoreText on macOS.
+HOST := $(shell uname -s)
+ifeq ($(HOST),Darwin)
+BRIDGE := build/liblightfast.dylib
+HOST_CXXFLAGS :=
+HOST_LDFLAGS := -dynamiclib
+HOST_LIBS := -framework CoreText -framework CoreFoundation
+# Cocoa needs no display variable.
+GUI_ENV :=
+else
 BRIDGE := build/liblightfast.so
+HOST_CXXFLAGS := $(shell pkg-config --cflags pangoft2 fontconfig)
+HOST_LDFLAGS := -shared
+HOST_LIBS := $(shell pkg-config --libs pangoft2 fontconfig)
+GUI_ENV := DISPLAY=$(RUN_DISPLAY)
+endif
+
 SOURCES := native/api_core.cpp \
            native/api_geometry.cpp \
            native/api_metrics.cpp \
@@ -24,9 +41,11 @@ SOURCES := native/api_core.cpp \
            native/cl_fltk_bridge_values.cpp \
            native/cl_fltk_bridge_widgets.cpp
 STOCK_ICONS := $(wildcard native/*.xpm)
-CXXFLAGS += -std=c++17 -fPIC -O2 -Wall -Wextra $(shell $(FLTK_CONFIG) --use-images --cxxflags) $(shell pkg-config --cflags pangoft2 fontconfig)
-LDFLAGS += -shared $(shell $(FLTK_CONFIG) --use-images --ldflags) $(shell pkg-config --libs pangoft2 fontconfig)
-LISP_ENV := ASDF_OUTPUT_TRANSLATIONS=$(CURDIR)/:$(CURDIR)/build/common-lisp-cache/
+CXXFLAGS += -std=c++17 -fPIC -O2 -Wall -Wextra $(shell $(FLTK_CONFIG) --use-images --cxxflags) $(HOST_CXXFLAGS)
+LDFLAGS += $(HOST_LDFLAGS) $(shell $(FLTK_CONFIG) --use-images --ldflags) $(HOST_LIBS)
+# The checks load the system from this tree, wherever it is checked out, ahead
+# of any other copy ASDF knows about, and keep their FASLs under build/.
+LISP_ENV := CL_SOURCE_REGISTRY=$(CURDIR)/:$(CL_SOURCE_REGISTRY) ASDF_OUTPUT_TRANSLATIONS=$(CURDIR)/:$(CURDIR)/build/common-lisp-cache/
 
 .PHONY: all native check smoke layout-smoke widget-smoke awake-smoke font-smoke text-smoke canvas-smoke demo layout-visual flat-theme-visual scrollbar-visual button-ellipsis-visual modern-widgets-visual clean
 
@@ -47,37 +66,37 @@ layout-smoke:
 	$(LISP_ENV) sbcl --noinform --non-interactive --load scripts/smoke-layout.lisp
 
 widget-smoke: native
-	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-widgets.lisp
+	$(LISP_ENV) $(GUI_ENV) sbcl --noinform --non-interactive --load scripts/smoke-widgets.lisp
 
 awake-smoke: native
-	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-awake.lisp
+	$(LISP_ENV) $(GUI_ENV) sbcl --noinform --non-interactive --load scripts/smoke-awake.lisp
 
 font-smoke: native
-	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-fonts.lisp
+	$(LISP_ENV) $(GUI_ENV) sbcl --noinform --non-interactive --load scripts/smoke-fonts.lisp
 
 text-smoke: native
-	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-text.lisp
+	$(LISP_ENV) $(GUI_ENV) sbcl --noinform --non-interactive --load scripts/smoke-text.lisp
 
 canvas-smoke: native
-	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --noinform --non-interactive --load scripts/smoke-canvas.lisp
+	$(LISP_ENV) $(GUI_ENV) sbcl --noinform --non-interactive --load scripts/smoke-canvas.lisp
 
 demo: native
-	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load examples/demo.lisp --eval '(lightfast-demo:main)'
+	$(LISP_ENV) $(GUI_ENV) sbcl --load examples/demo.lisp --eval '(lightfast-demo:main)'
 
 layout-visual: native
-	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load scripts/visual-layout.lisp
+	$(LISP_ENV) $(GUI_ENV) sbcl --load scripts/visual-layout.lisp
 
 scrollbar-visual: native
-	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load scripts/visual-scrollbars.lisp
+	$(LISP_ENV) $(GUI_ENV) sbcl --load scripts/visual-scrollbars.lisp
 
 button-ellipsis-visual: native
-	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load scripts/visual-button-ellipsis.lisp
+	$(LISP_ENV) $(GUI_ENV) sbcl --load scripts/visual-button-ellipsis.lisp
 
 flat-theme-visual: native
-	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load scripts/visual-flat-theme.lisp
+	$(LISP_ENV) $(GUI_ENV) sbcl --load scripts/visual-flat-theme.lisp
 
 modern-widgets-visual: native
-	$(LISP_ENV) DISPLAY=$(RUN_DISPLAY) sbcl --load scripts/visual-modern-widgets.lisp
+	$(LISP_ENV) $(GUI_ENV) sbcl --load scripts/visual-modern-widgets.lisp
 
 clean:
 	rm -rf build
