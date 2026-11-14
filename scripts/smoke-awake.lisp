@@ -17,7 +17,10 @@
 
 ;;; A callback from inside the event loop runs with the floating point traps
 ;;; Lisp had outside it, although the loop itself runs with them masked.
+;;; The quotient is stored where the compiler can see no end of it: a division
+;;; whose result is dropped is one an older SBCL deletes, trap and all.
 (defparameter *zero* 0.0)
+(defparameter *quotient* nil)
 (let* ((window (lightfast:make-window :width 200 :height 100 :label "float traps"))
        (outside (getf (sb-int:get-floating-point-modes) :traps))
        (inside :never-ran)
@@ -26,7 +29,8 @@
   (lightfast:add-timeout 0.05
                          (lambda ()
                            (setf inside (getf (sb-int:get-floating-point-modes) :traps)
-                                 signalled (handler-case (progn (/ 1.0 *zero*) nil)
+                                 signalled (handler-case
+                                               (progn (setf *quotient* (/ 1.0 *zero*)) nil)
                                              (division-by-zero () t)))))
   (loop repeat 40
         while (eq inside :never-ran)

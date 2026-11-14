@@ -31,10 +31,13 @@
 
 ;; Foreign code runs with every floating point trap masked, and Lisp has its
 ;; own traps back as soon as the call returns and inside a callback meanwhile.
+;; The quotient is stored where the compiler can see no end of it: a division
+;; whose result is dropped is one an older SBCL deletes, trap and all.
 (defparameter *zero* 0.0)
+(defparameter *quotient* nil)
 (flet ((traps () (getf (sb-int:get-floating-point-modes) :traps))
        (division-signals-p ()
-         (handler-case (progn (/ 1.0 *zero*) nil)
+         (handler-case (progn (setf *quotient* (/ 1.0 *zero*)) nil)
            (division-by-zero () t))))
   (let ((outside (traps)))
     (assert outside () "this Lisp runs with no floating point traps to mask")
