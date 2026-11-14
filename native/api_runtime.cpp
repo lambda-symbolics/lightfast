@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <mutex>
+#include <thread>
 
 using namespace clfl_bridge;
 
@@ -26,13 +27,29 @@ widget_id g_next_wakeup_id = 1;
 // lock and Fl::wait releases it while it sleeps, as FLTK documents. Taken once:
 // both thread wakeups and wakeup callbacks need it, and a second lock on the
 // interface thread would never be released by Fl::wait.
+//
+// The thread that takes the lock is the interface thread, remembered so that
+// a request from any other thread can be told apart and handed over.
+std::atomic<bool> g_threads_enabled{false};
+std::thread::id g_interface_thread;
+
 void enable_threads_once()
 {
-    static bool enabled = false;
-    if (!enabled) {
+    if (!g_threads_enabled.load()) {
         Fl::lock();
-        enabled = true;
+        g_interface_thread = std::this_thread::get_id();
+        g_threads_enabled.store(true);
     }
+}
+
+bool on_another_thread()
+{
+    return g_threads_enabled.load() && std::this_thread::get_id() != g_interface_thread;
+}
+
+void quit_dispatch(void *)
+{
+    request_quit();
 }
 
 void wakeup_dispatch(void *data)
@@ -125,8 +142,17 @@ int clfl_remove_wakeup(widget_id id)
     return 1;
 }
 
+/// Quits now on the interface thread. From any other thread, once thread
+/// wakeups are enabled, the quit is handed to the interface thread, which
+/// carries it out when it next wakes: hiding windows from elsewhere is
+/// against FLTK's rule everywhere and ends the process on macOS, where only
+/// the main thread may touch Cocoa.
 void clfl_quit()
 {
+    if (on_another_thread()) {
+        Fl::awake(quit_dispatch, nullptr);
+        return;
+    }
     request_quit();
 }
 

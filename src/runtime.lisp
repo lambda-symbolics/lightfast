@@ -743,6 +743,11 @@ first recovers the 1/10 the programmer meant."
   widget)
 
 (defun quit ()
+  "Close every window and make the event loop return.
+
+On the interface thread this happens at once. Another thread may call it too
+once ENABLE-THREAD-WAKEUPS has run: the quit is then handed to the interface
+thread, which carries it out when it next wakes."
   (load-library)
   (%quit))
 
