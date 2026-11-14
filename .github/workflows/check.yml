@@ -15,7 +15,7 @@ jobs:
       FLTK_VERSION: 1.4.5
       FLTK_SHA256: eede1fb2b8e9c2e581e77082e15252145855c79aad30070ee3b24aabe2f926f1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install the compiler, SBCL, the X11 and font libraries and Xvfb
         run: |
@@ -29,7 +29,7 @@ jobs:
 
       - name: Restore FLTK
         id: fltk
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/fltk
           key: fltk-${{ env.FLTK_VERSION }}-ubuntu-24.04-x11-cairo-pango-1
@@ -76,12 +76,12 @@ jobs:
         run: make native
 
       - name: Run the checks that need no display
-        run: make smoke layout-smoke
+        run: make check-headless
 
       - name: Run the checks that open windows, under Xvfb
         run: |
           xvfb-run --auto-servernum --server-args="-screen 0 1280x1024x24" \
-            sh -c 'make widget-smoke awake-smoke font-smoke text-smoke canvas-smoke flat-theme-capture RUN_DISPLAY="$DISPLAY"'
+            sh -c 'make check-display flat-theme-capture RUN_DISPLAY="$DISPLAY"'
 
       - name: Convert the captures to PNG
         run: |
@@ -90,7 +90,7 @@ jobs:
             convert "$capture" "build/screenshots/$(basename "${capture%.ppm}")-linux.png"
           done
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: linux-screenshots
           path: build/screenshots/*.png
@@ -103,7 +103,7 @@ jobs:
       HOMEBREW_NO_AUTO_UPDATE: 1
       HOMEBREW_NO_INSTALL_CLEANUP: 1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install FLTK and SBCL
         run: |
@@ -120,27 +120,39 @@ jobs:
             --eval '(ql:quickload :cffi)'
 
       - name: Build the native bridge
-        run: make native
+        run: |
+          make native
+          otool -L build/liblightfast.dylib
 
       - name: Run the checks that need no display
-        run: make smoke layout-smoke
+        run: make check-headless
 
       # The runner has a logged-in window session, so FLTK opens real Cocoa
       # windows here; nothing stands in for the display.
       - name: Run the checks that open windows
-        run: make widget-smoke awake-smoke font-smoke text-smoke canvas-smoke
+        run: make check-display
 
       - name: Render the flat theme gallery offscreen
         run: make flat-theme-capture
 
-      - name: Convert the captures to PNG
+      # What a person at the machine sees, which the offscreen capture cannot
+      # show: the gallery's window with its title bar and, at the top of the
+      # screen, its menus in the system menu bar.
+      - name: Photograph the screen with the gallery on it
         run: |
           mkdir -p build/screenshots
+          LIGHTFAST_VISUAL_TIMEOUT=8 make flat-theme-visual &
+          sleep 5
+          screencapture -x build/screenshots/screen-macos.png
+          wait
+
+      - name: Convert the captures to PNG
+        run: |
           for capture in build/visual-flat-theme.ppm build/smoke-canvas.ppm; do
             sips -s format png "$capture" --out "build/screenshots/$(basename "${capture%.ppm}")-macos.png"
           done
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: macos-screenshots
           path: build/screenshots/*.png
