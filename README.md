@@ -4,7 +4,9 @@ Small, direct Common Lisp bindings for FLTK 1.4.
 
 Requires SBCL with ASDF and CFFI, FLTK 1.4 with `fltk-config`, and a C++17
 compiler, on Linux x86-64 or macOS arm64. Linux also needs the Pango and
-fontconfig development files; see [macOS](#macos) for that platform.
+fontconfig development files; see [macOS](#macos) for that platform. The
+bridge also builds on NetBSD amd64 with FLTK from pkgsrc; the Makefile is GNU
+make's, so run `gmake` there.
 
 ```sh
 make              # build/liblightfast.so, or build/liblightfast.dylib on macOS
