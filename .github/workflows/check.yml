@@ -99,6 +99,11 @@ jobs:
   macos:
     runs-on: macos-15
     timeout-minutes: 30
+    # macOS runners are scarce and a push follows every commit here: one job
+    # runs at a time, and of those waiting behind it only the newest is kept.
+    concurrency:
+      group: macos-${{ github.ref }}
+      cancel-in-progress: false
     env:
       HOMEBREW_NO_AUTO_UPDATE: 1
       HOMEBREW_NO_INSTALL_CLEANUP: 1
@@ -139,12 +144,17 @@ jobs:
       # show: the gallery's window with its title bar and, at the top of the
       # screen, its menus in the system menu bar.
       - name: Photograph the screen with the gallery on it
+        timeout-minutes: 2
         run: |
+          set -x
           mkdir -p build/screenshots
-          LIGHTFAST_VISUAL_TIMEOUT=8 make flat-theme-visual &
+          LIGHTFAST_VISUAL_TIMEOUT=8 make flat-theme-visual SBCL="sbcl --non-interactive" \
+            > build/gallery.log 2>&1 &
+          gallery=$!
           sleep 5
           screencapture -x build/screenshots/screen-macos.png
-          wait
+          wait "$gallery" || { cat build/gallery.log; exit 1; }
+          cat build/gallery.log
 
       - name: Convert the captures to PNG
         run: |
