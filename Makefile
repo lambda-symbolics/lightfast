@@ -10,6 +10,13 @@ BRIDGE := build/liblightfast.dylib
 HOST_CXXFLAGS :=
 HOST_LDFLAGS := -dynamiclib
 HOST_LIBS := -framework CoreText -framework CoreFoundation
+# Homebrew's fltk-config names the directory of the libpng FLTK was built
+# against, which the next libpng upgrade removes. Homebrew's own lib directory
+# always holds the image libraries.
+HOMEBREW_PREFIX := $(shell brew --prefix 2>/dev/null)
+ifneq ($(HOMEBREW_PREFIX),)
+HOST_LDFLAGS += -L$(HOMEBREW_PREFIX)/lib
+endif
 # Cocoa needs no display variable.
 GUI_ENV :=
 else
