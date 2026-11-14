@@ -173,6 +173,12 @@ sfnt font, in which case nothing is written."
            (loop for ,index below ,count
                  do (cffi:foreign-string-free (cffi:mem-aref ,pointer :pointer ,index))))))))
 
+(defparameter *cairo-text-driver-p*
+  #+darwin nil
+  #-darwin t
+  "Whether FLTK draws text through Cairo and Pango, as it does everywhere but
+on macOS, where it draws through CoreText.")
+
 (defun correct-font-baselines (families &key (directory (uiop:xdg-cache-home "lightfast/fonts/")))
   "Make FLTK draw FAMILIES on the baseline it is given. Each font file of each
 family that carries a line gap is copied to DIRECTORY with the gap folded into
@@ -181,17 +187,22 @@ copies in place of the originals for this process. Returns the corrected
 files as a list of (ORIGINAL . COPY), NIL when no family needed it.
 
 Call this once, after LOAD-LIBRARY and before any font is loaded or window
-shown; faces loaded earlier keep their uncorrected metrics."
+shown; faces loaded earlier keep their uncorrected metrics.
+
+The fault belongs to FLTK's Cairo text driver. On macOS FLTK places text by
+the face's own ascent, so there this does nothing, writes nothing and returns
+NIL; an application calls it the same way on every platform."
   (load-library)
   (let ((corrected nil))
-    (dolist (family families)
-      (dolist (entry (font-files family))
-        (let* ((source (car entry))
-               (target (namestring (merge-pathnames (file-namestring source)
-                                                    (uiop:ensure-directory-pathname directory)))))
-          (when (and (not (assoc source corrected :test #'string=))
-                     (fold-font-line-gap source target))
-            (push (cons source target) corrected)))))
+    (when *cairo-text-driver-p*
+      (dolist (family families)
+        (dolist (entry (font-files family))
+          (let* ((source (car entry))
+                 (target (namestring (merge-pathnames (file-namestring source)
+                                                      (uiop:ensure-directory-pathname directory)))))
+            (when (and (not (assoc source corrected :test #'string=))
+                       (fold-font-line-gap source target))
+              (push (cons source target) corrected))))))
     (setf corrected (nreverse corrected))
     (when corrected
       (%with-c-strings (copies (mapcar #'cdr corrected))
