@@ -8,9 +8,10 @@
 // and puts its own back on the way out, and does the reverse around a
 // callback, with the two functions here.
 //
-// They touch the control registers directly rather than going through
-// <cfenv>: saving and loading a whole x87 environment costs about 70 ns a
-// time, and this pair runs around every call into the bridge.
+// They touch the control registers directly because this pair runs around
+// every call into the bridge. SBCL's own setter saves and loads the whole x87
+// environment on x86-64, which measured about 70 ns a time; the pair here
+// costs about 25 ns a call together.
 
 #include <cstdint>
 

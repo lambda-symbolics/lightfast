@@ -135,7 +135,7 @@ CFFI:DEFCFUN is written, that runs with floating point traps masked.
 
 Every foreign function of the bridge is declared with this and none with
 CFFI:DEFCFUN: a call that skipped the mask would work on Linux and end the
-process on macOS the first time Cocoa divided by zero under it."
+process on macOS the first time Cocoa computed a NaN under it."
   `(defun ,lisp-name ,(mapcar #'first arguments)
      (with-native-float-traps
        (cffi:foreign-funcall ,foreign-name
