@@ -70,6 +70,14 @@ missing and warns when it is older than the native sources beside the system."
                 path (file-namestring stale)
                 (asdf:system-source-directory :lightfast))))
       (cffi:load-foreign-library path)
+      ;; Every call into the bridge goes through its trap mask, so a bridge
+      ;; built before the mask existed would fail at the first call, with an
+      ;; error naming a function the caller never mentioned.
+      (unless (cffi:foreign-symbol-pointer "clfl_float_traps_mask")
+        (error "The native Lightfast bridge at ~A was built from older sources: ~
+                it lacks clfl_float_traps_mask, which every call needs. ~
+                Rebuild it with `make native`."
+               path))
       (setf *library-loaded-p* t))))
 
 (defun next-callback-token (callback)
