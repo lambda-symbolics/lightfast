@@ -1,5 +1,5 @@
 (asdf:defsystem #:lightfast
-  :description "Small, direct Common Lisp bindings for FLTK 1.4."
+  :description "Common Lisp bindings for FLTK 1.4 with additional layouting functionality"
   :author "Lukas Hozda"
   :license "MIT"
   :depends-on (#:cffi)
